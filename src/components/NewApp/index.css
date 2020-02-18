@@ -1,0 +1,66 @@
+.newapp {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    border: 1px solid #eee;
+    padding: 20px;
+    display: inline-block;
+}
+
+.newapp form .ant-form-item-with-help {
+    margin-bottom: 9px;
+}
+
+.newapp .appProps {
+    padding: 20px;
+}
+
+.newapp .appProps .ant-form-item {
+    max-width: 440px;
+    margin: 0 auto 24px;
+    display: flex;
+    display: -webkit-flex;
+}
+
+.newapp .appProps .ant-form-item-label {
+    width: 110px;
+}
+
+.newapp .appProps .ant-form-item-control-wrapper {
+    width: calc(100% - 110px);
+    display: inline-block;
+}
+
+.newapp .paramsList {
+    padding: 20px 0 20px 20px;
+}
+
+.newapp .paramsList .paramLabel {
+    width: 70px;
+    display: inline-block;
+}
+
+.newapp .paramsList label {
+    line-height: 40px;
+}
+
+.newapp .paramsList .paramInput {
+    width: calc(100% - 70px);
+    display: inline-block;
+}
+
+.newapp .paramsList .ant-form-item-control-wrapper {
+    width: 100%;
+    display: inline-block;
+}
+
+.newapp .paramsList .ant-form-item {
+    margin-bottom: 0px;
+    display: flex;
+    display: -webkit-flex;
+    margin: 0 auto;
+}
+
+.ant-upload-list-item-card-actions a[title="Download file"] {
+    display: none !important;
+}
