@@ -16,10 +16,10 @@ export default class Container extends React.Component {
     render() {
         return (
             <Content className="home-content" style={this.props.style}>
-                <Route path="/home" component={Home} />
-                <Route path="/newapp" component={NewApp} />
-                <Route path="/personal" component={Personal} />
-                <Route path="/notice" component={Notice} />
+                <Route path="/home"><Home /></Route>
+                <Route path="/newapp"><NewApp /></Route>
+                <Route path="/personal"><Personal /></Route>
+                <Route path="/notice"><Notice /></Route>
             </Content>
         );
     };
