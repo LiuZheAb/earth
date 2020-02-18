@@ -300,9 +300,9 @@ class Details extends React.Component {
                         <IconFont type="anticondaohang-caidan" style={{ fontSize: '24px', color: '#fff', marginLeft: '-3px' }} />
                     </Button>
                     <Link to="/home">
-                        <div className="details-logo" title="综合地球物理反演与解释一体化平台">
+                        <div className="details-logo" title="综合地球物理联合反演与解释一体化平台">
                             <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" />
-                            <span>综合地球物理反演与解释一体化平台</span>
+                            <span>综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </Link>
                     <span className="details-title">{appName}</span>

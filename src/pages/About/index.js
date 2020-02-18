@@ -66,9 +66,9 @@ export default class About extends React.Component {
             <Layout className="about">
                 <Header className="about-header">
                     <Link to="/login">
-                        <div className="about-logo" title="综合地球物理反演与解释一体化平台">
+                        <div className="about-logo" title="综合地球物理联合反演与解释一体化平台">
                             <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
-                            <span>综合地球物理反演与解释一体化平台</span>
+                            <span>综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </Link>
                     <IconFont className="about-quit" onClick={history.goBack} type="anticonfanhui" title="返回上一页"/>

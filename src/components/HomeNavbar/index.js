@@ -65,7 +65,7 @@ export default class HomeNavbar extends React.Component {
                 <div className="leftdiv">
                     <Link to="/home">
                         <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" style={{ marginRight: '10px', height: "24px" }} />
-                        <span>综合地球物理反演与解释一体化平台</span>
+                        <span>综合地球物理联合反演与解释一体化平台</span>
                     </Link>
                 </div>
                 <div className="rightdiv">

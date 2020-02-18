@@ -355,7 +355,7 @@ class Register extends React.Component {
                         <div className="logo">
                             {/* eslint-disable-next-line */}
                             <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" height="24" />
-                            <span>综合地球物理反演与解释一体化平台</span>
+                            <span>综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </header>
                     <div className="register-banner">
