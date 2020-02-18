@@ -24,9 +24,9 @@ export default class EarthRouter extends React.Component {
                     <Route exact path="/">
                         <Redirect to="/login" />
                     </Route>
-                    <Route exact path="/login" component={Login} />
-                    <Route exact path="/register" component={Register} />
-                    <Route exact path="/about" component={About} />
+                    <Route path="/login"><Login /></Route>
+                    <Route path="/register"><Register /></Route>
+                    <Route path="/about"><About /></Route>
                     <Route render={() => (<ErrorPage />)} />
                 </Switch>
             </Router>
