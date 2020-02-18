@@ -1,0 +1,102 @@
+.homepage .top .ant-col {
+    margin-bottom: 10px;
+}
+
+.homepage .top-block {
+    height: 220px;
+    background-color: #fff;
+    margin-top: 10px;
+    display: flex;
+    display: -webkit-flex;
+}
+
+.homepage .person {
+    padding: 20px;
+}
+
+.homepage .avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.homepage .avatar img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+}
+
+.homepage .personality {
+    width: 100%;
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+}
+
+.homepage .personality ul {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    padding: 25px 0 25px 40px;
+    margin: 0;
+}
+
+.homepage .personality li {
+    /* list-style: none; */
+    font-size: 14px;
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+}
+
+.homepage .personal-info {
+    width: calc(100% - 56px);
+}
+
+.homepage .personal-info div {
+    width: 50px;
+    text-align: right;
+    margin-right: 20px;
+    display: inline-block;
+}
+
+.homepage .personality span {
+    text-decoration: none;
+    width: 150px;
+    margin: 0 auto;
+}
+
+.homepage .plat-img {
+    width: 220px;
+    height: 220px;
+}
+
+.homepage .plat-img img {
+    width: 100%;
+    height: 100%;
+}
+
+.homepage .plat-desc .textarea {
+    padding: 20px;
+    width: calc(100% - 220px);
+}
+
+.homepage .textarea h3 {
+    margin: 0 0 5px 0;
+}
+
+.homepage .textarea p {
+    max-height: 140px;
+    text-indent: 2em;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.homepage .textarea .more {
+    float: right;
+}
