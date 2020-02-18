@@ -1,0 +1,19 @@
+.example {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.05);
+    width: 100vw;
+    height: 100vh;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+/* .ant-spin-lg .ant-spin-dot{
+    font-size: 80px;
+}
+.ant-spin-lg .ant-spin-dot i{
+    width: 30px;
+    height:15px;
+} */
