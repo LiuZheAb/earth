@@ -1,0 +1,64 @@
+.about {
+    width: 100vw;
+    height: 100vh;
+}
+
+.about-header {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    line-height: 50px;
+    padding: 0 20px;
+    border-bottom: 1px#e6e9ed solid;
+}
+
+.about-logo {
+    float: left;
+    color: rgb(102, 102, 102);
+}
+
+.about-logo img {
+    margin-right: 10px;
+    height: 24px;
+}
+
+.about-quit {
+    float: right;
+    margin-top: 13px;
+    font-size: 24px;
+    color: #04b0e9;
+}
+
+.about-contentarea {
+    height: calc(100% - 50px);
+}
+
+.about-sider {
+    height: 100%;
+    background-color: #fff;
+}
+
+.about-sider .ant-menu-inline {
+    border: none;
+}
+
+.about-content {
+    height: 100%;
+    padding: 20px;
+}
+
+.about-container {
+    height: 100%;
+}
+
+.about-container .textarea {
+    width: 100%;
+    min-height: 100%;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.textareacenter {
+    max-width: 1090px;
+    margin: 0 auto;
+}
