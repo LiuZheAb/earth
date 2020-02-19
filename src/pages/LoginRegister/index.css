@@ -1,0 +1,99 @@
+/* 头部样式 */
+
+.login-register {
+    user-select: none;
+    overflow-x: hidden;
+}
+
+.lr-main {
+    width: 100vw;
+    height: 100vh;
+    min-height: 514px;
+    background: url(../../assets/images/background.png) center center no-repeat;
+    background-size: cover;
+}
+
+.lr-main header {
+    width: 100%;
+    height: 50px;
+    background-color: #fff;
+    position: absolute;
+    padding: 0 40px;
+    top: 0;
+    left: 0;
+}
+
+.lr-main .lr-logo {
+    height: 50px;
+    font-size: 24px;
+    color: #000;
+    display: flex;
+    align-items: center;
+}
+
+.lr-main .lr-logo img {
+    margin-right: 10px;
+}
+
+/* 中间样式 */
+
+.lr-main .lr-banner {
+    max-width: 1030px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.lr-main .lr-banner .earth {
+    z-index: 9;
+    opacity: 0.85;
+}
+
+.lr-main .lr-banner .earth-circle {
+    position: absolute;
+    z-index: 10;
+}
+
+.lr-footer {
+    height: 44px;
+    width: 100vw;
+    line-height: 44px;
+    font-size: 16px;
+    padding-left: 40px;
+}
+
+.lr-footer a {
+    margin-right: 40px;
+    color: #5f6162;
+}
+
+.lr-footer a:hover {
+    color: #5f6162;
+    text-decoration: none;
+}
+
+@media screen and (min-width: 1500px) {
+    .lr-footer {
+        width: 1360px;
+        margin: 0 auto;
+    }
+}
+
+@media screen and (max-width: 1065px) {
+    .lr-main .earth {
+        display: none;
+    }
+
+    .lr-main .lr-banner {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .lr-main .lr-logo span {
+        font-size: 16px;
+    }
+}
