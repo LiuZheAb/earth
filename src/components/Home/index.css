@@ -1,7 +1,3 @@
-.homepage .top .ant-col {
-    margin-bottom: 10px;
-}
-
 .homepage .top-block {
     height: 220px;
     background-color: #fff;
@@ -10,7 +6,7 @@
     display: -webkit-flex;
 }
 
-.homepage .person {
+.homepage .top-block {
     padding: 20px;
 }
 
@@ -46,7 +42,6 @@
 }
 
 .homepage .personality li {
-    /* list-style: none; */
     font-size: 14px;
     display: flex;
     display: -webkit-flex;

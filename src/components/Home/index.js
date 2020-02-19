@@ -59,11 +59,6 @@ export default class Home extends React.Component {
       visible: false,
     });
   };
-  handleCancel = e => {
-    this.setState({
-      visible: false,
-    });
-  };
   render() {
     let { userName, mobile, email, avatar, nickname } = this.state;
     return (
@@ -71,7 +66,7 @@ export default class Home extends React.Component {
         <Row gutter={10} style={{ marginBottom: "10px" }}>
           <Col lg={12} xs={24}>
             <div>个人中心</div>
-            <div className="top-block person box-shadow">
+            <div className="top-block box-shadow">
               <div className="avatar" style={{ backgroundColor: avatar ? null : "#d7e9f0" }}>
                 <img src={avatar ? apiurl + avatar : require("../../assets/images/avatar.png")} alt="头像" />
               </div>
@@ -90,7 +85,7 @@ export default class Home extends React.Component {
               <Modal
                 visible={this.state.visible}
                 onOk={this.handleOk}
-                onCancel={this.handleCancel}
+                onCancel={this.handleOk}
                 footer={null}
                 bodyStyle={{ padding: "40px 40px 20px" }}
                 style={{ width: "300px", maxWidth: "500px" }}>
