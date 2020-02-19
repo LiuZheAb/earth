@@ -8,10 +8,10 @@ import { apiurl } from '../../assets/urls';
 import axios from 'axios';
 import { getCookie } from '../../utils/cookies';
 import loadable from '../../utils/lazyLoad';
-import RecentVisit from '../RecentVisit';
-import LoginModal from '../LoginModal';
 
+const RecentVisit = loadable(() => import('../RecentVisit'));
 const ModuleList = loadable(() => import('../ModuleList'));
+const LoginModal = loadable(() => import('../LoginModal'));
 
 export default class Home extends React.Component {
   state = {
