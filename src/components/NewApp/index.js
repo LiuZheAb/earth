@@ -33,23 +33,13 @@ class NewApp extends React.Component {
                 title: null,
             }
         };
-        this.changeAppName = this.changeAppName.bind(this);
-        this.changeModule = this.changeModule.bind(this);
-        this.changeLangType = this.changeLangType.bind(this);
-        this.handleFileChange = this.handleFileChange.bind(this);
-        this.changeParamNum = this.changeParamNum.bind(this);
-        this.changePath = this.changePath.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.continue = this.continue.bind(this);
-        this.reChangeAppName = this.reChangeAppName.bind(this);
-        this.reUpload = this.reUpload.bind(this);
-        this.appNameValidator = this.appNameValidator.bind(this);
     };
     componentDidMount() {
         document.title = "新建应用";
-        this.setState({
-            paramNum: 0
-        });
+        // this.setState({
+        //     paramNum: 0
+        // });
         const _this = this;
         //获取模块列表
         axios.get(apiurl + "homelanguage")
@@ -122,25 +112,21 @@ class NewApp extends React.Component {
         };
         this.setState({
             paramNum: value,
-            params: params
+            params
         });
     };
     //获取参数名称
     changeParamName(index, e) {
         let { params } = this.state;
         params[index].name = e.target.value;
-        this.setState({
-            params: params
-        });
+        this.setState({ params });
     };
     //获取参数类型
     changeParamType(index, value) {
         let { params } = this.state;
         params[index].type = value;
         params[index].defaultValue = "";
-        this.setState({
-            params: params
-        });
+        this.setState({ params });
     };
     //获取参数默认值
     changeParamValue(index, e) {
@@ -162,9 +148,7 @@ class NewApp extends React.Component {
             };
         }
         params[index].defaultValue = defaultValue;
-        this.setState({
-            params: params
-        });
+        this.setState({ params: params });
     };
     paramValueValidator = (index, rule, value, callback) => {
         if (!value) {
@@ -329,7 +313,7 @@ class NewApp extends React.Component {
             data: {
                 userName: getCookie("userName")
             },
-            onChange: this.handleFileChange,
+            onChange: this.handleFileChange.bind(this),
         };
         let resultExtra = null;
         switch (submitResult.state) {
@@ -343,13 +327,13 @@ class NewApp extends React.Component {
             case 2:
                 resultExtra = <>
                     <Button type="default" style={{ marginRight: "20px" }} onClick={() => { this.props.history.push("/home") }}>返回首页</Button>
-                    <Button type="primary" style={{ marginRight: "20px" }} onClick={this.reChangeAppName}>修改应用名</Button>
+                    <Button type="primary" style={{ marginRight: "20px" }} onClick={this.reChangeAppName.bind(this)}>修改应用名</Button>
                 </>;
                 break;
             case 0:
                 resultExtra = <>
                     <Button type="default" style={{ marginRight: "20px" }} onClick={() => { this.props.history.push("/home") }}>返回首页</Button>
-                    <Button type="primary" style={{ marginRight: "20px" }} onClick={this.reUpload}>重新上传docker</Button>
+                    <Button type="primary" style={{ marginRight: "20px" }} onClick={this.reUpload.bind(this)}>重新上传docker</Button>
                 </>;
                 break;
             case -1:
@@ -363,21 +347,21 @@ class NewApp extends React.Component {
         };
         return (
             <div className="newapp box-shadow">
-                <Form onSubmit={this.handleSubmit}>
+                <Form onSubmit={this.handleSubmit.bind(this)}>
                     <Row gutter={20}>
                         <Col xs={7} className="appProps" style={params.length === 0 ? { margin: "0 auto", float: "none" } : null}>
                             <Form.Item label="应用名称">
                                 {getFieldDecorator("appName", {
-                                    rules: [{ validator: this.appNameValidator }]
+                                    rules: [{ validator: this.appNameValidator.bind(this) }]
                                 })(
-                                    <Input placeholder="请输入应用名称" onChange={this.changeAppName} />
+                                    <Input placeholder="请输入应用名称" onChange={this.changeAppName.bind(this)} />
                                 )}
                             </Form.Item>
                             <Form.Item label="注册应用模块">
                                 {getFieldDecorator("module", {
                                     rules: [{ required: true, message: "请选择应用模块!" }]
                                 })(
-                                    <Select onChange={this.changeModule} placeholder="--请选择模块--">
+                                    <Select onChange={this.changeModule.bind(this)} placeholder="--请选择模块--">
                                         {modules.map((module, index) => {
                                             return (
                                                 <Option value={index + 1} key={index}>
@@ -392,7 +376,7 @@ class NewApp extends React.Component {
                                 {getFieldDecorator("langTypes", {
                                     rules: [{ required: true, message: "请选择程序语言类型!" }]
                                 })(
-                                    <Select onChange={this.changeLangType} placeholder="--请选择类型--">
+                                    <Select onChange={this.changeLangType.bind(this)} placeholder="--请选择类型--">
                                         {langTypes.map((langType, index) => {
                                             return (
                                                 <Option value={langType} key={index}>
@@ -419,14 +403,14 @@ class NewApp extends React.Component {
                                 {getFieldDecorator("imgUrl", {
                                     rules: [{ required: true, message: "请输入运行路径!" }]
                                 })(
-                                    <Input placeholder="请输入运行路径" onChange={this.changePath} />
+                                    <Input placeholder="请输入运行路径" onChange={this.changePath.bind(this)} />
                                 )}
                             </Form.Item>
                             <Form.Item label="参数个数">
                                 {getFieldDecorator("paramNum", {
                                     rules: [{ required: true, message: "请输入参数个数!" }]
                                 })(
-                                    <InputNumber onChange={this.changeParamNum} min={0} />
+                                    <InputNumber onChange={this.changeParamNum.bind(this)} min={0} />
                                 )}
                             </Form.Item>
                             {params.length === 0 && (
@@ -529,7 +513,7 @@ class NewApp extends React.Component {
                 </Form>
                 <Modal
                     visible={visible}
-                    onOk={this.handleOk}
+                    onOk={this.handleCancel}
                     onCancel={this.handleCancel}
                     footer={null}
                 >
