@@ -6,7 +6,7 @@
     display: -webkit-flex;
 }
 
-.homepage .top-block {
+.homepage .person {
     padding: 20px;
 }
 
@@ -82,10 +82,13 @@
 
 .homepage .textarea h3 {
     margin: 0 0 5px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .homepage .textarea p {
-    max-height: 140px;
+    max-height: 120px;
     text-indent: 2em;
     margin-bottom: 5px;
     overflow: hidden;
