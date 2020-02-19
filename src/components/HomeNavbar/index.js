@@ -44,14 +44,7 @@ export default class HomeNavbar extends React.Component {
         this.setState({ visible: true })
     }
     handleOk = e => {
-        this.setState({
-            visible: false,
-        });
-    };
-    handleCancel = e => {
-        this.setState({
-            visible: false,
-        });
+        this.setState({ visible: false });
     };
     render() {
         const menu = <Menu>
@@ -96,10 +89,10 @@ export default class HomeNavbar extends React.Component {
                         <Modal
                             visible={this.state.visible}
                             onOk={this.handleOk}
-                            onCancel={this.handleCancel}
+                            onCancel={this.handleOk}
                             footer={null}
                             bodyStyle={{ padding: "40px 40px 20px" }}
-                            style={{ width: "300px",maxWidth:"500px" }}>
+                            style={{ width: "300px", maxWidth: "500px" }}>
                             <LoginModal parent={this} />
                         </Modal>
                     </div>
