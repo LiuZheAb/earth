@@ -3,8 +3,7 @@ import { Switch, Redirect, HashRouter as Router, Route } from "react-router-dom"
 import loadable from '../utils/lazyLoad';
 
 const Homepage = loadable(() => import('../pages/HomePage'));
-const Login = loadable(() => import('../pages/Login'));
-const Register = loadable(() => import('../pages/Register'));
+const LoginRegister = loadable(() => import('../pages/LoginRegister'));
 const Details = loadable(() => import('../pages/Details'));
 const ErrorPage = loadable(() => import('../pages/ErrorPage'));
 const About = loadable(() => import('../pages/About'));
@@ -24,9 +23,8 @@ export default class EarthRouter extends React.Component {
                     <Route exact path="/">
                         <Redirect to="/login" />
                     </Route>
-                    <Route path="/login" component={Login}/>
-                    <Route path="/register" component={Register}/>
-                    <Route path="/about" component={About}/>
+                    <Route path={["/login", "/register"]} component={LoginRegister} />
+                    <Route path="/about" component={About} />
                     <Route render={() => (<ErrorPage />)} />
                 </Switch>
             </Router>
