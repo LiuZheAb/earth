@@ -39,7 +39,8 @@
     font-weight: bold;
 }
 
-.personal-sider #personal-menu .ant-menu-item-selected::after, .personal-sider #personal-menu .ant-menu-item::after {
+.personal-sider #personal-menu .ant-menu-item-selected::after,
+.personal-sider #personal-menu .ant-menu-item::after {
     left: 0;
     right: 100%;
 }
@@ -83,4 +84,22 @@
     align-items: flex-start;
     line-height: 30px;
     cursor: pointer;
+}
+
+.edit-modal {
+    width: 800px !important;
+    max-width: 800px;
+}
+
+.param-delete {
+    position: absolute;
+    right: -30px;
+    top: 7px;
+}
+
+.param-delete:hover {
+    color: #fff;
+    border-color: red;
+    background-color: red;
+
 }

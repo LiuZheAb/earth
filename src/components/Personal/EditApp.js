@@ -206,7 +206,7 @@ class EditApp extends Component {
         const { getFieldDecorator } = this.props.form;
         let { appName, paramNum, inputType, params, project, visible } = this.state;
         //应用列名
-        const projectcolumns = [    
+        const projectcolumns = [
             {
                 title: '项目名称',
                 dataIndex: 'appName',
@@ -226,11 +226,9 @@ class EditApp extends Component {
         //编辑应用表单布局
         const formItemLayout = {
             labelCol: {
-                xs: { span: 20 },
-                sm: { span: 5 },
+                sm: { span: 4 },
             },
             wrapperCol: {
-                xs: { span: 28 },
                 sm: { span: 18 },
             },
         };
@@ -252,8 +250,8 @@ class EditApp extends Component {
         //     },
         // };
         return (
-            <Card bordered={false} style={{ width: "100%", textAlign: "center" }}>
-                <Table rowKey={record => record.appName} columns={projectcolumns} dataSource={project} tableLayout="fixed"/>
+            <Card bordered={false} style={{ width: "100%", textAlign: "center" }} bodyStyle={{ padding: 0 }}>
+                <Table rowKey={record => record.appName} columns={projectcolumns} dataSource={project} tableLayout="fixed" />
                 <Modal
                     title="修改应用"
                     visible={visible}
@@ -262,19 +260,19 @@ class EditApp extends Component {
                     okText='确认'
                     cancelText='取消'
                     destroyOnClose="true"
+                    className="edit-modal"
                 >
-                    <Card bordered={false} style={{ width: "100%" }}>
-                        <Form {...formItemLayout} onSubmit={this.handleSubmitproject}>
-                            <Form.Item label="应用名称">
-                                {getFieldDecorator('appname', {
-                                    rules: [{ required: true, message: '请输入应用名称!', }], initialValue: appName, validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
-                                })(
-                                    <Col span={12}>
-                                        <Input defaultValue={appName} onChange={this.changeAppname.bind(this)} />
-                                    </Col>
-                                )}
-                            </Form.Item>
-                            {/* <Form.Item label="修改镜像">
+                    <Form {...formItemLayout} onSubmit={this.handleSubmitproject}>
+                        <Form.Item label="应用名称" style={{ marginBottom: "10px" }}>
+                            {getFieldDecorator('appname', {
+                                rules: [{ required: true, message: '请输入应用名称!', }], initialValue: appName, validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
+                            })(
+                                <Col span={12}>
+                                    <Input defaultValue={appName} onChange={this.changeAppname.bind(this)} />
+                                </Col>
+                            )}
+                        </Form.Item>
+                        {/* <Form.Item label="修改镜像">
                                     {getFieldDecorator('appupload', {
                                         rules: [{ required: true, message: '请上传镜像' }], validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
                                     })(
@@ -285,88 +283,81 @@ class EditApp extends Component {
                                         </Upload>,
                                     )}
                                 </Form.Item> */}
-                            <Form.Item label="参数个数">
-                                {getFieldDecorator('paramNum', {
-                                    rules: [{ required: true, message: '请输入参数个数!' }],
-                                    initialValue: paramNum,
-                                    validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
-                                })(
-                                    <InputNumber onChange={this.changeParamNum.bind(this)} min={0}></InputNumber>
-                                )}
-                            </Form.Item>
-                            {/* 根据params数组生成参数列表 */}
-                            {params.map((param, index) => {
-                                return (
-                                    <Form.Item key={index} label={`参数  ${index + 1}：`}>
-                                        <Row gutter={5}>
-                                            <Col span={7}>
-                                                <Form.Item >
-                                                    {getFieldDecorator(`${index}Name`, {
-                                                        rules: [
-                                                            {
-                                                                required: true,
-                                                                message: `输入参数 ${index + 1}的名称`
-                                                            }
-                                                        ],
-                                                        initialValue: param.name,
-                                                        validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
-                                                    })(
-                                                        <Input placeholder={param.name == null ? "输入参数名称" : param.name} onChange={this.changeParamName.bind(this, index)} />
-                                                    )}
+                        <Form.Item label="参数个数" style={{ marginBottom: "10px" }}>
+                            {getFieldDecorator('paramNum', {
+                                rules: [{ required: true, message: '请输入参数个数!' }],
+                                initialValue: paramNum,
+                                validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
+                            })(
+                                <InputNumber onChange={this.changeParamNum.bind(this)} min={0}></InputNumber>
+                            )}
+                        </Form.Item>
+                        {/* 根据params数组生成参数列表 */}
+                        {params.map((param, index) => {
+                            return (
+                                <Form.Item key={index} label={`参数  ${index + 1}：`} style={{ marginBottom: "10px" }}>
+                                    <Row gutter={10}>
+                                        <Col xs={params[index].type === "radio" || params[index].type === "checkBox" || params[index].type === "select" ? 8 : 12}>
+                                            <Form.Item style={{ marginBottom: "0" }}>
+                                                {getFieldDecorator(`${index}Name`, {
+                                                    rules: [
+                                                        {
+                                                            required: true,
+                                                            message: `输入参数 ${index + 1}的名称`
+                                                        }
+                                                    ],
+                                                    initialValue: param.name,
+                                                    validateTrigger: 'onSubmit', // 设置进行表单验证的时机为onSubmit
+                                                })(
+                                                    <Input placeholder={param.name == null ? "输入参数名称" : param.name} onChange={this.changeParamName.bind(this, index)} />
+                                                )}
+                                            </Form.Item>
+                                        </Col>
+                                        <Col xs={params[index].type === "radio" || params[index].type === "checkBox" || params[index].type === "select" ? 8 : 12}>
+                                            <Form.Item style={{ marginBottom: "0" }}>
+                                                {getFieldDecorator(`${index}Type`, {
+                                                    rules: [
+                                                        {
+                                                            required: true,
+                                                            message: `请选择参数 ${index + 1}的类型!`
+                                                        }
+                                                    ],
+                                                    initialValue: param.type,
+                                                })(
+                                                    <Select onChange={this.changeParamType.bind(this, index)} placeholder={param.type === "text" ? "输入框" : (param.type === "radio" ? "单选框" : (param.type === "checkBox" ? "复选框" : (param.type === "select" ? "选择器" : (param.type === "textArea" ? "文本域" : (param.type === "textArea" ? "文本域" : (param.type == null ? "请选择类型" : null))))))}>
+                                                        {inputType.map((type, index) => {
+                                                            return (
+                                                                <Option value={type} key={index}>
+                                                                    {type === "text" ? "输入框" : (type === "radio" ? "单选框" : (type === "checkBox" ? "复选框" : (type === "select" ? "选择器" : (type === "textArea" ? "文本域" : null))))}
+                                                                </Option>
+                                                            );
+                                                        })}
+                                                    </Select>
+                                                )}
+                                            </Form.Item>
+                                        </Col>
+                                        {params[index].type === "radio" || params[index].type === "checkBox" || params[index].type === "select" ? (
+                                            <Col span={8}>
+                                                <Form.Item style={{ marginBottom: "0" }}>
+                                                    <div key={`${index}Value`}>
+                                                        {getFieldDecorator(`${index}Value`, {
+                                                            rules: [{ validator: this.paramValueValidator.bind(this, index) }], initialValue: param.defaultValue,
+                                                            getValueFromEvent: (event) => {
+                                                                return event.target.value.replace(/\uff0c/g, ",")
+                                                            },
+                                                        })(
+                                                            <Input placeholder={param.defaultValue} onChange={this.changeParamValue.bind(this, index)} />
+                                                        )}
+                                                    </div>
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={7}>
-                                                <Form.Item>
-                                                    {getFieldDecorator(`${index}Type`, {
-                                                        rules: [
-                                                            {
-                                                                required: true,
-                                                                message: `请选择参数 ${index + 1}的类型!`
-                                                            }
-                                                        ],
-                                                        initialValue: param.type,
-                                                    })(
-                                                        <Select onChange={this.changeParamType.bind(this, index)} placeholder={param.type === "text" ? "输入框" : (param.type === "radio" ? "单选框" : (param.type === "checkBox" ? "复选框" : (param.type === "select" ? "选择器" : (param.type === "textArea" ? "文本域" : (param.type === "textArea" ? "文本域" : (param.type == null ? "请选择类型" : null))))))}>
-                                                            {inputType.map((type, index) => {
-                                                                return (
-                                                                    <Option value={type} key={index}>
-                                                                        {type === "text" ? "输入框" : (type === "radio" ? "单选框" : (type === "checkBox" ? "复选框" : (type === "select" ? "选择器" : (type === "textArea" ? "文本域" : null))))}
-                                                                    </Option>
-                                                                );
-                                                            })}
-                                                        </Select>
-                                                    )}
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={7}>
-                                                <Form.Item>
-                                                    {params[index].type === "radio" ||
-                                                        params[index].type === "checkBox" ||
-                                                        params[index].type === "select" ? (
-                                                            <div key={`${index}Value`}>
-                                                                {getFieldDecorator(`${index}Value`, {
-                                                                    rules: [{ validator: this.paramValueValidator.bind(this, index) }], initialValue: param.defaultValue,
-                                                                    getValueFromEvent: (event) => {
-                                                                        return event.target.value.replace(/\uff0c/g, ",")
-                                                                    },
-                                                                })(
-                                                                    <Input placeholder={param.defaultValue} onChange={this.changeParamValue.bind(this, index)} />
-                                                                )}
-                                                            </div>
-                                                        ) : null}
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={2}>
-                                                <Button type="circle" icon="minus" size="small"
-                                                    onClick={this.remove.bind(this, index)}
-                                                ></Button>
-                                            </Col>
-                                        </Row>
-                                    </Form.Item>
-                                )
-                            })}
-                        </Form>
-                    </Card>
+                                        ) : null}
+                                        <Button className="param-delete" type="circle" icon="close" size="small" onClick={this.remove.bind(this, index)} />
+                                    </Row>
+                                </Form.Item>
+                            )
+                        })}
+                    </Form>
                 </Modal>
             </Card>
         )
