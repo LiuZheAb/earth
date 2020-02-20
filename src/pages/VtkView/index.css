@@ -1,0 +1,44 @@
+.vtkview {
+    height: 100vh;
+    width: 100vw;
+}
+
+.vtkview-header {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    padding: 0 20px;
+    border-bottom: 1px solid #e6e9ed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.vtkview-logo {
+    color: rgb(102, 102, 102);
+}
+
+.vtkview-logo img {
+    margin-right: 10px;
+    height: 24px;
+}
+
+.vtkview-logo span{
+    position: relative;
+    top: 2px;
+}
+
+.vtkview-quit {
+    font-size: 24px;
+    color: #04b0e9;
+}
+
+.vtkview-content {
+    height: calc(100% - 50px);
+    width: 100%;
+}
+
+.vtkview-content iframe{
+    width: 100%;
+    height: 100%;
+}
