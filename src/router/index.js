@@ -7,7 +7,7 @@ const LoginRegister = loadable(() => import('../pages/LoginRegister'));
 const Details = loadable(() => import('../pages/Details'));
 const ErrorPage = loadable(() => import('../pages/ErrorPage'));
 const About = loadable(() => import('../pages/About'));
-
+const VtkView = loadable(() => import('../pages/VtkView'));
 
 export default class EarthRouter extends React.Component {
     render() {
@@ -19,6 +19,9 @@ export default class EarthRouter extends React.Component {
                     </Route>
                     <Route exact path="/details">
                         <Details />
+                    </Route>
+                    <Route exact path="/vtkview">
+                        <VtkView />
                     </Route>
                     <Route exact path="/">
                         <Redirect to="/login" />
