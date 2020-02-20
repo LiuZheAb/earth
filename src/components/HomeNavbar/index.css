@@ -29,6 +29,9 @@
 .home-header .leftdiv {
     float: left;
     color: rgb(102, 102, 102);
+    height: 50px;
+    display: flex;
+    align-items: center;
 }
 
 .home-header .leftdiv a {
@@ -43,16 +46,6 @@
     display: -webkit-flex;
     align-items: center;
     height: 100%;
-}
-
-.rightdiv .searcher {
-    margin-right: 28px;
-}
-
-.rightdiv .searcher input {
-    border-radius: 15px;
-    height: 30px;
-    font-size: 14px;
 }
 
 .dropdown {
@@ -78,26 +71,16 @@
     line-height: 16px;
 }
 
-@media screen and (max-width: 768px) {
-    .leftdiv span {
-        display: none;
-    }
-}
-
-@media screen and (max-width: 520px) {
+@media screen and (max-width: 450px) {
     .home-header {
         padding-right: 5px;
     }
-    .rightdiv .searcher {
-        margin-right: 5px;
+
+    .home-header .leftdiv span {
+        display: none;
     }
+
     .dropdown div {
         margin: 0 5px;
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .rightdiv .searcher .ant-input-affix-wrapper {
-        width: 120px !important;
     }
 }

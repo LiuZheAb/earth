@@ -35,7 +35,7 @@ export default class Homepage extends React.Component {
     render() {
         const { invisible } = this.state;
         return (
-            <Layout>
+            <Layout style={{minWidth:"800px"}}>
                 {invisible ? (
                     null
                 ) : <Alert
