@@ -21,7 +21,7 @@ export default class VtkView extends Component {
                     <IconFont className="vtkview-quit" onClick={history.goBack} type="anticonfanhui" />
                 </header>
                 <div className="vtkview-content">
-                    <iframe frameBorder="0" title="navigation" style={{ "width": "100%", "height": "100%" }} src="http://139.219.15.47:8080/"></iframe>
+                    <iframe frameBorder="0" title="navigation" style={{ "width": "100%", "height": "100%" }} src="http://42.159.91.168/"></iframe>
                 </div >
             </div >
         )
