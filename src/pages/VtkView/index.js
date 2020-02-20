@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
 import IconFont from '../../assets/IconFont';
 // eslint-disable-next-line
 import { HashRouter as Router, Route, Link } from "react-router-dom";
