@@ -74,6 +74,10 @@ export default class Sidebar extends React.Component {
                         <IconFont type="anticonxinjianxiangmu" style={{ fontSize: '14px' }} />
                         <span onClick={this.handleClick.bind(this)}>新建应用</span>
                     </Menu.Item>
+                    <Menu.Item key="3">
+                        <IconFont type="anticonhtc" style={{ fontSize: '14px' }} />
+                        <span><Link to="/view">可视化</Link></span>
+                    </Menu.Item>
                 </Menu>
             </Sider>
         );
