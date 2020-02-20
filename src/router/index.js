@@ -20,7 +20,7 @@ export default class EarthRouter extends React.Component {
                     <Route exact path="/details">
                         <Details />
                     </Route>
-                    <Route exact path="/vtkview">
+                    <Route exact path="/view">
                         <VtkView />
                     </Route>
                     <Route exact path="/">
