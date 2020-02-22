@@ -3,6 +3,7 @@ import IconFont from '../../assets/IconFont';
 // eslint-disable-next-line
 import { HashRouter as Router, Route, Link } from "react-router-dom";
 import { createHashHistory } from 'history';
+import { viewurl } from "../../assets/urls";
 import './index.css';
 
 const history = createHashHistory();
@@ -21,7 +22,7 @@ export default class VtkView extends Component {
                     <IconFont className="vtkview-quit" onClick={history.goBack} type="anticonfanhui" />
                 </header>
                 <div className="vtkview-content">
-                    <iframe frameBorder="0" title="navigation" style={{ "width": "100%", "height": "100%" }} src="http://42.159.91.168/"></iframe>
+                    <iframe frameBorder="0" title="navigation" style={{ "width": "100%", "height": "100%" }} src={viewurl}></iframe>
                 </div >
             </div >
         )
