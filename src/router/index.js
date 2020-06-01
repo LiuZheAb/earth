@@ -14,7 +14,7 @@ export default class EarthRouter extends React.Component {
         return (
             <Router>
                 <Switch>
-                    <Route path={["/home", "/hdfscluster", "/bigdata", "/yarncluster", "/hbasecluster", "/zkui", "/newapp", "/personal", "/notice"]}>
+                    <Route path={["/home", "/newapp", "/personal", "/notice", "/magneton"]}>
                         <Homepage />
                     </Route>
                     <Route exact path="/details">

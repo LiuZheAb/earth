@@ -10,6 +10,7 @@ const Home = loadable(() => import('../Home'));
 const NewApp = loadable(() => import('../NewApp'));
 const Personal = loadable(() => import('../Personal'));
 const Notice = loadable(() => import('../Notice'));
+const Jupyter = loadable(() => import('../Jupyter'));
 const { Content } = Layout;
 
 export default class Container extends React.Component {
@@ -20,6 +21,7 @@ export default class Container extends React.Component {
                 <Route path="/newapp"><NewApp /></Route>
                 <Route path="/personal"><Personal /></Route>
                 <Route path="/notice"><Notice /></Route>
+                <Route path="/magneton"><Jupyter /></Route>
             </Content>
         );
     };

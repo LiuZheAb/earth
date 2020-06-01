@@ -102,7 +102,7 @@ export default class ModuleList extends React.Component {
                                                     {apps[1].map((app, appIndex) => {
                                                         return (
                                                             <Col span={6} key={appIndex} style={{ marginBottom: "10px" }}>
-                                                                <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
+                                                                <Link to="/magneton" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
                                                             </Col>
                                                         )
                                                     })}

@@ -1,12 +1,15 @@
 import React from "react";
-import { Input, Row, Col, message, Drawer, Result } from "antd";
+import { Input, Row, Col, message, Drawer, Result, Modal } from "antd";
 // eslint-disable-next-line
 import { HashRouter as Router, Route, Link } from "react-router-dom";
 import IconFont from '../../assets/IconFont';
 import axios from 'axios';
 import { apiurl } from '../../assets/urls';
 import { getCookie } from '../../utils/cookies';
+import loadable from '../../utils/lazyLoad';
 import "./index.css";
+
+const LoginModal = loadable(() => import('../LoginModal'));
 
 export default class RecentVisit extends React.Component {
     state = {
@@ -75,6 +78,14 @@ export default class RecentVisit extends React.Component {
             visible: false,
         });
     };
+    showModal = () => {
+        this.setState({ visible2: true })
+    }
+    handleOk = e => {
+        this.setState({
+            visible2: false,
+        });
+    };
     render() {
         let { visible, searchResult, userName, recentVisit } = this.state;
         return (
@@ -129,8 +140,17 @@ export default class RecentVisit extends React.Component {
                             )
                         })}
                     </Row> : null)
-                    : <Link to="/login" style={{ marginLeft: "20px", textDecoration: "none" }}>您还未登录,请登录后查看</Link>
+                    : <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>
                 }
+                <Modal
+                    visible={this.state.visible2}
+                    onOk={this.handleOk}
+                    onCancel={this.handleOk}
+                    footer={null}
+                    bodyStyle={{ padding: "40px 40px 20px" }}
+                    style={{ width: "300px", maxWidth: "500px" }}>
+                    <LoginModal parent={this} />
+                </Modal>
             </div>
         );
     };

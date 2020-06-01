@@ -75,8 +75,16 @@ export default class Sidebar extends React.Component {
                         <span onClick={this.handleClick.bind(this)}>新建应用</span>
                     </Menu.Item>
                     <Menu.Item key="3">
-                        <IconFont type="anticonhtc" style={{ fontSize: '14px' }} />
-                        <span><Link to="/view">可视化</Link></span>
+                        <Link to="/view">
+                            <IconFont type="anticonhtc" style={{ fontSize: '14px' }} />
+                            <span>可视化</span>
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Item key="4">
+                        <Link to="/magneton">
+                            <IconFont type="anticonmagneton" style={{ fontSize: '14px' }} />
+                            <span>电磁计算</span>
+                        </Link>
                     </Menu.Item>
                 </Menu>
             </Sider>
