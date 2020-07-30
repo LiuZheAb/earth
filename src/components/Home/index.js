@@ -68,8 +68,8 @@ export default class Home extends React.Component {
             <div>个人中心</div>
             <div className="top-block person box-shadow">
               <div className="avatar" style={{ backgroundColor: avatar ? null : "#d7e9f0" }}>
-                {/* <img src={avatar ? apiurl + avatar : require("../../assets/images/avatar.png")} alt="头像" /> */}
-                <img src={require("../../assets/images/avatar.png")} alt="头像" />
+                <img src={avatar ? apiurl + avatar : require("../../assets/images/avatar.png")} alt="头像" />
+                {/* <img src={require("../../assets/images/avatar.png")} alt="头像" /> */}
               </div>
               <div className="personality">
                 {userName ?

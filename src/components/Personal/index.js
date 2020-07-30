@@ -168,33 +168,29 @@ class Personal extends React.Component {
     // 个人信息页数据提交
     handleSubmit(e) {
         e.preventDefault();
-        let { userName, nickname, description, address, area,loading } = this.state;
+        let { userName, nickname, description, address, area } = this.state;
         let _this = this;
         _this.props.form.validateFields({ force: true }, (err, values) => {
             if (!err) {
                 //判断文件是否上传完成
-                if(loading){
-                    axios({
-                        method: 'post',
-                        url: apiurl + 'userchange',
-                        data: {
-                            userName: userName,
-                            nickname: nickname,
-                            description: description,
-                            address: address,
-                            area: area,
-                        },
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(function (response) {
-                        message.success("修改成功", 2);
-                    }).catch(function (error) {
-                        message.error("服务器无响应", 2);
-                    });
-                }else{
-                    message.warning("头像未上传完成", 2);
-                }
+                axios({
+                    method: 'post',
+                    url: apiurl + 'userchange',
+                    data: {
+                        userName: userName,
+                        nickname: nickname,
+                        description: description,
+                        address: address,
+                        area: area,
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (response) {
+                    message.success("修改成功", 2);
+                }).catch(function (error) {
+                    message.error("服务器无响应", 2);
+                });
             };
         });
     };
@@ -501,7 +497,7 @@ class Personal extends React.Component {
                     </Menu>
                 </Sider>
                 <Content className="personal-content">
-                    {userName ? content : <p style={{marginTop:"20px"}}>用户信息过期，请重新登录</p>}
+                    {userName ? content : <p style={{ marginTop: "20px" }}>用户信息过期，请重新登录</p>}
                 </Content>
             </Layout>
         );
