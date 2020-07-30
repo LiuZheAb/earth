@@ -3,11 +3,11 @@ import React from "react";
 import { Form, Button, InputNumber, Select, Input, Upload, Icon, message, Row, Col, Modal, Result } from "antd";
 import axios from "axios";
 import { apiurl } from "../../assets/urls";
+import { withRouter } from 'react-router-dom'
 import "./index.css";
 import { getCookie, getUserCookie } from '../../utils/cookies';
 
 const { Option } = Select;
-
 class NewApp extends React.Component {
     constructor(props) {
         super(props);
@@ -529,4 +529,4 @@ class NewApp extends React.Component {
     };
 };
 
-export default Form.create({ name: "newapp" })(NewApp);
+export default Form.create({ name: "newapp" })(withRouter(NewApp));

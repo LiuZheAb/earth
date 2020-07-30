@@ -70,16 +70,16 @@ export default class Sidebar extends React.Component {
                             <span>应用与服务</span>
                         </a>
                     </Menu.Item>
-                    <Menu.Item key="2">
+                    <Menu.Item key="2" onClick={this.handleClick.bind(this)}>
                         <IconFont type="anticonxinjianxiangmu" style={{ fontSize: '14px' }} />
-                        <span onClick={this.handleClick.bind(this)}>新建应用</span>
+                        <span>新建应用</span>
                     </Menu.Item>
-                    <Menu.Item key="3">
+                    {/* <Menu.Item key="3">
                         <Link to="/view">
                             <IconFont type="anticonhtc" style={{ fontSize: '14px' }} />
                             <span>可视化</span>
                         </Link>
-                    </Menu.Item>
+                    </Menu.Item> */}
                     <Menu.Item key="4">
                         <Link to="/magneton">
                             <IconFont type="anticonmagneton" style={{ fontSize: '14px' }} />
