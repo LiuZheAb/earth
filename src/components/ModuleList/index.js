@@ -66,7 +66,8 @@ export default class ModuleList extends React.Component {
                         <Spin tip="应用列表加载中，请稍候..." />
                     </div>
                     :
-                    loading === "done" ? appList.map((apps, index) => {
+                    loading === "done" ? 
+                    appList.map((apps, index) => {
                         return (
                             <Row gutter={10} key={index} className="app-row">
                                 <Col span={12}>
@@ -80,7 +81,7 @@ export default class ModuleList extends React.Component {
                                                 <Row gutter={10}>
                                                     {apps[0].map((app, appIndex) => {
                                                         return (
-                                                            <Col span={6} key={appIndex} style={{ marginBottom: "5px" }}>
+                                                            <Col span={6} key={appIndex} style={{ marginBottom: "10px" }}>
                                                                 <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
                                                             </Col>
                                                         )
@@ -102,6 +103,7 @@ export default class ModuleList extends React.Component {
                                                     {apps[1].map((app, appIndex) => {
                                                         return (
                                                             <Col span={6} key={appIndex} style={{ marginBottom: "10px" }}>
+                                                                {/* <Link to="/magneton" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link> */}
                                                                 <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
                                                             </Col>
                                                         )
