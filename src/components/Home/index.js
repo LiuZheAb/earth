@@ -102,7 +102,7 @@ export default class Home extends React.Component {
               <div className="textarea">
                 <h3>综合地球物理联合反演与解释一体化平台</h3>
                 <p>项目拟通过3000米以浅多种、多类型数据的联合反演解释技术以及多元信息评价与预测技术，发展大数据人工智能理论方法，提高大规模数据处理、解释的高性能计算能力，研发重磁、电磁、地震处理、解释可视化及一体化平台，开展典型矿集区应用示范，从而实现中深部金属矿产资源评价与预测。 </p>
-                <Link className="more" to="about" onClick={() => { sessionStorage.setItem("aboutSiderKey", 1) }}>更多详情</Link>
+                <Link className="more" to="/about" onClick={() => { sessionStorage.setItem("aboutSiderKey", 1) }}>更多详情</Link>
               </div>
             </div>
           </Col>

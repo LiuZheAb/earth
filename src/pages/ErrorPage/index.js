@@ -1,13 +1,9 @@
 //404页面
 import React from 'react';
 import "./index.css";
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
-import { createHashHistory } from 'history';
+import { Link, withRouter } from "react-router-dom";
 
-const history = createHashHistory();
-
-export default class ErrorPage extends React.Component {
+class ErrorPage extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -112,9 +108,9 @@ export default class ErrorPage extends React.Component {
             makeSnow(canvas);
         });
     };
-    componentDidUpdate(){
+    componentDidUpdate() {
         if (this.state.seconds === 0) {
-            history.goBack();
+            this.props.history.goBack();
         };
     };
     componentWillUnmount() {
@@ -130,7 +126,7 @@ export default class ErrorPage extends React.Component {
                 <canvas className="notmatch-snow" id="snow" width="1920" height="917"></canvas>
                 <div className="notmatch-main-text">
                     <h1>对不起，<br />页面在雪地里失踪了。</h1>
-                    <div className="notmatch-main-text-a">{seconds}秒后将跳回上一页<Link to="/" onClick={() => { history.goBack() }} style={{ fontSize: "20px", textDecoration: "none" }}>手动跳转</Link></div>
+                    <div className="notmatch-main-text-a">{seconds}秒后将跳回上一页<Link to="/" onClick={() => { this.props.history.goBack() }} style={{ fontSize: "20px", textDecoration: "none" }}>手动跳转</Link></div>
                 </div>
                 <div className="notmatch-ground">
                     <div className="notmatch-mound">
@@ -142,3 +138,5 @@ export default class ErrorPage extends React.Component {
         );
     };
 };
+
+export default withRouter(ErrorPage);

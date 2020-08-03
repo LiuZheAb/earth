@@ -4,6 +4,7 @@ import { Row, Col, Result, Spin, Modal, Drawer, message } from 'antd';
 import { apiurl } from '../../assets/urls';
 import { Link } from "react-router-dom";
 import axios from 'axios';
+import { getCookie } from '../../utils/cookies';
 import './index.css';
 import IconFont from '../../assets/IconFont';
 
@@ -42,6 +43,7 @@ export default class ModuleList extends React.Component {
     //点击应用时将所点的应用名称保存到sessionStorage中
     setApp(appName) {
         sessionStorage.setItem("appName", appName);
+        this.submitClickedApp(appName);
     };
     showModal = (menuName, module) => {
         let _this = this;
@@ -54,7 +56,7 @@ export default class ModuleList extends React.Component {
                 secondModules: response.data
             })
         }).catch(function (error) {
-            message.error("服务器错误", 2)
+            message.error("服务器无响应", 2)
         });
         this.setState({
             modalVisible: true,
@@ -125,6 +127,18 @@ export default class ModuleList extends React.Component {
             drawerVisible: false
         });
     };
+    submitClickedApp = appName => {
+        axios({
+            method: 'post',
+            url: apiurl + 'recentvisit',
+            responseType: 'json',
+            data: {
+                userName: getCookie("userName"),
+                projectName: appName
+            },
+            headers: { 'Content-Type': 'application/json' }
+        })
+    }
     render() {
         const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, currentModule, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2 } = this.state;
         function type(index) {
@@ -146,7 +160,7 @@ export default class ModuleList extends React.Component {
             };
         };
         return (
-            <div id="app-service-anchor">
+            <div id="moudule-list">
                 {loading === "loading" ?
                     <div style={{ width: "100%", height: "400px", lineHeight: "400px", textAlign: "center" }}>
                         <Spin tip="应用列表加载中，请稍候..." />
@@ -165,11 +179,17 @@ export default class ModuleList extends React.Component {
                                                 <p className="module-name" onClick={this.showDrawer.bind(this, index)}>{module}</p>
                                                 <div className="app-list">
                                                     <Row gutter={10}>
-                                                        {subModules[module].map(({ menuName, url }, menuIndex) =>
+                                                        {subModules[module].map(({ menuName, url, hasSub }, menuIndex) =>
                                                             <Col span={24} key={menuIndex} style={{ marginBottom: "10px" }}>
-                                                                {url ?
-                                                                    <a href={url} target="_blank" rel="noopener noreferrer">{menuName}</a> :
-                                                                    <p className="app-name" onClick={this.showModal.bind(this, menuName, module)}>{menuName}</p>}
+                                                                {
+                                                                    url ?
+                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
+                                                                        :
+                                                                        hasSub ?
+                                                                            <p className="app-name" onClick={this.showModal.bind(this, menuName, module)}>{menuName}</p>
+                                                                            :
+                                                                            <p><Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link></p>
+                                                                }
                                                             </Col>
                                                         )}
                                                     </Row>
@@ -197,7 +217,7 @@ export default class ModuleList extends React.Component {
                     {currentMenu && currentModule ?
                         secondModules.map(({ menuName, url, hasSub }, index) =>
                             url ?
-                                <p><a href={url} target="_blank" rel="noopener noreferrer">{menuName}</a></p>
+                                <p><a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a></p>
                                 : hasSub ?
                                     <p style={{ cursor: "pointer" }} onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</p>
                                     : <p><Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link></p>
@@ -215,7 +235,7 @@ export default class ModuleList extends React.Component {
                     {currentMenu2 ?
                         thirdModules.map(({ menuName, url, hasSub }, index) =>
                             url ?
-                                <p><a href={url} target="_blank" rel="noopener noreferrer">{menuName}</a></p>
+                                <p><a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a></p>
                                 : <p><Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link></p>
                         )
                         : null}

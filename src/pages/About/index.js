@@ -15,11 +15,10 @@ export default class About extends React.Component {
         this.state = {
             aboutSiderKey: sessionStorage.getItem("aboutSiderKey") ? sessionStorage.getItem("aboutSiderKey") : "1",
         };
-        this.changeSider = this.changeSider.bind(this);
     };
-    changeSider(props) {
+    changeSider = ({ key }) => {
         this.setState({
-            aboutSiderKey: props.key
+            aboutSiderKey: key
         });
     };
     render() {
@@ -29,35 +28,23 @@ export default class About extends React.Component {
         switch (aboutSiderKey) {
             case "1":
                 content =
-                    <div className="textareacenter">
+                    <>
                         <img src={require('../../assets/images/about.png')} alt="关于我们" style={{ width: "100%", marginBottom: "20px" }} />
                         <p>关于我们</p>
                         <p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p><p>关于我们</p>
-                    </div>;
+                    </>;
                 break;
             case "2":
-                content =
-                    <div className="textareacenter">
-                        <p>立即加入</p>
-                    </div>;
+                content = <p>立即加入</p>;
                 break;
             case "3":
-                content =
-                    <div className="textareacenter">
-                        <p>用户协议</p>
-                    </div>;
+                content = <p>用户协议</p>;
                 break;
             case "4":
-                content =
-                    <div className="textareacenter">
-                        <p>法律声明及隐私权政策</p>
-                    </div>;
+                content = <p>法律声明及隐私权政策</p>;
                 break;
             case "5":
-                content =
-                    <div className="textareacenter">
-                        <p>联系我们</p>
-                    </div>;
+                content = <p>联系我们</p>;
                 break;
             default:
                 break;
@@ -89,8 +76,8 @@ export default class About extends React.Component {
                         </Menu>
                     </Sider>
                     <Content className="about-content">
-                        <div className="about-container">
-                            <div className="textarea box-shadow">{content}</div>
+                        <div className="about-container box-shadow">
+                            <div className="textarea">{content}</div>
                         </div>
                     </Content>
                 </Layout>

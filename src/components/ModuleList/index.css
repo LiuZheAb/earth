@@ -1,10 +1,10 @@
-#app-service-anchor .app-row,
-#app-service-anchor .ant-col {
+#moudule-list .app-row,
+#moudule-list .ant-col {
     display: flex;
     align-items: stretch;
 }
 
-#app-service-anchor .ant-col {
+#moudule-list .ant-col {
     display: flex;
     align-items: stretch;
 }

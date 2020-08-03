@@ -1,6 +1,6 @@
 //应用详情页
 import React from 'react';
-import { Layout, Button, Menu, Select, Radio, Checkbox, Input, message, Card, Col, Row, Form, Upload, Icon, Empty } from 'antd';
+import { Layout, Button, Menu, Select, Radio, Checkbox, Input, message, Card, Col, Row, Form, Upload, Icon, Empty, Result } from 'antd';
 import './index.css'
 // eslint-disable-next-line
 import { HashRouter as Router, Route, Link } from "react-router-dom";
@@ -279,7 +279,7 @@ class Details extends React.Component {
             },
         };
         const { appName, collapsed, textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, loading, content, listener } = this.state;
-        // const{getFieldDecorator}=this.props.form
+        console.log(textBoxs);
         const uploadProps = {
             name: "uploadfile",
             action: apiurl + "upload",
@@ -328,75 +328,84 @@ class Details extends React.Component {
                     <Row style={{ height: "100%", width: "100%" }}>
                         <Col span={6} className="details-card">
                             <Card title="参数数据" bordered={false} className="params-card">
-                                <Form {...formItemLayout} onSubmit={this.handleSubmit} className="details-form">
-                                    {textBoxs === null ? null : textBoxs.map((textBox, index) => {
-                                        return (
-                                            <Form.Item label={textBox.paramName} key={index}>
-                                                <Input min={0} step={1} value={textBox.currentValue} onChange={this.changeText.bind(this, index)} />
-                                            </Form.Item>
-                                        );
-                                    })}
-                                    {selectBoxs === null ? null : selectBoxs.map((selectBox, index) => {
-                                        return (
-                                            <Form.Item label={selectBox.paramName} key={index}>
-                                                <Select onChange={this.changeOption.bind(this, index)} value={selectBox.currentValue}>
-                                                    {selectBox.defaultValue.map((value, index2) => {
-                                                        return (
-                                                            <Option key={index2} value={value}>
-                                                                {value}
-                                                            </Option>
-                                                        );
-                                                    }
-                                                    )}
-                                                </Select>
-                                            </Form.Item>
-                                        );
-                                    })}
-                                    {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map((upload, index) => {
-                                        return (
-                                            <Form.Item label={upload.paramName} key={index}>
-                                                <Upload {...uploadProps}
-                                                    onChange={this.changeUpload.bind(this, index)}
-                                                >
-                                                    <Button type="default"><Icon type="upload" />上传文件</Button>
-                                                </Upload>
-                                            </Form.Item>
-                                        );
-                                    })}
-                                    {radioBoxs === null ? null : radioBoxs.map((radioBox, index) => {
-                                        return (
-                                            <Form.Item label={radioBox.paramName} key={index}>
-                                                <RadioGroup onChange={this.changeRadio.bind(this, index)} value={radioBox.currentValue}>
-                                                    {radioBox.defaultValue.map((value, index2) => {
-                                                        return (
-                                                            <Radio key={index2} value={value}>
-                                                                {value}
-                                                            </Radio>
-                                                        );
-                                                    })}
-                                                </RadioGroup>
-                                            </Form.Item>
-                                        );
-                                    })}
-                                    {checkBoxs === null ? null : checkBoxs.map((checkBox, index) => {
-                                        return (
-                                            <Form.Item label={checkBox.paramName} key={index}>
-                                                <CheckboxGroup options={checkBox.defaultValue} value={checkBox.currentValue} onChange={this.changeCheck.bind(this, index)} />
-                                            </Form.Item>
-                                        );
-                                    })}
-                                    {textAreas === null ? null : textAreas.map((textArea, index) => {
-                                        return (
-                                            <Form.Item label={textArea.paramName} key={index}>
-                                                <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={textArea.currentValue} onChange={this.changeTextarea.bind(this, index)} />
-                                            </Form.Item>
-                                        );
-                                    })}
-                                    <Row className="app-button">
-                                        <Button type="primary" className="">帮助</Button>
-                                        <Button type="primary" className="" htmlType="submit" loading={loading}>运行</Button>
-                                    </Row>
-                                </Form>
+                                {textBoxs === undefined && selectBoxs === undefined && uploadBoxs === undefined && radioBoxs === undefined && checkBoxs === undefined && textAreas === undefined ?
+                                    <Result
+                                        status="warning"
+                                        title="参数列表获取失败!"
+                                        style={{ paddingTop: "80px" }}
+                                    >
+                                    </Result>
+                                    :
+                                    <Form {...formItemLayout} onSubmit={this.handleSubmit} className="details-form">
+                                        {textBoxs === null ? null : textBoxs.map((textBox, index) => {
+                                            return (
+                                                <Form.Item label={textBox.paramName} key={index}>
+                                                    <Input min={0} step={1} value={textBox.currentValue} onChange={this.changeText.bind(this, index)} />
+                                                </Form.Item>
+                                            );
+                                        })}
+                                        {selectBoxs === null ? null : selectBoxs.map((selectBox, index) => {
+                                            return (
+                                                <Form.Item label={selectBox.paramName} key={index}>
+                                                    <Select onChange={this.changeOption.bind(this, index)} value={selectBox.currentValue}>
+                                                        {selectBox.defaultValue.map((value, index2) => {
+                                                            return (
+                                                                <Option key={index2} value={value}>
+                                                                    {value}
+                                                                </Option>
+                                                            );
+                                                        }
+                                                        )}
+                                                    </Select>
+                                                </Form.Item>
+                                            );
+                                        })}
+                                        {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map((upload, index) => {
+                                            return (
+                                                <Form.Item label={upload.paramName} key={index}>
+                                                    <Upload {...uploadProps}
+                                                        onChange={this.changeUpload.bind(this, index)}
+                                                    >
+                                                        <Button type="default"><Icon type="upload" />上传文件</Button>
+                                                    </Upload>
+                                                </Form.Item>
+                                            );
+                                        })}
+                                        {radioBoxs === null ? null : radioBoxs.map((radioBox, index) => {
+                                            return (
+                                                <Form.Item label={radioBox.paramName} key={index}>
+                                                    <RadioGroup onChange={this.changeRadio.bind(this, index)} value={radioBox.currentValue}>
+                                                        {radioBox.defaultValue.map((value, index2) => {
+                                                            return (
+                                                                <Radio key={index2} value={value}>
+                                                                    {value}
+                                                                </Radio>
+                                                            );
+                                                        })}
+                                                    </RadioGroup>
+                                                </Form.Item>
+                                            );
+                                        })}
+                                        {checkBoxs === null ? null : checkBoxs.map((checkBox, index) => {
+                                            return (
+                                                <Form.Item label={checkBox.paramName} key={index}>
+                                                    <CheckboxGroup options={checkBox.defaultValue} value={checkBox.currentValue} onChange={this.changeCheck.bind(this, index)} />
+                                                </Form.Item>
+                                            );
+                                        })}
+                                        {textAreas === null ? null : textAreas.map((textArea, index) => {
+                                            return (
+                                                <Form.Item label={textArea.paramName} key={index}>
+                                                    <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={textArea.currentValue} onChange={this.changeTextarea.bind(this, index)} />
+                                                </Form.Item>
+                                            );
+                                        })}
+                                        <Row className="app-button">
+                                            <Button type="primary" className="">帮助</Button>
+                                            <Button type="primary" className="" htmlType="submit" loading={loading}>运行</Button>
+                                        </Row>
+                                    </Form>
+                                }
                             </Card>
                         </Col>
                         <Col span={8} className="details-card">

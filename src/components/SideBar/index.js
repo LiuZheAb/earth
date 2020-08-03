@@ -64,29 +64,21 @@ export default class Sidebar extends React.Component {
                     mode="inline"
                 >
                     <Menu.Item key="1" >
-                        {/* eslint-disable-next-line */}
-                        <a onClick={() => this.scrollToAnchor('app-service-anchor')} style={{ textDecoration: 'none' }}>
-                            <Icon type="appstore" theme="filled" style={{ fontSize: '14px' }} />
+                        <Link to="/home">
+                            <Icon type="appstore" theme="filled" style={{ fontSize: '18px' }} />
                             <span>应用与服务</span>
-                        </a>
+                        </Link>
                     </Menu.Item>
                     <Menu.Item key="2" onClick={this.handleClick.bind(this)}>
-                        <IconFont type="anticonxinjianxiangmu" style={{ fontSize: '14px' }} />
+                        <IconFont type="anticonxinjianxiangmu" style={{ fontSize: '18px' }} />
                         <span>新建应用</span>
                     </Menu.Item>
-                    {/* <Menu.Item key="3">
-                        <Link to="/view">
-                            <IconFont type="anticonhtc" style={{ fontSize: '14px' }} />
-                            <span>可视化</span>
-                        </Link>
-                    </Menu.Item> */}
-                    <Menu.Item key="4">
+                    <Menu.Item key="3">
                         <Link to="/magneton">
-                            <IconFont type="anticonmagneton" style={{ fontSize: '14px' }} />
-                            <span>电磁计算</span>
+                            <IconFont type="anticonfl-shuazi" style={{ fontSize: '18px' }} />
+                            <span>数据渲染</span>
                         </Link>
                     </Menu.Item>
-                    
                 </Menu>
             </Sider>
         );

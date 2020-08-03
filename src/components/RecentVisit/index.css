@@ -1,5 +1,5 @@
 .search-area {
-    height: 140px;
+    min-height: 140px;
     background: white;
     padding: 15px 20px 20px 20px;
 }
@@ -25,12 +25,15 @@
     padding: 0;
     margin-top: -5px;
 }
-.search-area .ant-result-icon{
+
+.search-area .ant-result-icon {
     margin-bottom: 10px;
 }
-.search-area .anticon-warning{
+
+.search-area .anticon-warning {
     font-size: 48px;
 }
+
 .search-area .searcher input:focus {
     box-shadow: none;
 }
@@ -46,9 +49,15 @@
 
 .recent-visit {
     color: #bfbfbf;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.recent-visit .ant-col a {
+.recent-visit span {
+    margin-right: 60px;
+}
+
+.recent-visit a {
     color: #666;
     text-decoration: none;
 }

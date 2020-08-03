@@ -96,8 +96,7 @@
 }
 
 .homepage .textarea .more {
-    float: right;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    position: absolute;
+    bottom: 8px;
+    right: 25px;
 }

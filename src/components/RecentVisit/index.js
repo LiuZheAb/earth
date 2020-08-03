@@ -21,23 +21,17 @@ export default class RecentVisit extends React.Component {
     componentDidMount() {
         const _this = this;
         if (this.state.userName) {
-            axios({
-                method: 'post',
-                url: apiurl + 'recentvisit',
-                responseType: 'json',
-                data: {
+            axios.get(apiurl + "recentvisit", {
+                params: {
                     userName: _this.state.userName,
-                },
-                headers: { 'Content-Type': 'application/json' },
-            })
-                .then(function (response) {
-                    _this.setState({
-                        recentVisit: response.data.message
-                    })
+                }
+            }).then(function (response) {
+                _this.setState({
+                    recentVisit: response.data.message
                 })
-                .catch(function (error) {
-                    message.error("服务器无响应", 2)
-                });
+            }).catch(function (error) {
+                message.error("服务器无响应", 2)
+            });
         };
     };
     setApp(appName) {
@@ -131,15 +125,15 @@ export default class RecentVisit extends React.Component {
                 </Drawer>
                 <p>最近访问</p>
                 {userName ?
-                    (recentVisit ? <Row className="recent-visit" gutter={10}>
+                    (recentVisit ? <div className="recent-visit" gutter={10}>
                         {recentVisit.map((app, appIndex) => {
                             return (
-                                <Col span={4} key={appIndex}>
+                                <span key={appIndex}>
                                     <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
-                                </Col>
+                                </span>
                             )
                         })}
-                    </Row> : null)
+                    </div> : null)
                     : <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>
                 }
                 <Modal
