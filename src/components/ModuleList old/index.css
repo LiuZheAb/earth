@@ -1,0 +1,58 @@
+#app-service-anchor .app-row,
+#app-service-anchor .ant-col {
+    display: flex;
+    align-items: stretch;
+}
+
+#app-service-anchor .ant-col {
+    display: flex;
+    align-items: stretch;
+}
+
+.app {
+    width: 100%;
+    margin-top: 10px;
+    display: inline-flex;
+    min-height: calc((100vh - 520px)/3);
+}
+
+.app-des {
+    width: calc(100% - 80px);
+    height: auto;
+    background: white;
+    padding: 20px;
+}
+
+.app-icon {
+    height: auto;
+    width: 80px;
+    font-size: 36px;
+    color: #3294dd;
+    background: #fff;
+    border-right: 1px solid #d9d9d9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-des .module-name {
+    color: #004392;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.app-list {
+    margin: 10px 0 0 20px;
+}
+
+.app-list .ant-row .ant-col a {
+    color: #333;
+    text-decoration: none;
+}
+
+.app .app-name {
+    max-height: 20px;
+    overflow: hidden;
+    margin-bottom: 0;
+    cursor: pointer;
+}

@@ -51,7 +51,6 @@ class Personal extends React.Component {
     };
     // 根据用户名获取到用户信息
     componentDidMount() {
-        document.title = "个人中心";
         const _this = this;
         let { userName } = this.state;
         if (userName) {

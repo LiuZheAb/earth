@@ -8,20 +8,24 @@ import "./index.css";
 import { getCookie, getUserCookie } from '../../utils/cookies';
 
 const { Option } = Select;
+
 class NewApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            appName: "",
-            module: "",
-            path: "",
+            appName: null,
+            modules: {},
+            parentModules: [],
+            module: null,
+            subModules: [],
+            subModule: null,
+            path: null,
             paramNum: 0,
             params: [],
             uploaded: false,
             disabled: false,
-            fileName: "",
-            modules: [],
-            langType: "",
+            fileName: null,
+            langType: null,
             langTypes: [],
             inputType: ["text", "radio", "checkBox", "select", "textArea", "upload"],
             loading: false,
@@ -36,17 +40,15 @@ class NewApp extends React.Component {
         this.continue = this.continue.bind(this);
     };
     componentDidMount() {
-        document.title = "新建应用";
-        // this.setState({
-        //     paramNum: 0
-        // });
         const _this = this;
         //获取模块列表
         axios.get(apiurl + "homelanguage")
             .then(function (response) {
+                let { modules, subModules, langType } = response.data
                 _this.setState({
-                    modules: response.data.modules,
-                    langTypes: response.data.langType
+                    parentModules: modules,
+                    modules: subModules,
+                    langTypes: langType
                 });
             })
             .catch(function (error) {
@@ -75,7 +77,16 @@ class NewApp extends React.Component {
     };
     //获取选项
     changeModule(value) {
-        this.setState({ module: value });
+        let { modules, parentModules } = this.state;
+        this.setState({
+            module: value,
+            subModules: modules[parentModules[value]],
+            subModule: null
+        });
+        this.props.form.setFieldsValue({ "subModule": "" })
+    };
+    changeSubModule(value) {
+        this.setState({ subModule: value });
     };
     changeLangType(value) {
         this.setState({ langType: value });
@@ -167,7 +178,7 @@ class NewApp extends React.Component {
     //提交应用数据时调用
     handleSubmit(e) {
         e.preventDefault();
-        let { uploaded, appName, module, langType, params, path, fileName } = this.state;
+        let { uploaded, appName, module, subModule, langType, params, path, fileName } = this.state;
         //判断文件是否上传完成
         if (uploaded) {
             this.props.form.validateFields({ force: true }, (err, values) => {
@@ -198,6 +209,7 @@ class NewApp extends React.Component {
                             userName: getCookie("userName"),
                             appName: appName,
                             module: module,
+                            subModule: subModule,
                             langType: langType,
                             params: params,
                             path: path,
@@ -302,7 +314,7 @@ class NewApp extends React.Component {
     };
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { appName, modules, langTypes, params, inputType, disabled, loading, visible, submitResult, fileList } = this.state;
+        const { appName, parentModules, module, subModules, subModule, langTypes, params, inputType, disabled, loading, visible, submitResult, fileList } = this.state;
         //上传文件
         const uploadProps = {
             name: "uploadfile",
@@ -361,8 +373,23 @@ class NewApp extends React.Component {
                                 {getFieldDecorator("module", {
                                     rules: [{ required: true, message: "请选择应用模块!" }]
                                 })(
-                                    <Select onChange={this.changeModule.bind(this)} placeholder="--请选择模块--">
-                                        {modules.map((module, index) => {
+                                    <Select onChange={this.changeModule.bind(this)} placeholder="-请选择应用模块-">
+                                        {parentModules.map((module, index) => {
+                                            return (
+                                                <Option value={index + 1} key={index}>
+                                                    {module}
+                                                </Option>
+                                            );
+                                        })}
+                                    </Select>
+                                )}
+                            </Form.Item>
+                            <Form.Item label="应用子模块">
+                                {getFieldDecorator("subModule", {
+                                    rules: [{ required: true, message: "请选择应用子模块!" }], initialValues: subModule
+                                })(
+                                    <Select onChange={this.changeSubModule.bind(this)} placeholder="-请选择子模块-" disabled={module ? false : true}>
+                                        {subModules.map((module, index) => {
                                             return (
                                                 <Option value={index + 1} key={index}>
                                                     {module}

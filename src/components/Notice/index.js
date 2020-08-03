@@ -19,9 +19,6 @@ export default class Notice extends React.Component {
         };
         this.changeSider = this.changeSider.bind(this);
     };
-    componentDidMount() {
-        document.title = "消息通知";
-    };
     changeSider(props) {
         this.setState({
             siderKey: props.key

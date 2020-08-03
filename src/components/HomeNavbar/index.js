@@ -84,7 +84,7 @@ export default class HomeNavbar extends React.Component {
                                 </div>
                             </>
                             :
-                            <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>请先登录</span>
+                            <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>登录</span>
                         }
                         <Modal
                             visible={this.state.visible}

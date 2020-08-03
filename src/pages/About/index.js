@@ -10,12 +10,12 @@ const history = createHashHistory();
 const { Header, Sider, Content } = Layout;
 
 export default class About extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             aboutSiderKey: sessionStorage.getItem("aboutSiderKey") ? sessionStorage.getItem("aboutSiderKey") : "1",
         };
-        this.changeSider=this.changeSider.bind(this);
+        this.changeSider = this.changeSider.bind(this);
     };
     changeSider(props) {
         this.setState({
@@ -71,7 +71,7 @@ export default class About extends React.Component {
                             <span>综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </Link>
-                    <IconFont className="about-quit" onClick={history.goBack} type="anticonfanhui" title="返回上一页"/>
+                    <IconFont className="about-quit" onClick={history.goBack} type="anticonfanhui" title="返回上一页" />
                 </Header>
                 <Layout className="about-contentarea">
                     <Sider className="about-sider">
@@ -82,7 +82,7 @@ export default class About extends React.Component {
                             style={{ lineHeight: '64px', marginTop: "20px" }}
                         >
                             <Menu.Item key="1" onClick={this.changeSider}>关于我们</Menu.Item>
-                            <Menu.Item key="2" onClick={this.changeSider}>立即加入</Menu.Item>
+                            <Menu.Item key="2" onClick={this.changeSider}>软件平台说明书</Menu.Item>
                             <Menu.Item key="3" onClick={this.changeSider}>用户协议</Menu.Item>
                             <Menu.Item key="4" onClick={this.changeSider}>法律声明及隐私权政策</Menu.Item>
                             <Menu.Item key="5" onClick={this.changeSider}>联系我们</Menu.Item>

@@ -86,6 +86,7 @@ export default class Sidebar extends React.Component {
                             <span>电磁计算</span>
                         </Link>
                     </Menu.Item>
+                    
                 </Menu>
             </Sider>
         );

@@ -46,7 +46,6 @@ class Details extends React.Component {
     timer = undefined;
     requestRef = undefined;
     componentDidMount() {
-        document.title = "详情";
         const _this = this;
         //根据应用名称向服务端请求并获取数据
         if (_this.state.appName) {
@@ -253,9 +252,7 @@ class Details extends React.Component {
                 _this.setState({
                     resMessage: response.data.message,
                     loading: false,
-                    content: 
-                    // <Vtkview/>,
-                    response.data.data ? <Contour data={response.data.data} /> : <Contour message={response.data.message} />,
+                    content:  /* <Vtkview/>,*/response.data.data ? <Contour data={response.data.data} /> : <Contour message={response.data.message} />,
                     listener: <Listener />
                 });
             }).catch(function (error) {

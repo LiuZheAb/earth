@@ -29,7 +29,6 @@ class RegisterForm extends Component {
     };
     componentDidMount() {
         const _this = this;
-        document.title = "注册";
         //获取验证码
         axios.get(apiurl + 'firstgetcaptcha')
             .then(function (response) {

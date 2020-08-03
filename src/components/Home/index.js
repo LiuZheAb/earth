@@ -21,7 +21,6 @@ export default class Home extends React.Component {
     avatar: "",
   };
   componentDidMount() {
-    document.title = "首页";
     const _this = this;
     if (this.state.userName) {
       axios({
@@ -76,8 +75,8 @@ export default class Home extends React.Component {
                   <ul>
                     <li><div className="personal-info"><div>用户名 :</div>{userName}</div></li>
                     <li><div className="personal-info"><div>昵称 :</div>{nickname}</div><Link to="personal" onClick={this.setSiderkey.bind(this, "1")}>编辑</Link></li>
-                    <li><div className="personal-info"><div>手机 :</div>{mobile}</div><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
                     <li><div className="personal-info"><div>邮箱 :</div>{email}</div><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
+                    <li><div className="personal-info"><div>电话 :</div>{mobile}</div><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
                   </ul>
                   :
                   <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>

@@ -23,7 +23,6 @@ class LoginModal extends Component {
     };
     componentDidMount() {
         const _this = this;
-        document.title = "登录";
         //获取验证码
         axios.get(apiurl + 'firstgetcaptcha')
             .then(function (response) {

@@ -17,7 +17,6 @@ export default class Homepage extends React.Component {
         });
     };
     componentDidMount() {
-        document.title = "首页";
         const _this = this;
         axios.get(apiurl)
             .then(function (response) {
