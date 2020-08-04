@@ -86,7 +86,7 @@ export default class RecentVisit extends React.Component {
                 <div className="searcher" >
                     <Input.Search
                         placeholder="请输入关键词"
-                        style={{ width: "50%", minWidth: "300px", height: 30 }}
+                        style={{ width: "50%", minWidth: "150px", height: 30 }}
                         onSearch={this.searchApp.bind(this)}
                     />
                 </div>

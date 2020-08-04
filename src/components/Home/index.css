@@ -1,3 +1,7 @@
+.homepage {
+    min-width: 220px;
+}
+
 .homepage .top-block {
     height: 220px;
     background-color: #fff;
@@ -27,15 +31,43 @@
     width: 100%;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding-left: 20px;
 }
 
 .homepage .personality ul {
     margin-bottom: 0;
+    padding-left: 0;
 }
-.homepage .personality li{
+
+.homepage .personality li {
     min-height: 36px;
     line-height: 36px;
 }
+
+.homepage .personality .prop-name {
+    width: 50px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.homepage .personality .prop {
+    width: calc(100% - 130px);
+    padding-left: 20px;
+}
+
+.homepage .personality .prop p {
+    margin-bottom: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.homepage .personality .prop-btn {
+    width: 60px;
+    white-space: nowrap;
+}
+
 .homepage .plat-img {
     width: 220px;
     height: 220px;
@@ -70,4 +102,34 @@
     position: absolute;
     bottom: 8px;
     right: 25px;
+}
+
+@media (max-width:576px) {
+    .homepage .top-block {
+        height: auto;
+    }
+
+    .homepage .title {
+        margin-top: 10px;
+    }
+
+    .homepage .personality {
+        padding-left: 0;
+    }
+
+    .homepage .person,
+    .homepage .plat-desc {
+        display: block;
+    }
+
+    .homepage .plat-desc .plat-img,
+    .homepage .person .avatar {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .homepage .plat-desc .textarea,
+    .homepage .person .personality {
+        width: 100%;
+    }
 }

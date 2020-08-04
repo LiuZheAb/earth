@@ -5,6 +5,11 @@
     border: 1px solid #eee;
     padding: 20px;
     display: inline-block;
+    overflow: auto;
+}
+
+.newapp .ant-form {
+    min-width: 1024px;
 }
 
 .newapp form .ant-form-item-with-help {
@@ -63,4 +68,23 @@
 
 .ant-upload-list-item-card-actions a[title="Download file"] {
     display: none !important;
+}
+
+@media (max-width: 575px) {
+    .ant-form-item-label {
+        display: inline-block;
+        overflow: hidden;
+        line-height: 39.9999px;
+        white-space: nowrap;
+        text-align: right;
+        vertical-align: middle;
+        padding: 0;
+    }
+
+    .newapp .ant-form-item-label::after {
+        content: ':';
+        position: relative;
+        top: -0.5px;
+        margin: 0 8px 0 2px;
+    }
 }

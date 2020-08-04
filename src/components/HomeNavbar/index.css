@@ -63,14 +63,8 @@
     top: 4px;
 }
 
-@media screen and (max-width: 450px) {
-    .home-header {
-        padding-right: 5px;
-    }
+@media screen and (max-width: 495px) {
     .home-header .leftdiv span {
         display: none;
-    }
-    .icon-area div {
-        margin: 0 5px;
     }
 }

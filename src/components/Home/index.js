@@ -72,19 +72,19 @@ export default class Home extends React.Component {
               <div className="personality">
                 {userName ?
                   <>
-                    <ul>
+                    <ul className="prop-name">
                       <li className="personal-info">用户名 :</li>
                       <li className="personal-info">昵称 :</li>
                       <li className="personal-info">邮箱 :</li>
                       <li className="personal-info">电话 :</li>
                     </ul>
-                    <ul>
-                      <li>{userName}</li>
-                      <li>{nickname}</li>
-                      <li>{email}</li>
-                      <li>{mobile}</li>
+                    <ul className="prop">
+                      <li><p>{userName}</p></li>
+                      <li><p>{nickname}</p></li>
+                      <li><p>{email}</p></li>
+                      <li><p>{mobile}</p></li>
                     </ul>
-                    <ul>
+                    <ul className="prop-btn">
                       <li></li>
                       <li><Link to="personal" onClick={this.setSiderkey.bind(this, "1")}>编辑</Link></li>
                       <li><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>

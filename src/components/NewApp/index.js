@@ -325,7 +325,7 @@ class NewApp extends React.Component {
             data: {
                 userName: getCookie("userName")
             },
-            onChange: this.handleFileChange.bind(this),
+            onChange: this.handleFileChange.bind(this)
         };
         let resultExtra = null;
         switch (submitResult.state) {
@@ -361,7 +361,7 @@ class NewApp extends React.Component {
             <div className="newapp box-shadow">
                 <Form onSubmit={this.handleSubmit.bind(this)}>
                     <Row gutter={20}>
-                        <Col xs={7} className="appProps" style={params.length === 0 ? { margin: "0 auto", float: "none" } : null}>
+                        <Col span={7} className="appProps" style={params.length === 0 ? { margin: "0 auto", float: "none" } : null}>
                             <Form.Item label="应用名称">
                                 {getFieldDecorator("appName", {
                                     rules: [{ validator: this.appNameValidator.bind(this) }]
@@ -454,7 +454,7 @@ class NewApp extends React.Component {
                                 </Form.Item>
                             )}
                         </Col>
-                        <Col xs={17}>
+                        <Col span={17}>
                             <div className="paramsList">
                                 {/* 根据params数组生成参数列表 */}
                                 {params.map((param, index) => {
