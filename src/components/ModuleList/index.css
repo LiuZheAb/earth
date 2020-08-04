@@ -1,5 +1,4 @@
-#moudule-list .app-row,
-#moudule-list .ant-col {
+#moudule-list .app-row, #moudule-list .ant-col {
     display: flex;
     align-items: stretch;
 }
@@ -44,14 +43,25 @@
     margin: 10px 0 0 20px;
 }
 
-.app-list .ant-row .ant-col a {
-    color: #333;
-    text-decoration: none;
+.app-list ul, .module-modal ul {
+    padding-left: 0;
+    margin-bottom: 0;
 }
 
-.app .app-name {
-    max-height: 20px;
-    overflow: hidden;
-    margin-bottom: 0;
+.app-list li, .module-modal li {
+    margin-bottom: 8px;
+}
+
+.app-list li a, .module-modal li a {
+    color: #333;
+}
+
+.app-list li span, .module-modal li span {
     cursor: pointer;
+}
+
+.icon-link, .icon-menu, .icon-enter {
+    margin-left: 10px;
+    font-weight: bold;
+    color: #3294dd;
 }

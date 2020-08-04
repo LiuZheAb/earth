@@ -48,39 +48,29 @@
     height: 100%;
 }
 
-.dropdown {
+.icon-area {
     height: 100%;
     display: flex;
     display: -webkit-flex;
 }
 
-.dropdown div {
+.icon-area div {
     margin: 0 16px;
 }
 
-.dropdown div i {
+.icon-area div i {
     position: relative;
     top: 4px;
-}
-
-.dropdown .ant-badge-count {
-    height: 16px;
-    width: 16px;
-    min-width: 10px;
-    padding: 0 5px;
-    line-height: 16px;
 }
 
 @media screen and (max-width: 450px) {
     .home-header {
         padding-right: 5px;
     }
-
     .home-header .leftdiv span {
         display: none;
     }
-
-    .dropdown div {
+    .icon-area div {
         margin: 0 5px;
     }
 }

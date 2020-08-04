@@ -26,45 +26,16 @@
 .homepage .personality {
     width: 100%;
     display: flex;
-    display: -webkit-flex;
     align-items: center;
 }
 
 .homepage .personality ul {
-    display: flex;
-    display: -webkit-flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    width: 100%;
-    padding: 25px 0 25px 40px;
-    margin: 0;
+    margin-bottom: 0;
 }
-
-.homepage .personality li {
-    font-size: 14px;
-    display: flex;
-    display: -webkit-flex;
-    justify-content: space-between;
+.homepage .personality li{
+    min-height: 36px;
+    line-height: 36px;
 }
-
-.homepage .personal-info {
-    width: calc(100% - 56px);
-}
-
-.homepage .personal-info div {
-    width: 50px;
-    text-align: right;
-    margin-right: 20px;
-    display: inline-block;
-}
-
-.homepage .personality span {
-    text-decoration: none;
-    width: 150px;
-    margin: 0 auto;
-}
-
 .homepage .plat-img {
     width: 220px;
     height: 220px;

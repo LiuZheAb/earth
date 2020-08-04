@@ -168,31 +168,40 @@ export default class ModuleList extends React.Component {
                     :
                     loading === "done" ?
                         <Row gutter={10} className="app-row" style={{ flexWrap: "wrap" }}>
-                            {modules.map((module, index) => {
+                            {modules.map((module, moduleIndex) => {
                                 return (
-                                    <Col span={12} key={index}>
+                                    <Col xs={24} sm={24} md={12} key={moduleIndex}>
                                         <div className="box-shadow app">
                                             <div className="app-icon">
-                                                <IconFont type={type(index)} />
+                                                <IconFont type={type(moduleIndex)} />
                                             </div>
                                             <div className="app-des">
-                                                <p className="module-name" onClick={this.showDrawer.bind(this, index)}>{module}</p>
+                                                <div>
+                                                    <span onClick={this.showDrawer.bind(this, moduleIndex)} className="module-name">{module}</span>
+                                                </div>
                                                 <div className="app-list">
-                                                    <Row gutter={10}>
-                                                        {subModules[module].map(({ menuName, url, hasSub }, menuIndex) =>
-                                                            <Col span={24} key={menuIndex} style={{ marginBottom: "10px" }}>
-                                                                {
-                                                                    url ?
-                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
+                                                    <ul>
+                                                        {
+                                                            subModules[module].map(({ menuName, url, hasSub }, index) =>
+                                                                url ?
+                                                                    <li>
+                                                                        <a key={index} href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
+                                                                        <IconFont className="icon-link" type="anticonlianjie" />
+                                                                    </li>
+                                                                    :
+                                                                    hasSub ?
+                                                                        <li key={index}>
+                                                                            <span onClick={this.showModal.bind(this, menuName, module)}>{menuName}</span>
+                                                                            <IconFont className="icon-menu" type="anticoncaidan2" />
+                                                                        </li>
                                                                         :
-                                                                        hasSub ?
-                                                                            <p className="app-name" onClick={this.showModal.bind(this, menuName, module)}>{menuName}</p>
-                                                                            :
-                                                                            <p><Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link></p>
-                                                                }
-                                                            </Col>
-                                                        )}
-                                                    </Row>
+                                                                        <li key={index}>
+                                                                            <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                                                            <IconFont className="icon-enter" type="anticonjinru1" />
+                                                                        </li>
+                                                            )
+                                                        }
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -208,6 +217,7 @@ export default class ModuleList extends React.Component {
                         />
                 }
                 <Modal
+                    className="module-modal"
                     title={currentMenu}
                     visible={modalVisible}
                     onOk={this.handleOk}
@@ -215,16 +225,29 @@ export default class ModuleList extends React.Component {
                     footer={null}
                 >
                     {currentMenu && currentModule ?
-                        secondModules.map(({ menuName, url, hasSub }, index) =>
-                            url ?
-                                <p><a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a></p>
-                                : hasSub ?
-                                    <p style={{ cursor: "pointer" }} onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</p>
-                                    : <p><Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link></p>
-                        )
+                        <ul>
+                            {secondModules.map(({ menuName, url, hasSub }, index) =>
+                                url ?
+                                    <li key={index}>
+                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
+                                        <IconFont className="icon-link" type="anticonlianjie" />
+                                    </li>
+                                    : hasSub ?
+                                        <li key={index}>
+                                            <span onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</span>
+                                            <IconFont className="icon-menu" type="anticoncaidan2" />
+                                        </li>
+                                        :
+                                        <li key={index}>
+                                            <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                            <IconFont className="icon-enter" type="anticonjinru1" />
+                                        </li>
+                            )}
+                        </ul>
                         : null}
                 </Modal>
                 <Modal
+                    className="module-modal"
                     title={currentMenu2}
                     visible={modalVisible2}
                     onOk={this.handleOk2}
@@ -235,8 +258,15 @@ export default class ModuleList extends React.Component {
                     {currentMenu2 ?
                         thirdModules.map(({ menuName, url, hasSub }, index) =>
                             url ?
-                                <p><a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a></p>
-                                : <p><Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link></p>
+                                <li key={index}>
+                                    <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
+                                    <IconFont className="icon-link" type="anticonlianjie" />
+                                </li>
+                                :
+                                <li key={index}>
+                                    <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                    <IconFont className="icon-enter" type="anticonjinru1" />
+                                </li>
                         )
                         : null}
                 </Modal>

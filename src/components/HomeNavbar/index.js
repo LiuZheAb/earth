@@ -1,7 +1,7 @@
 // 顶部导航栏部分
 import React from 'react';
-import { Link,withRouter } from "react-router-dom";
-import { Layout, Menu, Dropdown, message, Badge, Modal } from 'antd';
+import { Link, withRouter } from "react-router-dom";
+import { Layout, message, Modal } from 'antd';
 import IconFont from '../../assets/IconFont';
 import './index.css';
 import { getCookie, removeCookie } from '../../utils/cookies';
@@ -9,7 +9,7 @@ import LoginModal from '../LoginModal';
 
 const { Header } = Layout;
 
- class HomeNavbar extends React.Component {
+class HomeNavbar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,25 +17,11 @@ const { Header } = Layout;
         };
         this.handleClick = this.handleClick.bind(this);
     };
-    handleClick(props) {
-        switch (props.key) {
-            case "1":
-                break;
-            case "2":
-                sessionStorage.setItem("personalSiderKey", "1");
-                this.props.history.push("personal");
-                break;
-            case "3":
-                message.warn('即将退出', 1.5)
-                setTimeout(() => {
-                    sessionStorage.clear();
-                    removeCookie("userName")
-                    this.props.history.push("login");
-                }, 1500);
-                break;
-            default:
-                break;
-        };
+    handleClick() {
+        message.warn('已注销', 1.5);
+        sessionStorage.clear();
+        removeCookie("userName")
+        this.props.history.push("login");
     }
     showModal = () => {
         this.setState({ visible: true })
@@ -43,13 +29,20 @@ const { Header } = Layout;
     handleOk = e => {
         this.setState({ visible: false });
     };
+    showConfirm = () => {
+        let _this = this;
+        Modal.confirm({
+            title: '确定注销吗?',
+            onOk() {
+                _this.handleClick();
+            },
+            onCancel() {
+            },
+            okText: "确定",
+            cancelText: "取消"
+        });
+    }
     render() {
-        const menu = <Menu>
-            <Menu.Item key="1" onClick={this.handleClick}>系统设置</Menu.Item>
-            <Menu.Item key="2" onClick={this.handleClick}>个人设置</Menu.Item>
-            <Menu.Divider />
-            <Menu.Item key="3" onClick={this.handleClick}>注销</Menu.Item>
-        </Menu>;
         return (
             <Header className="home-header" role="navigation" style={this.props.style}>
                 <div className="leftdiv">
@@ -59,25 +52,16 @@ const { Header } = Layout;
                     </Link>
                 </div>
                 <div className="rightdiv">
-                    <div className="dropdown">
+                    <div className="icon-area">
                         {this.state.userName ?
                             <>
                                 <div>
                                     <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
-                                        <IconFont type="anticontouxiang" title="个人中心" style={{ fontSize: '24px', color: 'rgb(50,148,221)' }} />
+                                        <IconFont className="icon-personal" type="anticontouxiang" title="个人中心" style={{ fontSize: '24px', color: 'rgb(50,148,221)' }} />
                                     </Link>
                                 </div>
                                 <div>
-                                    <Link to="/notice" onClick={() => { sessionStorage.setItem("noticeSiderKey", "1") }}>
-                                        <Badge count={5} overflowCount={10}>
-                                            <IconFont type="anticontongzhi" title="通知中心" style={{ fontSize: '24px', color: 'rgb(50,148,221)' }} />
-                                        </Badge>
-                                    </Link>
-                                </div>
-                                <div>
-                                    <Dropdown overlay={menu}>
-                                        <IconFont type="anticonshezhi1" title="设置" style={{ fontSize: '24px', color: 'rgb(50,148,221)' }} />
-                                    </Dropdown>
+                                    <IconFont className="icon-logout" type="anticonzhuxiaodenglu" title="注销" onClick={this.showConfirm} style={{ fontSize: '24px', color: 'rgb(50,148,221)' }} />
                                 </div>
                             </>
                             :
