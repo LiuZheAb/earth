@@ -1,8 +1,7 @@
 //前台首页，个人中心、平台简介、最近访问
 import React from 'react'
 import { Row, Col, message, Modal } from 'antd';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import './index.css';
 import { apiurl } from '../../assets/urls';
 import axios from 'axios';

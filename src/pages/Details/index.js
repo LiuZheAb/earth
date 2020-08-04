@@ -1,10 +1,7 @@
 //应用详情页
 import React from 'react';
 import { Layout, Button, Menu, Select, Radio, Checkbox, Input, message, Card, Col, Row, Form, Upload, Icon, Empty, Result } from 'antd';
-import './index.css'
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
-import { createHashHistory } from 'history';
+import { Link, withRouter } from "react-router-dom";
 import axios from 'axios';
 import IconFont from '../../assets/IconFont';
 import { apiurl } from '../../assets/urls';
@@ -13,9 +10,9 @@ import checkNullvalue from "../../utils/checkNullvalue";
 import Listener from "../../components/Listener";
 import Contour from "../../components/Contour";
 import { getCookie } from '../../utils/cookies';
+import './index.css';
 
 const { Content, Header, Sider } = Layout;
-const history = createHashHistory();
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
@@ -303,7 +300,7 @@ class Details extends React.Component {
                         </div>
                     </Link>
                     <span className="details-title">{appName}</span>
-                    <IconFont className="details-quit" onClick={history.goBack} type="anticonfanhui" />
+                    <IconFont className="details-quit" onClick={this.props.history.goBack} type="anticonfanhui" />
                 </Header>
                 <Sider
                     collapsible
@@ -425,4 +422,4 @@ class Details extends React.Component {
     };
 };
 
-export default Form.create({ name: "details" })(Details);
+export default Form.create({ name: "details" })(withRouter(Details));

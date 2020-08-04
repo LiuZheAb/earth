@@ -1,8 +1,7 @@
 //前台登录、注册页面
 import React from 'react';
 import { Alert } from 'antd';
-// eslint-disable-next-line 
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
 import Particles from '../../components/Particles';
 import loadable from '../../utils/lazyLoad';
 import './index.css';
@@ -51,13 +50,10 @@ class LoginRegister extends React.Component {
                             <img src={require("../../assets/images/circle.png")} alt="地球" draggable="false" className="earth-circle" />
                             <img src={require("../../assets/images/1_0000.gif")} alt="地球" draggable="false" style={{ opacity: 0.85 }} />
                         </div>
-                        <Router >
-                            {/* <!-- 登录表单 --> */}
-                            <Route path="/login"><LoginForm /></Route>
-                            {/* <!-- 注册表单 --> */}
-                            <Route path="/register"><RegisterForm /></Route>
-                        </Router>
-
+                        {/* <!-- 登录表单 --> */}
+                        <Route path="/login"><LoginForm /></Route>
+                        {/* <!-- 注册表单 --> */}
+                        <Route path="/register"><RegisterForm /></Route>
                     </div>
                 </div>
                 {/* <!-- 底部导航 --> */}

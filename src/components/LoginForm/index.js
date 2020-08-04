@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Icon, Input, Button, message } from "antd";
-// eslint-disable-next-line 
-import { withRouter,HashRouter as Router, Route, Link } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { apiurl } from '../../assets/urls';
 import { setCookie } from '../../utils/cookies';
 import axios from 'axios';

@@ -1,8 +1,7 @@
 // 前台内容区部分
 import React from 'react';
 import { Layout } from 'antd';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Route } from "react-router-dom";
 import './index.css';
 import loadable from '../../utils/lazyLoad';
 

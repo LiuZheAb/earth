@@ -1,15 +1,12 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import IconFont from '../../assets/IconFont';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
-import { createHashHistory } from "history";
+import { Link, withRouter } from "react-router-dom";
 import "./index.css";
 
-const history = createHashHistory();
 const { Header, Sider, Content } = Layout;
 
-export default class About extends React.Component {
+class About extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -52,13 +49,13 @@ export default class About extends React.Component {
         return (
             <Layout className="about">
                 <Header className="about-header">
-                    <Link to="/login">
+                    <Link to="/home">
                         <div className="about-logo" title="综合地球物理联合反演与解释一体化平台">
                             <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
                             <span>综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </Link>
-                    <IconFont className="about-quit" onClick={history.goBack} type="anticonfanhui" title="返回上一页" />
+                    <IconFont className="about-quit" onClick={this.props.history.goBack} type="anticonfanhui" title="返回上一页" />
                 </Header>
                 <Layout className="about-contentarea">
                     <Sider className="about-sider">
@@ -85,3 +82,5 @@ export default class About extends React.Component {
         );
     };
 };
+
+export default withRouter(About);

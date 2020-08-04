@@ -1,7 +1,6 @@
 import React from "react";
 import { Input, Row, Col, message, Drawer, Result, Modal } from "antd";
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import IconFont from '../../assets/IconFont';
 import axios from 'axios';
 import { apiurl } from '../../assets/urls';

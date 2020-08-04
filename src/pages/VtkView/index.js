@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import IconFont from '../../assets/IconFont';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
-import { createHashHistory } from 'history';
+import { Link, withRouter } from "react-router-dom";
 import { viewurl } from "../../assets/urls";
 import './index.css';
 
-const history = createHashHistory();
-
-export default class VtkView extends Component {
+class VtkView extends Component {
     render() {
         return (
             <div className="vtkview">
@@ -19,7 +15,7 @@ export default class VtkView extends Component {
                             <span>综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </Link>
-                    <IconFont className="vtkview-quit" onClick={history.goBack} type="anticonfanhui" />
+                    <IconFont className="vtkview-quit" onClick={this.props.history.goBack} type="anticonfanhui" />
                 </header>
                 <div className="vtkview-content">
                     <iframe frameBorder="0" title="navigation" style={{ "width": "100%", "height": "100%" }} src={viewurl}></iframe>
@@ -28,3 +24,5 @@ export default class VtkView extends Component {
         )
     }
 }
+
+export default withRouter(VtkView);

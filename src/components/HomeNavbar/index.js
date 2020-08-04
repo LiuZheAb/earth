@@ -1,18 +1,15 @@
 // 顶部导航栏部分
 import React from 'react';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Link,withRouter } from "react-router-dom";
 import { Layout, Menu, Dropdown, message, Badge, Modal } from 'antd';
 import IconFont from '../../assets/IconFont';
-import { createHashHistory } from 'history';
 import './index.css';
 import { getCookie, removeCookie } from '../../utils/cookies';
 import LoginModal from '../LoginModal';
 
 const { Header } = Layout;
-const history = createHashHistory();
 
-export default class HomeNavbar extends React.Component {
+ class HomeNavbar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -26,14 +23,14 @@ export default class HomeNavbar extends React.Component {
                 break;
             case "2":
                 sessionStorage.setItem("personalSiderKey", "1");
-                history.push("personal");
+                this.props.history.push("personal");
                 break;
             case "3":
                 message.warn('即将退出', 1.5)
                 setTimeout(() => {
                     sessionStorage.clear();
                     removeCookie("userName")
-                    history.push("login");
+                    this.props.history.push("login");
                 }, 1500);
                 break;
             default:
@@ -101,3 +98,5 @@ export default class HomeNavbar extends React.Component {
         );
     };
 };
+
+export default withRouter(HomeNavbar);

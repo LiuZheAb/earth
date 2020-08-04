@@ -1,17 +1,14 @@
 //侧边栏
 import React from 'react';
 import { Menu, Icon, Layout, message } from 'antd';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import './index.css';
 import IconFont from '../../assets/IconFont';
-import { createHashHistory } from 'history';
 import { getCookie } from "../../utils/cookies";
 
-const history = createHashHistory();
 const { Sider } = Layout;
 
-export default class Sidebar extends React.Component {
+class Sidebar extends React.Component {
     state = {
         //侧边栏默认收缩
         collapsed: true,
@@ -37,13 +34,13 @@ export default class Sidebar extends React.Component {
             if (anchorElement) {
                 anchorElement.scrollIntoView({ block: 'start', behavior: 'smooth' });
             } else {
-                history.push('home');
+                this.props.history.push('home');
             };
         };
     };
     handleClick() {
         if (getCookie("userName")) {
-            history.push('newapp');
+            this.props.history.push('newapp');
         } else {
             message.error("请先登录", 2);
         };
@@ -84,3 +81,5 @@ export default class Sidebar extends React.Component {
         );
     };
 };
+
+export default withRouter(Sidebar);

@@ -2,47 +2,11 @@
 import React from 'react';
 import { Row, Col, Result, Spin, Modal, Drawer, message } from 'antd';
 import { apiurl } from '../../assets/urls';
-// eslint-disable-next-line
-import { HashRouter as Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from 'axios';
 import './index.css';
 import IconFont from '../../assets/IconFont';
 
-let data = {
-    "重磁": [
-        {
-            menuName: "菜单1",
-            hasSub: true,
-            url: null,
-            subMenu: [
-                {
-                    menuName: "子菜单1",
-                    hasSub: true,
-                    url: null,
-                    subMenu: [
-                        {
-                            menuName: "应用1.1",
-                            url: "/details"
-                        }, {
-                            menuName: "应用1.2",
-                            url: "/details"
-                        }
-                    ],
-                }, {
-                    menuName: "子菜单2",
-                    hasSub: false,
-                    url: "test",
-                    subMenu: [],
-                },
-            ]
-        }, {
-            menuName: "菜单2",
-            hasSub: false,
-            url: "test",
-            subMenu: []
-        },
-    ]
-}
 export default class ModuleList extends React.Component {
     state = {
         modules: {},
