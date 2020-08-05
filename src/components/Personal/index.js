@@ -407,11 +407,11 @@ class Personal extends React.Component {
                 content = <Card bordered={false} style={{ width: "100%" }}>
                     <div className="item-block">
                         <div className="item">
-                            <h5>手机号码</h5>
+                            <p className="title">手机号码</p>
                             <p>{mobile}</p>
                         </div>
                         <div className="item">
-                            <span onClick={this.showModal.bind(this, 0)} style={{ cursor: "pointer" }}>更改</span>
+                            <span className="change-btn" onClick={this.showModal.bind(this, 0)}>更改</span>
                             <Modal title="修改手机号码" visible={visible[0]} onOk={this.handleChangeMobile} onCancel={this.handleCancel.bind(this, 0)} okText="确定" cancelText="取消">
                                 <Input placeholder="请输入您的手机号码" value={editMobile} onChange={this.handleChange.bind(this, "editMobile")} onPressEnter={this.handleChangeMobile} />
                             </Modal>
@@ -419,11 +419,11 @@ class Personal extends React.Component {
                     </div>
                     <div className="item-block">
                         <div className="item">
-                            <h5>邮箱</h5>
+                            <p className="title">邮箱</p>
                             <p>{email}</p>
                         </div>
                         <div className="item">
-                            <span onClick={this.showModal.bind(this, 1)} style={{ cursor: "pointer" }}>更改</span>
+                            <span className="change-btn" onClick={this.showModal.bind(this, 1)}>更改</span>
                             <Modal title="修改邮箱" visible={visible[1]} onOk={this.handleChangeEmail} onCancel={this.handleCancel.bind(this, 1)} okText="确定" cancelText="取消">
                                 <Input placeholder="请输入您的邮箱" value={editEmail} onChange={this.handleChange.bind(this, "editEmail")} onPressEnter={this.handleChangeEmail} />
                             </Modal>
@@ -431,11 +431,11 @@ class Personal extends React.Component {
                     </div>
                     <div className="item-block">
                         <div className="item">
-                            <h5>密码</h5>
+                            <p className="title">密码</p>
                             <p>{psd ? "已设置" : "请设置密码"}</p>
                         </div>
                         <div className="item">
-                            <span onClick={this.showModal.bind(this, 2)} style={{ cursor: "pointer" }}>更改</span>
+                            <span className="change-btn" onClick={this.showModal.bind(this, 2)}>更改</span>
                             <Modal title="修改密码" visible={visible[2]} onOk={this.handleChangePsd} onCancel={this.handleCancel.bind(this, 2)} okText="确定" cancelText="取消">
                                 <Tooltip placement="top" title="请输入旧密码">
                                     <Input style={{ margin: "15px 0" }} prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="旧密码"
@@ -450,17 +450,6 @@ class Personal extends React.Component {
                                         onChange={this.handleChange.bind(this, 'confirmPassword')} onPressEnter={this.handleChangePsd} />
                                 </Tooltip>
                             </Modal>
-                        </div>
-                    </div>
-                    <div className="item-block" style={{ height: "100px" }}>
-                        <div className="item">
-                            <h5>绑定第三方账号</h5>
-                            <p>绑定后通过第三方应用快速扫码登录</p>
-                            <div>
-                                <div className="third"><IconFont type="anticonweixin" style={{ fontSize: '30px', marginRight: "5px" }} /><span style={{ marginRight: "20px" }}>绑定微信</span></div>
-                                <div className="third"><IconFont type="anticonweibo" style={{ fontSize: '30px', marginRight: "5px" }} /><span style={{ marginRight: "20px" }}>绑定微博</span></div>
-                                <div className="third"><IconFont type="anticonQQ" style={{ fontSize: '30px', marginRight: "5px" }} /><span style={{ marginRight: "20px" }}>绑定QQ</span></div>
-                            </div>
                         </div>
                     </div>
                 </Card>;
@@ -484,10 +473,21 @@ class Personal extends React.Component {
                 <Sider className="personal-sider">
                     <Menu
                         theme="light"
-                        mode="inline"
+                        mode="vertical"
                         defaultSelectedKeys={[personalSiderKey]}
                         style={{ lineHeight: '64px' }}
                         id="personal-menu"
+                    >
+                        <Menu.Item key="1" onClick={this.changeSider}>个人信息</Menu.Item>
+                        <Menu.Item key="2" onClick={this.changeSider}>账户管理</Menu.Item>
+                        <Menu.Item key="3" onClick={this.changeSider}>账号申诉</Menu.Item>
+                        <Menu.Item key="4" onClick={this.changeSider}>编辑应用</Menu.Item>
+                    </Menu>
+                    <Menu
+                        theme="light"
+                        mode="horizontal"
+                        defaultSelectedKeys={[personalSiderKey]}
+                        id="personal-menu-h"
                     >
                         <Menu.Item key="1" onClick={this.changeSider}>个人信息</Menu.Item>
                         <Menu.Item key="2" onClick={this.changeSider}>账户管理</Menu.Item>

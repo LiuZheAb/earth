@@ -43,14 +43,13 @@
     cursor: pointer;
 }
 
-.search-area p {
-    margin: 10px 0 15px 0;
+.search-area .searcher .search-box {
+    width: 100%;
 }
 
-.recent-visit {
-    color: #bfbfbf;
-    display: flex;
-    flex-wrap: wrap;
+.recent-visit .title {
+    margin-top: 20px;
+    font-weight: 600;
 }
 
 .recent-visit span {
@@ -67,4 +66,15 @@
     overflow: hidden;
     margin-bottom: 0;
     display: inline-block;
+    transition: color .3s;
+}
+
+.recent-visit .app-name:hover {
+    color: #40a9ff;
+}
+
+@media(min-width:992px) {
+    .search-area .searcher .search-box {
+        width: 50%;
+    }
 }

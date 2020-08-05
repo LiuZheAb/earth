@@ -67,22 +67,21 @@ export default class Home extends React.Component {
             <div className="top-block person box-shadow">
               <div className="avatar" style={{ backgroundColor: avatar ? null : "#d7e9f0" }}>
                 <img src={avatar ? apiurl + avatar : require("../../assets/images/avatar.png")} alt="头像" />
-                {/* <img src={require("../../assets/images/avatar.png")} alt="头像" /> */}
               </div>
               <div className="personality">
                 {userName ?
                   <>
                     <ul className="prop-name">
-                      <li className="personal-info">用户名 :</li>
-                      <li className="personal-info">昵称 :</li>
-                      <li className="personal-info">邮箱 :</li>
-                      <li className="personal-info">电话 :</li>
+                      <li>用户名 :</li>
+                      <li>昵称 :</li>
+                      <li>邮箱 :</li>
+                      <li>电话 :</li>
                     </ul>
                     <ul className="prop">
-                      <li><p>{userName}</p></li>
-                      <li><p>{nickname}</p></li>
-                      <li><p>{email}</p></li>
-                      <li><p>{mobile}</p></li>
+                      <li>{userName}</li>
+                      <li>{nickname ? nickname : "未设置昵称"}</li>
+                      <li>{email ? email : "未设置邮箱"}</li>
+                      <li>{mobile ? mobile : "未设置电话"}</li>
                     </ul>
                     <ul className="prop-btn">
                       <li></li>
@@ -92,7 +91,9 @@ export default class Home extends React.Component {
                     </ul>
                   </>
                   :
-                  <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>
+                  <div className="login-btn">
+                    <span onClick={this.showModal}>您还未登录，请先登录</span>
+                  </div>
                 }
               </div>
               <Modal
@@ -113,7 +114,7 @@ export default class Home extends React.Component {
                 <img src={require("../../assets/images/introduce.jpg")} alt="平台简介" />
               </div>
               <div className="textarea">
-                <h3>综合地球物理联合反演与解释一体化平台</h3>
+                <h3 title="综合地球物理联合反演与解释一体化平台">综合地球物理联合反演与解释一体化平台</h3>
                 <p>项目拟通过3000米以浅多种、多类型数据的联合反演解释技术以及多元信息评价与预测技术，发展大数据人工智能理论方法，提高大规模数据处理、解释的高性能计算能力，研发重磁、电磁、地震处理、解释可视化及一体化平台，开展典型矿集区应用示范，从而实现中深部金属矿产资源评价与预测。 </p>
                 <Link className="more" to="/about" onClick={() => { sessionStorage.setItem("aboutSiderKey", 1) }}>更多详情</Link>
               </div>

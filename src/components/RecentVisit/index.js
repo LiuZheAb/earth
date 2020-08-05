@@ -85,8 +85,8 @@ export default class RecentVisit extends React.Component {
             <div className="search-area box-shadow" style={{ position: 'relative', }}>
                 <div className="searcher" >
                     <Input.Search
+                        className="search-box"
                         placeholder="请输入关键词"
-                        style={{ width: "50%", minWidth: "150px", height: 30 }}
                         onSearch={this.searchApp.bind(this)}
                     />
                 </div>
@@ -122,28 +122,30 @@ export default class RecentVisit extends React.Component {
                         </>
                     }
                 </Drawer>
-                <p>最近访问</p>
-                {userName ?
-                    (recentVisit ? <div className="recent-visit" gutter={10}>
-                        {recentVisit.map((app, appIndex) => {
-                            return (
-                                <span key={appIndex}>
-                                    <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
-                                </span>
-                            )
-                        })}
-                    </div> : null)
-                    : <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>
-                }
-                <Modal
-                    visible={this.state.visible2}
-                    onOk={this.handleOk}
-                    onCancel={this.handleOk}
-                    footer={null}
-                    bodyStyle={{ padding: "40px 40px 20px" }}
-                    style={{ width: "300px", maxWidth: "500px" }}>
-                    <LoginModal parent={this} />
-                </Modal>
+                <div className="recent-visit">
+                    <p className="title">最近访问</p>
+                    {userName ?
+                        (recentVisit ? <div gutter={10}>
+                            {recentVisit.map((app, appIndex) => {
+                                return (
+                                    <span key={appIndex}>
+                                        <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
+                                    </span>
+                                )
+                            })}
+                        </div> : null)
+                        : <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>
+                    }
+                    <Modal
+                        visible={this.state.visible2}
+                        onOk={this.handleOk}
+                        onCancel={this.handleOk}
+                        footer={null}
+                        bodyStyle={{ padding: "40px 40px 20px" }}
+                        style={{ width: "300px", maxWidth: "500px" }}>
+                        <LoginModal parent={this} />
+                    </Modal>
+                </div>
             </div>
         );
     };
