@@ -1,5 +1,4 @@
 .search-area {
-    min-height: 140px;
     background: white;
     padding: 15px 20px 20px 20px;
 }
@@ -52,24 +51,27 @@
     font-weight: 600;
 }
 
-.recent-visit span {
-    margin-right: 60px;
+.recent-visit .recent-visit-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -30px;
 }
 
-.recent-visit a {
+.recent-visit .recent-visit-item {
+    padding: 0 30px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.recent-visit .recent-visit-item a {
     color: #666;
     text-decoration: none;
 }
 
-.recent-visit .app-name {
-    max-height: 20px;
-    overflow: hidden;
-    margin-bottom: 0;
-    display: inline-block;
-    transition: color .3s;
-}
-
-.recent-visit .app-name:hover {
+.recent-visit .recent-visit-item a:hover {
     color: #40a9ff;
 }
 

@@ -4,6 +4,7 @@ import { apiurl } from '../../assets/urls';
 import { setCookie } from '../../utils/cookies';
 import axios from 'axios';
 import "./index.css";
+
 class LoginModal extends Component {
     constructor(props) {
         super(props);

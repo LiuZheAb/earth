@@ -122,30 +122,32 @@ export default class RecentVisit extends React.Component {
                         </>
                     }
                 </Drawer>
-                <div className="recent-visit">
-                    <p className="title">最近访问</p>
-                    {userName ?
-                        (recentVisit ? <div gutter={10}>
-                            {recentVisit.map((app, appIndex) => {
-                                return (
-                                    <span key={appIndex}>
-                                        <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
-                                    </span>
-                                )
-                            })}
-                        </div> : null)
-                        : <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>您还未登录，请先登录</span>
-                    }
-                    <Modal
-                        visible={this.state.visible2}
-                        onOk={this.handleOk}
-                        onCancel={this.handleOk}
-                        footer={null}
-                        bodyStyle={{ padding: "40px 40px 20px" }}
-                        style={{ width: "300px", maxWidth: "500px" }}>
-                        <LoginModal parent={this} />
-                    </Modal>
-                </div>
+                {userName ?
+                    <div className="recent-visit">
+                        <p className="title">最近访问</p>
+                        {recentVisit ?
+                            <div className="recent-visit-list">
+                                {recentVisit.map((app, appIndex) => {
+                                    return (
+                                        <div className="recent-visit-item" key={appIndex}>
+                                            <IconFont className="icon-link" type="anticonlianjie" />
+                                            <Link to="/details" onClick={this.setApp.bind(this, app)}>{app}</Link>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            : null}
+                        <Modal
+                            visible={this.state.visible2}
+                            onOk={this.handleOk}
+                            onCancel={this.handleOk}
+                            footer={null}
+                            bodyStyle={{ padding: "40px 40px 20px" }}
+                            style={{ width: "300px", maxWidth: "500px" }}>
+                            <LoginModal parent={this} />
+                        </Modal>
+                    </div>
+                    : null}
             </div>
         );
     };

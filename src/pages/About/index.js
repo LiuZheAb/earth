@@ -26,7 +26,7 @@ class About extends React.Component {
             case "1":
                 content =
                     <>
-                        <img src={require('../../assets/images/about.png')} alt="关于我们" style={{ width: "100%", marginBottom: "20px" }} />
+                        <img src={require('../../assets/images/about.png')} alt="关于我们" />
                         <p style={{ textIndent: "2em" }}>项目拟通过3000米以浅多种、多类型数据的联合反演解释技术以及多元信息评价与预测技术，发展大数据人工智能理论方法，提高大规模数据处理、解释的高性能计算能力，研发重磁、电磁、地震处理、解释可视化及一体化平台，开展典型矿集区应用示范，从而实现中深部金属矿产资源评价与预测。</p>
                     </>;
                 break;
@@ -57,11 +57,9 @@ class About extends React.Component {
         return (
             <Layout className="about">
                 <Header className="about-header">
-                    <Link to="/home">
-                        <div className="about-logo" title="综合地球物理联合反演与解释一体化平台">
-                            <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
-                            <span>综合地球物理联合反演与解释一体化平台</span>
-                        </div>
+                    <Link to="/home" className="about-logo" title="综合地球物理联合反演与解释一体化平台">
+                        <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
+                        <span>综合地球物理联合反演与解释一体化平台</span>
                     </Link>
                     <IconFont className="about-quit" onClick={this.props.history.goBack} type="anticonfanhui" title="返回上一页" />
                 </Header>
