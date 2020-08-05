@@ -42,10 +42,6 @@
     line-height: 144px;
 }
 
-.personality .login-btn {
-    text-align: center;
-}
-
 .personality .login-btn span:hover {
     color: #40a9ff;
 }
@@ -126,6 +122,9 @@
     }
     .homepage .personality {
         padding: 20px 0 0 0;
+    }
+    .personality .login-btn span {
+        line-height: 14px;
     }
     .homepage .person, .homepage .plat-desc {
         display: block;

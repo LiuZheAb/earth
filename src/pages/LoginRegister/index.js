@@ -42,7 +42,7 @@ class LoginRegister extends React.Component {
                     <header style={invisible ? { top: "0" } : { top: "37px" }}>
                         <div className="lr-logo">
                             <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" height="24" />
-                            <span>综合地球物理联合反演与解释一体化平台</span>
+                            <span title="综合地球物理联合反演与解释一体化平台">综合地球物理联合反演与解释一体化平台</span>
                         </div>
                     </header>
                     <div className="lr-banner">
