@@ -1,11 +1,11 @@
 // 顶部导航栏部分
 import React from 'react';
-import { Link, withRouter } from "react-router-dom";
 import { Layout, message, Modal } from 'antd';
-import IconFont from '../../assets/IconFont';
-import './index.css';
-import { getCookie, removeCookie } from '../../utils/cookies';
+import { Link, withRouter } from "react-router-dom";
 import LoginModal from '../LoginModal';
+import IconFont from '../../assets/IconFont';
+import { getCookie, removeCookie } from '../../utils/cookies';
+import './index.css';
 
 const { Header } = Layout;
 
@@ -47,30 +47,28 @@ class HomeNavbar extends React.Component {
         return (
             <Header className="home-header" role="navigation" style={this.props.style}>
                 <Link to="/home" className="logo" title="综合地球物理联合反演与解释一体化平台">
-                    <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false"/>
+                    <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" />
                     <span>综合地球物理联合反演与解释一体化平台</span>
                 </Link>
-                <div className="icon-area">
-                    {userName ?
-                        <>
-                            <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
-                                <IconFont type="anticontouxiang" title="个人中心" />
-                            </Link>
-                            <IconFont className="quit-icon" type="anticonzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
-                        </>
-                        :
-                        <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>登录</span>
-                    }
-                    <Modal
-                        visible={visible}
-                        onOk={this.handleOk}
-                        onCancel={this.handleOk}
-                        footer={null}
-                        bodyStyle={{ padding: "40px 40px 20px" }}
-                        style={{ width: "300px", maxWidth: "500px" }}>
-                        <LoginModal parent={this} />
-                    </Modal>
-                </div>
+                {userName ?
+                    <div className="icon-area">
+                        <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
+                            <IconFont type="anticontouxiang" title="个人中心" />
+                        </Link>
+                        <IconFont className="quit-icon" type="anticonzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
+                    </div>
+                    :
+                    <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>登录</span>
+                }
+                <Modal
+                    visible={visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleOk}
+                    footer={null}
+                    bodyStyle={{ padding: "40px 40px 20px" }}
+                    style={{ width: "300px", maxWidth: "500px" }}>
+                    <LoginModal parent={this} />
+                </Modal>
             </Header>
         );
     };

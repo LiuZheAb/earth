@@ -55,6 +55,13 @@
     text-overflow: ellipsis;
 }
 
+.app-list li i, .module-modal li i {
+    margin-right: 10px;
+    color: #1890ff;
+    position: relative;
+    top: 1px;
+}
+
 .app-list li a, .module-modal li a {
     color: #333;
     transition: color .3s;
@@ -67,9 +74,4 @@
 
 .app-list li a:hover, .module-modal li a:hover, .app-list li span:hover, .module-modal li span:hover {
     color: #40a9ff;
-}
-
-.icon-link, .icon-menu, .icon-enter {
-    margin-right: 10px;
-    color: #1890ff;
 }

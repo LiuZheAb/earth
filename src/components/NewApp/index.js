@@ -1,11 +1,11 @@
 //新建应用页面
 import React from "react";
-import { Form, Button, InputNumber, Select, Input, Upload, Icon, message, Row, Col, Modal, Result } from "antd";
 import axios from "axios";
-import { apiurl } from "../../assets/urls";
 import { withRouter } from 'react-router-dom'
-import "./index.css";
+import { Form, Button, InputNumber, Select, Input, Upload, Icon, message, Row, Col, Modal, Result } from "antd";
+import { apiurl } from "../../assets/urls";
 import { getCookie, getUserCookie } from '../../utils/cookies';
+import "./index.css";
 
 const { Option } = Select;
 

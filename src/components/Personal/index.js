@@ -1,11 +1,10 @@
 import React from 'react';
-import { Layout, Menu, Card, Form, Input, Button, Modal, message, Tooltip, Icon, Upload } from 'antd';
 import axios from 'axios';
-import { apiurl } from '../../assets/urls';
-import "./index.css";
-import { getCookie } from "../../utils/cookies";
-import IconFont from "../../assets/IconFont";
+import { Layout, Menu, Card, Form, Input, Button, Modal, message, Tooltip, Icon, Upload } from 'antd';
 import EditApp from './EditApp.js';
+import { apiurl } from '../../assets/urls';
+import { getCookie } from "../../utils/cookies";
+import "./index.css";
 
 const { Sider, Content } = Layout;
 const { TextArea } = Input;

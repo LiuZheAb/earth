@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Form, Icon, Input, Button, message } from "antd";
+import axios from 'axios';
 import { withRouter, Link } from "react-router-dom";
+import { Form, Icon, Input, Button, message } from "antd";
 import { apiurl } from '../../assets/urls';
 import { setCookie } from '../../utils/cookies';
-import axios from 'axios';
 import './index.css';
 
 class LoginForm extends Component {

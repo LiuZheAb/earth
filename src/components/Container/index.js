@@ -2,8 +2,8 @@
 import React from 'react';
 import { Layout } from 'antd';
 import { Route } from "react-router-dom";
-import './index.css';
 import loadable from '../../utils/lazyLoad';
+import './index.css';
 
 const Home = loadable(() => import('../Home'));
 const NewApp = loadable(() => import('../NewApp'));

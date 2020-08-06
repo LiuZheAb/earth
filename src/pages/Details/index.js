@@ -4,11 +4,11 @@ import { Layout, Button, Menu, Select, Radio, Checkbox, Input, message, Card, Co
 import { Link, withRouter } from "react-router-dom";
 import axios from 'axios';
 import IconFont from '../../assets/IconFont';
-import { apiurl } from '../../assets/urls';
-import checkNullvalue from "../../utils/checkNullvalue";
 // import Vtkview from "../../components/Vtkview";
 import Listener from "../../components/Listener";
 import Contour from "../../components/Contour";
+import checkNullvalue from "../../utils/checkNullvalue";
+import { apiurl } from '../../assets/urls';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 

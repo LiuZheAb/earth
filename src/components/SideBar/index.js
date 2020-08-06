@@ -2,9 +2,9 @@
 import React from 'react';
 import { Menu, Icon, Layout, message } from 'antd';
 import { Link, withRouter } from "react-router-dom";
-import './index.css';
 import IconFont from '../../assets/IconFont';
 import { getCookie } from "../../utils/cookies";
+import './index.css';
 
 const { Sider } = Layout;
 
@@ -25,22 +25,9 @@ class Sidebar extends React.Component {
             collapsed: true,
         });
     };
-    //锚点效果，点击“应用与服务”时调用
-    scrollToAnchor = (anchorName) => {
-        if (anchorName) {
-            // 找到锚点
-            let anchorElement = document.getElementById(anchorName);
-            // 如果对应id的锚点存在，就跳转到锚点
-            if (anchorElement) {
-                anchorElement.scrollIntoView({ block: 'start', behavior: 'smooth' });
-            } else {
-                this.props.history.push('home');
-            };
-        };
-    };
     handleClick() {
         if (getCookie("userName")) {
-            this.props.history.push('newapp');
+            this.props.history.push('/newapp');
         } else {
             message.error("请先登录", 2);
         };
@@ -56,10 +43,7 @@ class Sidebar extends React.Component {
                 onMouseLeave={this.MouseLeave}
                 style={this.props.style}
             >
-                <Menu
-                    theme="light"
-                    mode="inline"
-                >
+                <Menu theme="light" mode="inline">
                     <Menu.Item key="1" >
                         <Link to="/home">
                             <Icon type="appstore" theme="filled" style={{ fontSize: '18px' }} />

@@ -1,11 +1,11 @@
 import React from "react";
-import { Input, Row, Col, message, Drawer, Result, Modal } from "antd";
-import { Link } from "react-router-dom";
-import IconFont from '../../assets/IconFont';
 import axios from 'axios';
+import { Link } from "react-router-dom";
+import { Input, Row, Col, message, Drawer, Result, Modal } from "antd";
+import IconFont from '../../assets/IconFont';
 import { apiurl } from '../../assets/urls';
-import { getCookie } from '../../utils/cookies';
 import loadable from '../../utils/lazyLoad';
+import { getCookie } from '../../utils/cookies';
 import "./index.css";
 
 const LoginModal = loadable(() => import('../LoginModal'));
@@ -131,7 +131,7 @@ export default class RecentVisit extends React.Component {
                                     return (
                                         <div className="recent-visit-item" key={appIndex}>
                                             <IconFont className="icon-link" type="anticonlianjie" />
-                                            <Link to="/details" onClick={this.setApp.bind(this, app)}>{app}</Link>
+                                            <Link to="/details" onClick={this.setApp.bind(this, app)} title={app}>{app}</Link>
                                         </div>
                                     )
                                 })}

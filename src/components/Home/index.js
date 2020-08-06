@@ -1,12 +1,12 @@
 //前台首页，个人中心、平台简介、最近访问
-import React from 'react'
-import { Row, Col, message, Modal } from 'antd';
-import { Link } from "react-router-dom";
-import './index.css';
-import { apiurl } from '../../assets/urls';
+import React from 'react';
 import axios from 'axios';
+import { Link } from "react-router-dom";
+import { Row, Col, message, Modal } from 'antd';
 import { getCookie } from '../../utils/cookies';
+import { apiurl } from '../../assets/urls';
 import loadable from '../../utils/lazyLoad';
+import './index.css';
 
 const RecentVisit = loadable(() => import('../RecentVisit'));
 const ModuleList = loadable(() => import('../ModuleList'));

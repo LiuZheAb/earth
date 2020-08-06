@@ -1,11 +1,11 @@
 //前台首页
 import React from 'react';
+import axios from 'axios';
+import { Layout, BackTop, Alert, message } from 'antd';
 import HomeNavbar from '../../components/HomeNavbar';
 import Sidebar from '../../components/SideBar';
 import Container from '../../components/Container';
-import { Layout, BackTop, Alert, message } from 'antd';
 import { apiurl } from '../../assets/urls';
-import axios from 'axios';
 
 export default class Homepage extends React.Component {
     state = {

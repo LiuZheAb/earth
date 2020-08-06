@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
-import IconFont from '../../assets/IconFont';
 import { Link, withRouter } from "react-router-dom";
+import IconFont from '../../assets/IconFont';
 import "./index.css";
 
 const { Header, Sider, Content } = Layout;

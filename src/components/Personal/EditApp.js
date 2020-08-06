@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { Table, Card, Form, Input, Button, Modal, message, Icon, Row, Col, Select, InputNumber } from 'antd';
+import React, { Component } from 'react';
 import axios from 'axios';
+import { Table, Card, Form, Input, Button, Modal, message, Icon, Row, Col, Select, InputNumber } from 'antd';
 import { apiurl } from '../../assets/urls';
 import { getCookie } from "../../utils/cookies";
 import "./index.css";

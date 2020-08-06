@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
+import axios from 'axios';
 import { Form, Input, Icon, Button, message } from 'antd';
 import { apiurl } from '../../assets/urls';
 import { setCookie } from '../../utils/cookies';
-import axios from 'axios';
 import "./index.css";
 
 class LoginModal extends Component {

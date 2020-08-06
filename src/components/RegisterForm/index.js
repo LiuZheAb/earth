@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Form, Icon, Input, Button, message, Checkbox, AutoComplete, Tooltip } from "antd";
+import axios from 'axios';
 import { withRouter, Link } from "react-router-dom";
+import { Form, Icon, Input, Button, message, Checkbox, AutoComplete, Tooltip } from "antd";
 import { apiurl } from '../../assets/urls';
 import { setCookie } from '../../utils/cookies';
-import axios from 'axios';
 import './index.css';
 
 const AutoCompleteOption = AutoComplete.Option;
@@ -37,8 +37,7 @@ class RegisterForm extends Component {
                     isLoaded: true,
                     invisible: true
                 });
-            })
-            .catch(function (error) {
+            }).catch(function (error) {
                 message.error("服务器无响应", 2);
                 _this.setState({
                     isLoaded: false,
@@ -59,8 +58,7 @@ class RegisterForm extends Component {
                         captchaUrl: apiurl + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                     });
-                })
-                .catch(function (error) {
+                }).catch(function (error) {
                     message.error("服务器无响应", 2);
                     _this.setState({
                         isLoaded: false,

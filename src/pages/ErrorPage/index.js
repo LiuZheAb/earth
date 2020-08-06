@@ -1,7 +1,7 @@
 //404页面
 import React from 'react';
-import "./index.css";
 import { Link, withRouter } from "react-router-dom";
+import "./index.css";
 
 class ErrorPage extends React.Component {
     constructor() {
