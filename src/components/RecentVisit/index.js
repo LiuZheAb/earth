@@ -1,9 +1,16 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 最近访问组件
+ */
+
 import React from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Input, Row, Col, message, Drawer, Result, Modal } from "antd";
 import IconFont from '../../assets/IconFont';
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import loadable from '../../utils/lazyLoad';
 import { getCookie } from '../../utils/cookies';
 import "./index.css";
@@ -33,9 +40,11 @@ export default class RecentVisit extends React.Component {
             });
         };
     };
+    // 点击应用将其名称保存到sessionStotage中
     setApp(appName) {
         sessionStorage.setItem("appName", appName);
     };
+    // 搜索应用
     searchApp(appName) {
         const _this = this;
         if (appName) {
@@ -61,19 +70,19 @@ export default class RecentVisit extends React.Component {
             message.warning("请输入要搜索的内容");
         };
     };
+    // 显示搜索结果抽屉
     showDrawer = () => {
         this.setState({
             visible: true,
         });
     };
+    // 关闭搜索结果抽屉
     onClose = () => {
         this.setState({
             visible: false,
         });
     };
-    showModal = () => {
-        this.setState({ visible2: true })
-    }
+    // 点击确认调用
     handleOk = e => {
         this.setState({
             visible2: false,

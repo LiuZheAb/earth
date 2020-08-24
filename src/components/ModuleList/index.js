@@ -1,10 +1,16 @@
-//首页应用列表
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 首页应用列表
+ */
+
 import React from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Row, Col, Result, Spin, Modal, Drawer, message } from 'antd';
 import IconFont from '../../assets/IconFont';
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 
@@ -45,6 +51,7 @@ export default class ModuleList extends React.Component {
         sessionStorage.setItem("appName", appName);
         this.submitClickedApp(appName);
     };
+    // 显示二级菜单
     showModal = (menuName, module) => {
         let _this = this;
         axios.get(apiurl + 'subHome', {
@@ -64,6 +71,7 @@ export default class ModuleList extends React.Component {
             currentModule: module
         })
     }
+    // 显示三级菜单
     showSecondModal = menuName => {
         let _this = this;
         axios.get(apiurl + 'twoSubHome', {
@@ -82,28 +90,31 @@ export default class ModuleList extends React.Component {
             currentMenu2: menuName,
         })
     }
+    // 点击二级菜单确认按钮
     handleOk = e => {
         this.setState({
             modalVisible: false
         });
     };
-
+    // 点击二级菜单取消按钮
     handleCancel = e => {
         this.setState({
             modalVisible: false
         });
     };
+    // 点击三级菜单确认按钮
     handleOk2 = e => {
         this.setState({
             modalVisible2: false
         });
     };
-
+    // 点击三级菜单取消按钮
     handleCancel2 = e => {
         this.setState({
             modalVisible2: false
         });
     };
+    // 显示帮助文档抽屉，获取数据
     showDrawer = (index) => {
         let _this = this;
         axios.get(apiurl + 'mod/doc', {
@@ -122,11 +133,13 @@ export default class ModuleList extends React.Component {
             drawerVisible: true
         });
     };
+    // 关闭帮助文档抽屉
     onClose = () => {
         this.setState({
             drawerVisible: false
         });
     };
+    // 点击应用时将点击记录提交
     submitClickedApp = appName => {
         axios({
             method: 'post',

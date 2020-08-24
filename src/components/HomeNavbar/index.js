@@ -1,4 +1,10 @@
-// 顶部导航栏部分
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 顶部导航栏部分
+ */
+
 import React from 'react';
 import { Layout, message, Modal } from 'antd';
 import { Link, withRouter } from "react-router-dom";
@@ -17,18 +23,22 @@ class HomeNavbar extends React.Component {
         };
         this.handleClick = this.handleClick.bind(this);
     };
+    // 注销
     handleClick() {
         message.warn('已注销', 1.5);
         sessionStorage.clear();
         removeCookie("userName")
         this.props.history.push("login");
     }
+    // 显示登陆模态框
     showModal = () => {
         this.setState({ visible: true })
     }
+    // 点击确定调用
     handleOk = e => {
         this.setState({ visible: false });
     };
+    // 注销时确认对话框
     showConfirm = () => {
         let _this = this;
         Modal.confirm({

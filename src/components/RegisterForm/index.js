@@ -1,8 +1,15 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 注册表单
+ */
+
 import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter, Link } from "react-router-dom";
 import { Form, Icon, Input, Button, message, Checkbox, AutoComplete, Tooltip } from "antd";
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import { setCookie } from '../../utils/cookies';
 import './index.css';
 
@@ -71,7 +78,7 @@ class RegisterForm extends Component {
     handleChange(key, e) {
         this.setState({ [key]: e.target.value });
     };
-    //表单验证
+    //用户名验证
     usernameValidator = (rule, value, callback) => {
         if (!value) {
             callback('用户名不能为空!');
@@ -83,6 +90,7 @@ class RegisterForm extends Component {
             callback();
         };
     };
+    // 邮箱验证
     emailValidator = (rule, value, callback) => {
         if (!value) {
             callback('邮箱不能为空!');
@@ -92,6 +100,7 @@ class RegisterForm extends Component {
             callback();
         };
     };
+    // 自动补全邮箱地址
     handleWebsiteChange = value => {
         let autoCompleteResult;
         if (!value || /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value) === true) {
@@ -104,6 +113,7 @@ class RegisterForm extends Component {
             email: value
         });
     };
+    // 密码验证
     passwordValidator = (rule, value, callback) => {
         if (!value) {
             callback('请输入密码!');
@@ -113,6 +123,7 @@ class RegisterForm extends Component {
             callback();
         };
     };
+    // 确认密码
     confirmPasswordValidator = (rule, value, callback) => {
         if (!value) {
             callback('请再次输入密码!');
@@ -122,6 +133,7 @@ class RegisterForm extends Component {
             callback();
         };
     };
+    // 验证码验证
     captchaValidator = (rule, value, callback) => {
         if (!value) {
             callback("验证码不能为空!");
@@ -133,6 +145,7 @@ class RegisterForm extends Component {
             callback();
         };
     };
+    // 校验是否勾选协议
     checkboxChange(e) {
         this.setState({
             checked: e.target.checked

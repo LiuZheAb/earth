@@ -1,4 +1,10 @@
-// 前台内容区部分
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 前台内容区部分
+ */
+
 import React from 'react';
 import { Layout } from 'antd';
 import { Route } from "react-router-dom";

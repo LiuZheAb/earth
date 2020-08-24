@@ -1,9 +1,15 @@
-//新建应用页面
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 新建应用页面
+ */
+
 import React from "react";
 import axios from "axios";
 import { withRouter } from 'react-router-dom'
 import { Form, Button, InputNumber, Select, Input, Upload, Icon, message, Row, Col, Modal, Result } from "antd";
-import { apiurl } from "../../assets/urls";
+import { apiurl } from '../../assets/url.js';
 import { getCookie, getUserCookie } from '../../utils/cookies';
 import "./index.css";
 
@@ -66,6 +72,7 @@ class NewApp extends React.Component {
         };
         this.setState({ appName: e.target.value });
     };
+    // 应用名称验证
     appNameValidator = (rule, value, callback) => {
         if (!value) {
             callback('请输入应用名称!');
@@ -85,12 +92,15 @@ class NewApp extends React.Component {
         });
         this.props.form.setFieldsValue({ "subModule": "" })
     };
+    // 修改二级菜单名称
     changeSubModule(value) {
         this.setState({ subModule: value });
     };
+    // 修改语言类型
     changeLangType(value) {
         this.setState({ langType: value });
     };
+    // 上传文件调用
     handleFileChange(info) {
         let fileList = [...info.fileList];
         fileList = fileList.slice(-1);
@@ -103,6 +113,7 @@ class NewApp extends React.Component {
             this.setState({ uploaded: false });
         };
     };
+    // 修改运行路径
     changePath(e) {
         this.setState({ path: e.target.value });
     };
@@ -139,7 +150,7 @@ class NewApp extends React.Component {
         params[index].defaultValue = "";
         this.setState({ params });
     };
-    //获取参数默认值
+    //获取参数默认值并验证
     changeParamValue(index, e) {
         let defaultValue = [], value = e.target.value.toString().replace(/\uff0c/g, ","), { params } = this.state;
         if (value !== null) {
@@ -161,6 +172,7 @@ class NewApp extends React.Component {
         params[index].defaultValue = defaultValue;
         this.setState({ params: params });
     };
+    // 参数值验证
     paramValueValidator = (index, rule, value, callback) => {
         if (!value) {
             callback('默认值不能为空!');
@@ -276,11 +288,13 @@ class NewApp extends React.Component {
             message.error(`镜像未上传成功`);
         };
     }
+    // 点击模态框取消按钮
     handleCancel = e => {
         this.setState({
             visible: false,
         });
     };
+    // 继续新建
     continue() {
         this.props.form.resetFields();
         this.setState({
@@ -294,6 +308,7 @@ class NewApp extends React.Component {
             fileList: []
         });
     };
+    // 修改应用名称
     reChangeAppName() {
         this.props.form.validateFields({ force: true });
         this.setState({
@@ -301,6 +316,7 @@ class NewApp extends React.Component {
             disabled: false,
         });
     };
+    // 重新提交
     reUpload() {
         this.setState({
             visible: false,
@@ -308,6 +324,7 @@ class NewApp extends React.Component {
             fileList: []
         });
     };
+    // 点击前往计算时将应用名称保存到sessionStorage中
     setApp(app) {
         sessionStorage.setItem("appName", app);
         this.props.history.push("/details");

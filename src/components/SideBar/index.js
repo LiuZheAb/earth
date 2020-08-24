@@ -1,4 +1,11 @@
-//侧边栏
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 侧边栏组件
+ */
+
+
 import React from 'react';
 import { Menu, Icon, Layout, message } from 'antd';
 import { Link, withRouter } from "react-router-dom";
@@ -25,6 +32,7 @@ class Sidebar extends React.Component {
             collapsed: true,
         });
     };
+    // 点击新建应用时调用
     handleClick() {
         if (getCookie("userName")) {
             this.props.history.push('/newapp');

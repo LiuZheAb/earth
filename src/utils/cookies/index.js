@@ -1,3 +1,10 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 关于cookie的方法
+ */
+
 import { message } from 'antd';
 // 获取cookie
 export function getCookie(key) {
@@ -39,7 +46,7 @@ export function removeCookie(cookieName) {
         };
     };
 };
-
+// 获取用户名cookie
 export function getUserCookie() {
     if (getCookie("userName")) {
         return true;

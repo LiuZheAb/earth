@@ -1,3 +1,10 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 关于我们页面
+ */
+
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { Link, withRouter } from "react-router-dom";
@@ -13,6 +20,7 @@ class About extends React.Component {
             aboutSiderKey: sessionStorage.getItem("aboutSiderKey") ? sessionStorage.getItem("aboutSiderKey") : "1",
         };
     };
+    // 点击侧边栏调用
     changeSider = ({ key }) => {
         this.setState({
             aboutSiderKey: key

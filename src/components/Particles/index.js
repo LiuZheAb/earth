@@ -1,3 +1,10 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 登录/注册页粒子背景
+ */
+
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
 import "./index.css";

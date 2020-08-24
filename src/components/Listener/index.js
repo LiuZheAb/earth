@@ -1,9 +1,16 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : CPU、内存监控组件
+ */
+
 import React from 'react';
 import axios from 'axios';
 import DataSet from "@antv/data-set";
 import { Divider, message } from 'antd';
 import { Chart, Geom, Axis, Tooltip, Coord, Label, View, } from "bizcharts";
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 
 export default class Listener extends React.Component {
     constructor(props) {
@@ -22,6 +29,7 @@ export default class Listener extends React.Component {
         this.getPieData();
         this.getLineData();
     }
+    // 获取内存饼图数据
     getPieData = () => {
         const _this = this;
         this.pieTimer = window.setTimeout(() => {
@@ -44,6 +52,7 @@ export default class Listener extends React.Component {
                 });
         }, 1000);
     };
+    // 获取CPU折线图数据
     getLineData = () => {
         const _this = this;
         this.requestRef = requestAnimationFrame(() => {
@@ -72,6 +81,7 @@ export default class Listener extends React.Component {
             }, 1000);
         });
     };
+    // 页面注销时清空计时器
     componentWillUnmount() {
         clearInterval(this.pieTimer);
         clearInterval(this.lineTimer);

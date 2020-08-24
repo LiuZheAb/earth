@@ -1,3 +1,10 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 路由管理文件
+ */
+
 import React from 'react';
 import { Switch, Redirect, HashRouter as Router, Route } from "react-router-dom";
 import loadable from '../utils/lazyLoad';

@@ -1,4 +1,10 @@
-//应用详情页
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 应用详情页
+ */
+
 import React from 'react';
 import { Layout, Button, Menu, Select, Radio, Checkbox, Input, message, Card, Col, Row, Form, Upload, Icon, Empty, Result } from 'antd';
 import { Link, withRouter } from "react-router-dom";
@@ -8,7 +14,7 @@ import IconFont from '../../assets/IconFont';
 import Listener from "../../components/Listener";
 import Contour from "../../components/Contour";
 import checkNullvalue from "../../utils/checkNullvalue";
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 
@@ -125,6 +131,7 @@ class Details extends React.Component {
             textAreas: textAreas
         });
     };
+    // 上传文件调用
     changeUpload(index, info) {
         if (info.file.status === "done") {
             let { uploadBoxs } = this.state;
@@ -201,6 +208,7 @@ class Details extends React.Component {
             };
         };
     };
+    // 提交表单数据
     handleSubmit(e) {
         e.preventDefault();
         //判断文件是否上传完成

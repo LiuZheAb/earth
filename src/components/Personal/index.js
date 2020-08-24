@@ -1,14 +1,22 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 个人中心页面
+ */
+
 import React from 'react';
 import axios from 'axios';
 import { Layout, Menu, Card, Form, Input, Button, Modal, message, Tooltip, Icon, Upload } from 'antd';
 import EditApp from './EditApp.js';
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import { getCookie } from "../../utils/cookies";
 import "./index.css";
 
 const { Sider, Content } = Layout;
 const { TextArea } = Input;
 
+// 验证是否为空值
 let checkNullvalue = (param, str) => {
     if (str.length === 0) {
         message.error(`${param}不能为空，请填写后重新提交`, 2);
@@ -104,6 +112,7 @@ class Personal extends React.Component {
         }
         return isJpgOrPng && isLt2M;
     };
+    // 提交头像
     handleChangeAvatar = info => {
         if (info.file.status === 'uploading') {
             this.setState({ loading: true });
@@ -135,6 +144,7 @@ class Personal extends React.Component {
             visible: visible,
         });
     };
+    // 昵称验证
     nicknameValidator(rule, value, callback) {
         var len = 0;
         for (var i = 0; i < value.length; i++) {
@@ -153,15 +163,6 @@ class Personal extends React.Component {
         } else {
             callback();
         };
-    };
-    descriptionValidator(rule, value, callback) {
-        callback();
-    };
-    addressValidator(rule, value, callback) {
-        callback();
-    };
-    areaValidator(rule, value, callback) {
-        callback();
     };
     // 个人信息页数据提交
     handleSubmit(e) {
@@ -371,7 +372,6 @@ class Personal extends React.Component {
                         </Form.Item>
                         <Form.Item label="简介">
                             {getFieldDecorator('description', {
-                                rules: [{ validator: this.descriptionValidator }],
                                 initialValue: description,
                                 validateTrigger: "onSubmit"
                             })(
@@ -380,7 +380,6 @@ class Personal extends React.Component {
                         </Form.Item>
                         <Form.Item label="地址">
                             {getFieldDecorator('address', {
-                                rules: [{ validator: this.addressValidator }],
                                 initialValue: address,
                                 validateTrigger: "onSubmit"
                             })(
@@ -389,7 +388,6 @@ class Personal extends React.Component {
                         </Form.Item>
                         <Form.Item label="应用领域">
                             {getFieldDecorator('area', {
-                                rules: [{ validator: this.areaValidator }],
                                 initialValue: area,
                                 validateTrigger: "onSubmit"
                             })(

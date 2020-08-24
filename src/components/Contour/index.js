@@ -1,3 +1,10 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : docker运行结果可视化
+ */
+
 import React from 'react';
 import { Select, Result } from 'antd';
 
@@ -26,10 +33,12 @@ export default class Contour extends React.Component {
             this.showEcharts(rowNum, columnNum, min, max, dataSource);
         }
     };
+    // 修改数据文件
     handleChange(index) {
         const { rowNum, columnNum, min, max, dataSource } = this.props.data[index];
         this.showEcharts(rowNum, columnNum, min, max, dataSource);
     };
+    // 读取数据文件
     importData(e) {
         let dataSource = [], rowNum = 0, columnNum = 0, min = 0, max = 0;
         let _this = this;

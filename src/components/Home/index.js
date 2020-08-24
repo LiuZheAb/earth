@@ -1,10 +1,16 @@
-//前台首页，个人中心、平台简介、最近访问
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 前台首页，个人中心、平台简介、最近访问
+ */
+
 import React from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Row, Col, message, Modal } from 'antd';
 import { getCookie } from '../../utils/cookies';
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import loadable from '../../utils/lazyLoad';
 import './index.css';
 
@@ -46,12 +52,15 @@ export default class Home extends React.Component {
         });
     }
   };
+  // 点击按钮时将点击的按钮保存到sessionStorage中
   setSiderkey(index) {
     sessionStorage.setItem('personalSiderKey', index);
   };
+  // 显示模态框
   showModal = () => {
     this.setState({ visible: true })
   }
+  // 点击确定调用
   handleOk = e => {
     this.setState({
       visible: false,

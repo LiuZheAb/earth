@@ -1,4 +1,10 @@
-//前台登录、注册页面
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 登录、注册页面
+ */
+
 import React from 'react';
 import { Alert } from 'antd';
 import { Route, Link } from "react-router-dom";

@@ -1,7 +1,14 @@
+/*
+ *文件名 : index.js
+ *作者 : 刘哲
+ *创建时间 : 2020/8/24
+ *文件描述 : 登录模态框
+ */
+
 import React, { Component } from 'react'
 import axios from 'axios';
 import { Form, Input, Icon, Button, message } from 'antd';
-import { apiurl } from '../../assets/urls';
+import { apiurl } from '../../assets/url.js';
 import { setCookie } from '../../utils/cookies';
 import "./index.css";
 
@@ -70,7 +77,7 @@ class LoginModal extends Component {
     handleChange(key, e) {
         this.setState({ [key]: e.target.value });
     };
-    //表单验证
+    //用户名验证
     usernameValidator = (rule, value, callback) => {
         if (!value) {
             callback('用户名不能为空!');
@@ -82,6 +89,7 @@ class LoginModal extends Component {
             callback();
         };
     };
+    // 密码验证
     passwordValidator = (rule, value, callback) => {
         if (!value) {
             callback('请输入密码!');
@@ -93,6 +101,7 @@ class LoginModal extends Component {
             callback();
         };
     };
+    // 验证码验证
     captchaValidator = (rule, value, callback) => {
         if (!value) {
             callback("验证码不能为空!");
@@ -170,6 +179,7 @@ class LoginModal extends Component {
             };
         });
     };
+    // 关闭模态框
     closeModal() {
         this.props.parent.handleOk();
     }
