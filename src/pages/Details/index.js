@@ -299,7 +299,7 @@ class Details extends React.Component {
             <div className="details">
                 <Header className="details-header">
                     <Button className="details-menu-btn" type="primary" onClick={this.toggle}>
-                        <IconFont type="anticondaohang-caidan" style={{ fontSize: '24px', color: '#fff', marginLeft: '-3px' }} />
+                        <IconFont type="earthdaohang-caidan" style={{ fontSize: '24px', color: '#fff', marginLeft: '-3px' }} />
                     </Button>
                     <Link to="/home">
                         <div className="details-logo" title="综合地球物理联合反演与解释一体化平台">
@@ -308,7 +308,7 @@ class Details extends React.Component {
                         </div>
                     </Link>
                     <span className="details-title">{appName}</span>
-                    <IconFont className="details-quit" onClick={this.props.history.goBack} type="anticonfanhui" />
+                    <IconFont className="details-quit" onClick={this.props.history.goBack} type="earthfanhui" />
                 </Header>
                 <Sider
                     collapsible
@@ -318,7 +318,7 @@ class Details extends React.Component {
                     <Menu className="details-menu" mode="inline">
                         <li className="ant-menu-item details-collapse">
                             <IconFont
-                                type="anticonquit"
+                                type="earthquit"
                                 style={{ fontSize: '36px', margin: "0" }}
                                 className="details-collapse-icon"
                                 onClick={this.toggle} />

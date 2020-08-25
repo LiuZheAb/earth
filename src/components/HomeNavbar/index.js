@@ -9,7 +9,7 @@ import React from 'react';
 import { Layout, message, Modal } from 'antd';
 import { Link, withRouter } from "react-router-dom";
 import LoginModal from '../LoginModal';
-import IconFont from '../../assets/IconFont';
+import IconFont from '../IconFont';
 import { getCookie, removeCookie } from '../../utils/cookies';
 import './index.css';
 
@@ -63,9 +63,9 @@ class HomeNavbar extends React.Component {
                 {userName ?
                     <div className="icon-area">
                         <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
-                            <IconFont type="anticontouxiang" title="个人中心" />
+                            <IconFont type="earthtouxiang" title="个人中心" />
                         </Link>
-                        <IconFont className="quit-icon" type="anticonzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
+                        <IconFont className="quit-icon" type="earthzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
                     </div>
                     :
                     <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>登录</span>

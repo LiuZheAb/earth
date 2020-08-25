@@ -157,17 +157,17 @@ export default class ModuleList extends React.Component {
         function type(index) {
             switch (index) {
                 case 0:
-                    return "anticondatabase";
+                    return "earthdatabase";
                 case 1:
-                    return "anticondiqiu-";
+                    return "earthdiqiu-";
                 case 2:
-                    return "anticonIconfont_field";
+                    return "earthIconfont_field";
                 case 3:
-                    return "anticonmagneton";
+                    return "earthmagneton";
                 case 4:
-                    return "anticoncomputer1";
+                    return "earthcomputer1";
                 case 5:
-                    return "anticonAIzhineng";
+                    return "earthAIzhineng";
                 default:
                     break;
             };
@@ -198,18 +198,18 @@ export default class ModuleList extends React.Component {
                                                             subModules[module].map(({ menuName, url, hasSub }, index) =>
                                                                 url ?
                                                                     <li key={index} title={menuName}>
-                                                                        <IconFont type="anticonlianjie" />
+                                                                        <IconFont type="earthlianjie" />
                                                                         <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
                                                                     </li>
                                                                     :
                                                                     hasSub ?
                                                                         <li key={index} title={menuName}>
-                                                                            <IconFont type="anticoncaidan2" />
+                                                                            <IconFont type="earthcaidan2" />
                                                                             <span onClick={this.showModal.bind(this, menuName, module)}>{menuName}</span>
                                                                         </li>
                                                                         :
                                                                         <li key={index} title={menuName}>
-                                                                            <IconFont type="anticonjinru1" />
+                                                                            <IconFont type="earthjinru1" />
                                                                             <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
                                                                         </li>
                                                             )
@@ -242,17 +242,17 @@ export default class ModuleList extends React.Component {
                             {secondModules.map(({ menuName, url, hasSub }, index) =>
                                 url ?
                                     <li key={index} title={menuName}>
-                                        <IconFont type="anticonlianjie" />
+                                        <IconFont type="earthlianjie" />
                                         <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
                                     </li>
                                     : hasSub ?
                                         <li key={index} title={menuName}>
-                                            <IconFont type="anticoncaidan2" />
+                                            <IconFont type="earthcaidan2" />
                                             <span onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</span>
                                         </li>
                                         :
                                         <li key={index} title={menuName}>
-                                            <IconFont type="anticonjinru1" />
+                                            <IconFont type="earthjinru1" />
                                             <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
                                         </li>
                             )}
@@ -272,12 +272,12 @@ export default class ModuleList extends React.Component {
                         thirdModules.map(({ menuName, url, hasSub }, index) =>
                             url ?
                                 <li key={index} title={menuName}>
-                                    <IconFont type="anticonlianjie" />
+                                    <IconFont type="earthlianjie" />
                                     <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
                                 </li>
                                 :
                                 <li key={index} title={menuName}>
-                                    <IconFont type="anticonjinru1" />
+                                    <IconFont type="earthjinru1" />
                                     <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
                                 </li>
                         )

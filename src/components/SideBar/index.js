@@ -59,12 +59,12 @@ class Sidebar extends React.Component {
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="2" onClick={this.handleClick.bind(this)}>
-                        <IconFont type="anticonxinjianxiangmu" style={{ fontSize: '18px' }} />
+                        <IconFont type="earthxinjianxiangmu" style={{ fontSize: '18px' }} />
                         <span>新建应用</span>
                     </Menu.Item>
                     <Menu.Item key="3">
                         <Link to="/datarender">
-                            <IconFont type="anticonfl-shuazi" style={{ fontSize: '18px' }} />
+                            <IconFont type="earthfl-shuazi" style={{ fontSize: '18px' }} />
                             <span>数据渲染</span>
                         </Link>
                     </Menu.Item>

@@ -109,7 +109,7 @@ export default class RecentVisit extends React.Component {
                     bodyStyle={{ height: "100%" }}
                     width="calc(50% - 5px)"
                 >
-                    <IconFont type="anticonbaseline-close-px" onClick={this.onClose} style={{ float: "right", margin: "-10px" }}></IconFont>
+                    <IconFont type="earthbaseline-close-px" onClick={this.onClose} style={{ float: "right", margin: "-10px" }}></IconFont>
                     {typeof (searchResult) === "string" ?
                         <Result
                             status="warning"
@@ -139,7 +139,7 @@ export default class RecentVisit extends React.Component {
                                 {recentVisit.map((app, appIndex) => {
                                     return (
                                         <div className="recent-visit-item" key={appIndex}>
-                                            <IconFont className="icon-link" type="anticonlianjie" />
+                                            <IconFont className="icon-link" type="earthlianjie" />
                                             <Link to="/details" onClick={this.setApp.bind(this, app)} title={app}>{app}</Link>
                                         </div>
                                     )

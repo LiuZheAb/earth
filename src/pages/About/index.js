@@ -69,7 +69,7 @@ class About extends React.Component {
                         <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
                         <span>综合地球物理联合反演与解释一体化平台</span>
                     </Link>
-                    <IconFont className="about-quit" onClick={this.props.history.goBack} type="anticonfanhui" title="返回上一页" />
+                    <IconFont className="about-quit" onClick={this.props.history.goBack} type="earthfanhui" title="返回上一页" />
                 </Header>
                 <Layout className="about-contentarea">
                     <Sider className="about-sider">
