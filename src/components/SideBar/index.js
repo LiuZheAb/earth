@@ -9,7 +9,7 @@
 import React from 'react';
 import { Menu, Icon, Layout, message } from 'antd';
 import { Link, withRouter } from "react-router-dom";
-import IconFont from '../../assets/IconFont';
+import IconFont from '../IconFont';
 import { getCookie } from "../../utils/cookies";
 import './index.css';
 

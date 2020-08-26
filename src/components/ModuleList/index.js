@@ -9,7 +9,7 @@ import React from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Row, Col, Result, Spin, Modal, Drawer, message } from 'antd';
-import IconFont from '../../assets/IconFont';
+import IconFont from '../IconFont';
 import { apiurl } from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';

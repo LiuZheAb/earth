@@ -9,7 +9,7 @@ import React from 'react';
 import { Layout, Button, Menu, Select, Radio, Checkbox, Input, message, Card, Col, Row, Form, Upload, Icon, Empty, Result } from 'antd';
 import { Link, withRouter } from "react-router-dom";
 import axios from 'axios';
-import IconFont from '../../assets/IconFont';
+import IconFont from '../../components/IconFont';
 // import Vtkview from "../../components/Vtkview";
 import Listener from "../../components/Listener";
 import Contour from "../../components/Contour";
