@@ -65,8 +65,8 @@ class LoginRegister extends React.Component {
                 {/* <!-- 底部导航 --> */}
                 <footer className="lr-footer">
                     <Link to="/about" onClick={this.setSiderkey.bind(this, "1")}>关于我们</Link>
-                    <Link to="/about" onClick={this.setSiderkey.bind(this, "4")}>法律声明及隐私权政策</Link>
-                    <Link to="/about" onClick={this.setSiderkey.bind(this, "5")}>联系我们</Link>
+                    <Link to="/about" onClick={this.setSiderkey.bind(this, "3")}>法律声明及隐私权政策</Link>
+                    <Link to="/about" onClick={this.setSiderkey.bind(this, "4")}>联系我们</Link>
                 </footer>
             </div>
         );

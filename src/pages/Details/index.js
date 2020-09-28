@@ -36,6 +36,7 @@ class Details extends React.Component {
             textAreas: [],
             uploadBoxs: [],
             appName: sessionStorage.getItem("appName") ? sessionStorage.getItem("appName") : "",
+            moduleName: sessionStorage.getItem("moduleName") ? sessionStorage.getItem("moduleName") : "",
             resMessage: "",
             loading: false,
             content: <Empty style={{ height: "250px" }} description="程序未运行" />,
@@ -63,19 +64,18 @@ class Details extends React.Component {
                     'Content-Type': 'application/json'
                 }
             }).then(function (response) {
-                let appParams = response.data.projectparams;
+                let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs } = response.data.projectparams;
                 _this.setState({
-                    textBoxs: appParams.texts,
-                    selectBoxs: appParams.selects,
-                    radioBoxs: appParams.radios,
-                    checkBoxs: appParams.checkBoxs,
-                    textAreas: appParams.textAreas,
-                    uploadBoxs: appParams.uploadBoxs,
+                    textBoxs: texts,
+                    selectBoxs: selects,
+                    radioBoxs: radios,
+                    checkBoxs,
+                    textAreas,
+                    uploadBoxs
                 });
-            })
-                .catch(function (error) {
-                    message.error("服务器无响应");
-                });
+            }).catch(function (error) {
+                message.error("服务器无响应");
+            });
         } else {
             message.error("未获取到应用名称,请返回首页");
         };
@@ -83,9 +83,7 @@ class Details extends React.Component {
     //改变sidebar收缩状态时调用
     toggle = () => {
         let { collapsed } = this.state;
-        this.setState({
-            collapsed: !collapsed,
-        });
+        this.setState({ collapsed: !collapsed });
     };
     /**
      * 获取textBoxs当前输入的值，并把值赋给textBoxs数组
@@ -95,48 +93,38 @@ class Details extends React.Component {
     changeText(index, e) {
         let { textBoxs } = this.state;
         textBoxs[index].currentValue = e.target.value;
-        this.setState({
-            textBoxs: textBoxs
-        });
+        this.setState({ textBoxs });
     };
     //获取selectBoxs当前所选项的值，并把值赋给selectBoxs数组
     changeOption(index, value) {
         let { selectBoxs } = this.state;
         selectBoxs[index].currentValue = value;
-        this.setState({
-            selectBoxs: selectBoxs
-        });
+        this.setState({ selectBoxs });
     };
     //获取radioBoxs当前所选项的值，并把值赋给radioBoxs数组
     changeRadio(index, e) {
         let { radioBoxs } = this.state;
         radioBoxs[index].currentValue = e.target.value;
-        this.setState({
-            radioBoxs: radioBoxs
-        });
+        this.setState({ radioBoxs });
     };
     //获取checkBoxs当前所选项的值，并把值赋给checkBoxs数组
     changeCheck(index, checkedValues) {
         let { checkBoxs } = this.state;
         checkBoxs[index].currentValue = checkedValues;
-        this.setState({
-            checkBoxs: checkBoxs
-        });
+        this.setState({ checkBoxs });
     };
     //获取textAreas当前所选项的值，并把值赋给textAreas数组
     changeTextarea(index, e) {
         let { textAreas } = this.state;
         textAreas[index].currentValue = e.target.value;
-        this.setState({
-            textAreas: textAreas
-        });
+        this.setState({ textAreas });
     };
     // 上传文件调用
     changeUpload(index, info) {
         if (info.file.status === "done") {
             let { uploadBoxs } = this.state;
             uploadBoxs[index].currentValue = info.file.name;
-            this.setState({ uploaded: true, uploadBoxs: uploadBoxs });
+            this.setState({ uploaded: true, uploadBoxs });
             message.success(`${info.file.name} 上传成功`);
         } else if (info.file.status === "error") {
             message.error(`${info.file.name} 上传失败`);
@@ -153,14 +141,14 @@ class Details extends React.Component {
             let _this = this;
             reader.readAsText(file);
             reader.onload = function () {
-                var importJson1 = JSON.parse(reader.result);
+                let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs } = JSON.parse(reader.result);
                 _this.setState({
-                    textBoxs: importJson1.texts,
-                    selectBoxs: importJson1.selects,
-                    radioBoxs: importJson1.radios,
-                    checkBoxs: importJson1.checkBoxs,
-                    textAreas: importJson1.textAreas,
-                    uploadBoxs: importJson1.uploadBoxs,
+                    textBoxs: texts,
+                    selectBoxs: selects,
+                    radioBoxs: radios,
+                    checkBoxs,
+                    textAreas,
+                    uploadBoxs
                 });
             };
         };
@@ -202,9 +190,7 @@ class Details extends React.Component {
                     alert("注意：您正在上传一个空的项目！");
                 };
                 let instance = axios.create({ headers: {} });
-                instance.post('/dynamic', makeJson)
-                    .then(res => { })
-                    .catch(err => { });
+                instance.post('/dynamic', makeJson).then(res => { }).catch(err => { });
             };
         };
     };
@@ -213,15 +199,12 @@ class Details extends React.Component {
         e.preventDefault();
         //判断文件是否上传完成
         let _this = this;
-        this.setState({
-            loading: true
-        });
-        let { textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, appName } = this.state;
+        this.setState({ loading: true });
+        let { textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, appName, moduleName } = this.state;
         let params = {};
         function formatData(array) {
             if (array) {
-                let len = array.length;
-                for (let i = 0; i < len; i++) {
+                for (let i = 0, len = array.length; i < len; i++) {
                     params[array[i].paramName] = array[i].currentValue;
                 };
             };
@@ -229,8 +212,7 @@ class Details extends React.Component {
         let fileList = {};
         function formatFileData(array) {
             if (array) {
-                let len = array.length;
-                for (let i = 0; i < len; i++) {
+                for (let i = 0, len = array.length; i < len; i++) {
                     fileList[array[i].paramName] = array[i].currentValue;
                 };
             };
@@ -244,11 +226,12 @@ class Details extends React.Component {
         if (checkNullvalue(textBoxs) && checkNullvalue(selectBoxs) && checkNullvalue(uploadBoxs) && checkNullvalue(radioBoxs) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
             axios({
                 method: 'post',
-                url: apiurl + 'compute',
+                url: apiurl + 'runContain',
                 data: {
-                    appName: appName,
-                    params: params,
-                    fileList: fileList
+                    appName,
+                    params,
+                    fileList,
+                    moduleName
                 },
                 headers: {
                     'Content-Type': 'application/json'
@@ -260,16 +243,13 @@ class Details extends React.Component {
                     content:  /* <Vtkview/>,*/response.data.data ? <Contour data={response.data.data} /> : <Contour message={response.data.message} />,
                     listener: <Listener />
                 });
+                if (response.data.uri) window.open(response.data.uri);
             }).catch(function (error) {
                 message.error("服务器无响应")
-                _this.setState({
-                    loading: false
-                });
+                _this.setState({ loading: false });
             });
         } else {
-            _this.setState({
-                loading: false
-            });
+            _this.setState({ loading: false });
         };
     };
     render() {
@@ -284,7 +264,6 @@ class Details extends React.Component {
             },
         };
         const { appName, collapsed, textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, loading, content, listener } = this.state;
-        console.log(textBoxs);
         const uploadProps = {
             name: "uploadfile",
             action: apiurl + "upload",
@@ -333,84 +312,86 @@ class Details extends React.Component {
                     <Row style={{ height: "100%", width: "100%" }}>
                         <Col span={6} className="details-card">
                             <Card title="参数数据" bordered={false} className="params-card">
-                                {textBoxs === undefined && selectBoxs === undefined && uploadBoxs === undefined && radioBoxs === undefined && checkBoxs === undefined && textAreas === undefined ?
-                                    <Result
-                                        status="warning"
-                                        title="参数列表获取失败!"
-                                        style={{ paddingTop: "80px" }}
-                                    >
-                                    </Result>
-                                    :
-                                    <Form {...formItemLayout} onSubmit={this.handleSubmit} className="details-form">
-                                        {textBoxs === null ? null : textBoxs.map((textBox, index) => {
-                                            return (
-                                                <Form.Item label={textBox.paramName} key={index}>
-                                                    <Input min={0} step={1} value={textBox.currentValue} onChange={this.changeText.bind(this, index)} />
-                                                </Form.Item>
-                                            );
-                                        })}
-                                        {selectBoxs === null ? null : selectBoxs.map((selectBox, index) => {
-                                            return (
-                                                <Form.Item label={selectBox.paramName} key={index}>
-                                                    <Select onChange={this.changeOption.bind(this, index)} value={selectBox.currentValue}>
-                                                        {selectBox.defaultValue.map((value, index2) => {
-                                                            return (
-                                                                <Option key={index2} value={value}>
-                                                                    {value}
-                                                                </Option>
-                                                            );
-                                                        }
-                                                        )}
-                                                    </Select>
-                                                </Form.Item>
-                                            );
-                                        })}
-                                        {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map((upload, index) => {
-                                            return (
-                                                <Form.Item label={upload.paramName} key={index}>
-                                                    <Upload {...uploadProps}
-                                                        onChange={this.changeUpload.bind(this, index)}
-                                                    >
-                                                        <Button type="default"><Icon type="upload" />上传文件</Button>
-                                                    </Upload>
-                                                </Form.Item>
-                                            );
-                                        })}
-                                        {radioBoxs === null ? null : radioBoxs.map((radioBox, index) => {
-                                            return (
-                                                <Form.Item label={radioBox.paramName} key={index}>
-                                                    <RadioGroup onChange={this.changeRadio.bind(this, index)} value={radioBox.currentValue}>
-                                                        {radioBox.defaultValue.map((value, index2) => {
-                                                            return (
-                                                                <Radio key={index2} value={value}>
-                                                                    {value}
-                                                                </Radio>
-                                                            );
-                                                        })}
-                                                    </RadioGroup>
-                                                </Form.Item>
-                                            );
-                                        })}
-                                        {checkBoxs === null ? null : checkBoxs.map((checkBox, index) => {
-                                            return (
-                                                <Form.Item label={checkBox.paramName} key={index}>
-                                                    <CheckboxGroup options={checkBox.defaultValue} value={checkBox.currentValue} onChange={this.changeCheck.bind(this, index)} />
-                                                </Form.Item>
-                                            );
-                                        })}
-                                        {textAreas === null ? null : textAreas.map((textArea, index) => {
-                                            return (
-                                                <Form.Item label={textArea.paramName} key={index}>
-                                                    <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={textArea.currentValue} onChange={this.changeTextarea.bind(this, index)} />
-                                                </Form.Item>
-                                            );
-                                        })}
-                                        <Row className="app-button">
-                                            <Button type="primary" className="">帮助</Button>
-                                            <Button type="primary" className="" htmlType="submit" loading={loading}>运行</Button>
-                                        </Row>
-                                    </Form>
-                                }
+                                <Form {...formItemLayout} onSubmit={this.handleSubmit} className="details-form">
+                                    {textBoxs === undefined && selectBoxs === undefined && uploadBoxs === undefined && radioBoxs === undefined && checkBoxs === undefined && textAreas === undefined ?
+                                        <Result
+                                            status="warning"
+                                            title="参数列表获取失败!"
+                                            style={{ paddingTop: "80px" }}
+                                        >
+                                        </Result>
+                                        :
+                                        <>
+                                            {textBoxs === null ? null : textBoxs.map((textBox, index) => {
+                                                return (
+                                                    <Form.Item label={textBox.paramName} key={index}>
+                                                        <Input min={0} step={1} value={textBox.currentValue} onChange={this.changeText.bind(this, index)} />
+                                                    </Form.Item>
+                                                );
+                                            })}
+                                            {selectBoxs === null ? null : selectBoxs.map((selectBox, index) => {
+                                                return (
+                                                    <Form.Item label={selectBox.paramName} key={index}>
+                                                        <Select onChange={this.changeOption.bind(this, index)} value={selectBox.currentValue}>
+                                                            {selectBox.defaultValue.map((value, index2) => {
+                                                                return (
+                                                                    <Option key={index2} value={value}>
+                                                                        {value}
+                                                                    </Option>
+                                                                );
+                                                            }
+                                                            )}
+                                                        </Select>
+                                                    </Form.Item>
+                                                );
+                                            })}
+                                            {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map((upload, index) => {
+                                                return (
+                                                    <Form.Item label={upload.paramName} key={index}>
+                                                        <Upload {...uploadProps}
+                                                            onChange={this.changeUpload.bind(this, index)}
+                                                        >
+                                                            <Button type="default"><Icon type="upload" />上传文件</Button>
+                                                        </Upload>
+                                                    </Form.Item>
+                                                );
+                                            })}
+                                            {radioBoxs === null ? null : radioBoxs.map((radioBox, index) => {
+                                                return (
+                                                    <Form.Item label={radioBox.paramName} key={index}>
+                                                        <RadioGroup onChange={this.changeRadio.bind(this, index)} value={radioBox.currentValue}>
+                                                            {radioBox.defaultValue.map((value, index2) => {
+                                                                return (
+                                                                    <Radio key={index2} value={value}>
+                                                                        {value}
+                                                                    </Radio>
+                                                                );
+                                                            })}
+                                                        </RadioGroup>
+                                                    </Form.Item>
+                                                );
+                                            })}
+                                            {checkBoxs === null ? null : checkBoxs.map((checkBox, index) => {
+                                                return (
+                                                    <Form.Item label={checkBox.paramName} key={index}>
+                                                        <CheckboxGroup options={checkBox.defaultValue} value={checkBox.currentValue} onChange={this.changeCheck.bind(this, index)} />
+                                                    </Form.Item>
+                                                );
+                                            })}
+                                            {textAreas === null ? null : textAreas.map((textArea, index) => {
+                                                return (
+                                                    <Form.Item label={textArea.paramName} key={index}>
+                                                        <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={textArea.currentValue} onChange={this.changeTextarea.bind(this, index)} />
+                                                    </Form.Item>
+                                                );
+                                            })}
+                                        </>
+                                    }
+                                    <Row className="app-button">
+                                        <Button type="primary" className="">帮助</Button>
+                                        <Button type="primary" className="" htmlType="submit" loading={loading}>运行</Button>
+                                    </Row>
+                                </Form>
                             </Card>
                         </Col>
                         <Col span={8} className="details-card">

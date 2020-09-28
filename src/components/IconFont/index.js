@@ -7,4 +7,4 @@
 
 import { Icon } from 'antd';
 
-export default Icon.createFromIconfontCN({ scriptUrl: './font.js' });
+export default Icon.createFromIconfontCN({ scriptUrl: './icon.js' });

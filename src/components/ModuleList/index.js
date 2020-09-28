@@ -8,11 +8,15 @@
 import React from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
-import { Row, Col, Result, Spin, Modal, Drawer, message } from 'antd';
+import { Row, Col, Result, Spin, Modal, Drawer, message, Pagination } from 'antd';
+import { Document, Page } from 'react-pdf';
+import { pdfjs } from 'react-pdf';
 import IconFont from '../IconFont';
 import { apiurl } from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default class ModuleList extends React.Component {
     state = {
@@ -29,6 +33,9 @@ export default class ModuleList extends React.Component {
         thirdModules: [],
         modalVisible2: false,
         currentMenu2: null,
+        pdfModalVisible: false,
+        numPages: null,
+        pageNumber: 1
     };
     componentDidMount() {
         const _this = this;
@@ -47,12 +54,16 @@ export default class ModuleList extends React.Component {
             });
     };
     //点击应用时将所点的应用名称保存到sessionStorage中
-    setApp(appName) {
+    setApp(appName, moduleName) {
         sessionStorage.setItem("appName", appName);
+        sessionStorage.setItem("moduleName", this.state.currentMenu2 || this.state.currentMenu || moduleName);
         this.submitClickedApp(appName);
     };
     // 显示二级菜单
     showModal = (menuName, module) => {
+        this.setState({
+            secondModules: []
+        });
         let _this = this;
         axios.get(apiurl + 'subHome', {
             params: {
@@ -71,8 +82,19 @@ export default class ModuleList extends React.Component {
             currentModule: module
         })
     }
+    // 显示pdf菜单
+    showPdfModal = menuName => {
+        this.setState({
+            pdfModalVisible: true,
+            currentMenu: menuName,
+            pageNumber: 1
+        })
+    }
     // 显示三级菜单
     showSecondModal = menuName => {
+        this.setState({
+            thirdModules: []
+        });
         let _this = this;
         axios.get(apiurl + 'twoSubHome', {
             params: {
@@ -81,14 +103,14 @@ export default class ModuleList extends React.Component {
         }).then(function (response) {
             _this.setState({
                 thirdModules: response.data
-            })
+            });
         }).catch(function (error) {
             message.error("服务器错误", 2)
         });
         this.setState({
             modalVisible2: true,
             currentMenu2: menuName,
-        })
+        });
     }
     // 点击二级菜单确认按钮
     handleOk = e => {
@@ -99,7 +121,21 @@ export default class ModuleList extends React.Component {
     // 点击二级菜单取消按钮
     handleCancel = e => {
         this.setState({
-            modalVisible: false
+            modalVisible: false,
+            currentMenu: null
+        });
+    };
+    // 点击pdf菜单确认按钮
+    handlePdfOk = e => {
+        this.setState({
+            pdfModalVisible: false
+        });
+    };
+    // 点击pdf菜单取消按钮
+    handlePdfCancel = e => {
+        this.setState({
+            pdfModalVisible: false,
+            currentMenu: null
         });
     };
     // 点击三级菜单确认按钮
@@ -111,11 +147,16 @@ export default class ModuleList extends React.Component {
     // 点击三级菜单取消按钮
     handleCancel2 = e => {
         this.setState({
-            modalVisible2: false
+            modalVisible2: false,
+            currentMenu2: null
         });
     };
     // 显示帮助文档抽屉，获取数据
     showDrawer = (index) => {
+        this.setState({
+            docTitle: "",
+            docContent: ""
+        });
         let _this = this;
         axios.get(apiurl + 'mod/doc', {
             params: {
@@ -152,8 +193,41 @@ export default class ModuleList extends React.Component {
             headers: { 'Content-Type': 'application/json' }
         })
     }
+    onDocumentLoadSuccess = ({ numPages }) => {
+        this.setState({ numPages });
+    }
+    onChange = page => {
+        this.setState({ pageNumber: page });
+    };
+    runApp(appName, moduleName) {
+        console.log(appName, moduleName);
+        axios({
+            method: 'post',
+            url: apiurl + 'runContain',
+            data: {
+                appName,
+                moduleName
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            let { uri } = response.data;
+            let msg = response.data.message;
+            if (uri) {
+                message.loading("应用启动中", 2);
+                setTimeout(() => {
+                    window.open(uri);
+                }, 2000);
+            } else if (msg) {
+                message.info(msg, 2)
+            }
+        }).catch(function (error) {
+            message.error("服务器无响应")
+        });
+    }
     render() {
-        const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, currentModule, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2 } = this.state;
+        const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2, pdfModalVisible, pageNumber, numPages } = this.state;
         function type(index) {
             switch (index) {
                 case 0:
@@ -180,7 +254,7 @@ export default class ModuleList extends React.Component {
                     </div>
                     :
                     loading === "done" ?
-                        <Row gutter={10} className="app-row" style={{ flexWrap: "wrap" }}>
+                        <Row className="app-row" gutter={10} style={{ flexWrap: "wrap" }}>
                             {modules.map((module, moduleIndex) => {
                                 return (
                                     <Col xs={24} sm={24} md={12} key={moduleIndex}>
@@ -194,26 +268,40 @@ export default class ModuleList extends React.Component {
                                                 </div>
                                                 <div className="app-list">
                                                     <ul>
-                                                        {
-                                                            subModules[module].map(({ menuName, url, hasSub }, index) =>
-                                                                url ?
-                                                                    <li key={index} title={menuName}>
+                                                        {subModules[module].map(({ menuName, url, hasSub, hasParam }, index) =>
+                                                            <li key={index} title={menuName}>
+                                                                {url ?
+                                                                    <>
                                                                         <IconFont type="earthlianjie" />
-                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
-                                                                    </li>
+                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, module)}>{menuName}</a>
+                                                                    </>
                                                                     :
                                                                     hasSub ?
-                                                                        <li key={index} title={menuName}>
+                                                                        <>
                                                                             <IconFont type="earthcaidan2" />
                                                                             <span onClick={this.showModal.bind(this, menuName, module)}>{menuName}</span>
-                                                                        </li>
+                                                                        </>
                                                                         :
-                                                                        <li key={index} title={menuName}>
-                                                                            <IconFont type="earthjinru1" />
-                                                                            <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
-                                                                        </li>
-                                                            )
-                                                        }
+                                                                        menuName.indexOf("参数库") === -1
+                                                                            ?
+                                                                            hasParam ?
+                                                                                <>
+                                                                                    <IconFont type="earthjinru1" />
+                                                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                                                                </>
+                                                                                :
+                                                                                <>
+                                                                                    <IconFont type="earthyunhang" />
+                                                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName) }}>{menuName}</span>
+                                                                                </>
+                                                                            :
+                                                                            <>
+                                                                                <IconFont type="earthcaidan2" />
+                                                                                <span onClick={this.showPdfModal.bind(this, menuName)}>{menuName}</span>
+                                                                            </>
+                                                                }
+                                                            </li>
+                                                        )}
                                                     </ul>
                                                 </div>
                                             </div>
@@ -224,11 +312,32 @@ export default class ModuleList extends React.Component {
                             )}
                         </Row>
                         :
-                        <Result
-                            status="warning"
-                            title="服务器错误,无法获取应用列表,请尝试刷新或联系管理员"
-                        />
+                        <Result status="warning" title="服务器错误,无法获取应用列表,请尝试刷新或联系管理员" />
                 }
+                <Modal
+                    className="pdf-modal"
+                    title={currentMenu}
+                    visible={pdfModalVisible}
+                    onOk={this.handlePdfOk}
+                    onCancel={this.handlePdfCancel}
+                    footer={null}
+                >
+                    {currentMenu ?
+                        <>
+                            <Document
+                                file={currentMenu.indexOf("地质参数库") === -1 ? "Geophysics.pdf" : "Geology.pdf"}
+                                onLoadSuccess={this.onDocumentLoadSuccess}
+                                renderMode="svg"
+                                loading="正在努力加载中"
+                                externalLinkTarget="_blank"
+                            >
+                                <Page pageNumber={pageNumber} />
+                            </Document>
+                            <Pagination current={pageNumber} total={numPages} pageSize={1} onChange={this.onChange} />
+                        </>
+                        : null
+                    }
+                </Modal>
                 <Modal
                     className="module-modal"
                     title={currentMenu}
@@ -237,24 +346,33 @@ export default class ModuleList extends React.Component {
                     onCancel={this.handleCancel}
                     footer={null}
                 >
-                    {currentMenu && currentModule ?
+                    {currentMenu ?
                         <ul>
-                            {secondModules.map(({ menuName, url, hasSub }, index) =>
-                                url ?
-                                    <li key={index} title={menuName}>
-                                        <IconFont type="earthlianjie" />
-                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
-                                    </li>
-                                    : hasSub ?
-                                        <li key={index} title={menuName}>
-                                            <IconFont type="earthcaidan2" />
-                                            <span onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</span>
-                                        </li>
-                                        :
-                                        <li key={index} title={menuName}>
-                                            <IconFont type="earthjinru1" />
-                                            <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
-                                        </li>
+                            {secondModules.map(({ menuName, url, hasSub, hasParam }, index) =>
+                                <li key={index} title={menuName}>
+                                    {url ?
+                                        <>
+                                            <IconFont type="earthlianjie" />
+                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName)}>{menuName}</a>
+                                        </>
+                                        : hasSub ?
+                                            <>
+                                                <IconFont type="earthcaidan2" />
+                                                <span onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</span>
+                                            </>
+                                            :
+                                            hasParam ?
+                                                <>
+                                                    <IconFont type="earthjinru1" />
+                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                                </>
+                                                :
+                                                <>
+                                                    <IconFont type="earthyunhang" />
+                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName) }}>{menuName}</span>
+                                                </>
+                                    }
+                                </li>
                             )}
                         </ul>
                         : null}
@@ -269,21 +387,31 @@ export default class ModuleList extends React.Component {
                     style={{ top: 150 }}
                 >
                     {currentMenu2 ?
-                        thirdModules.map(({ menuName, url, hasSub }, index) =>
-                            url ?
-                                <li key={index} title={menuName}>
-                                    <IconFont type="earthlianjie" />
-                                    <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.submitClickedApp.bind(this, menuName)}>{menuName}</a>
-                                </li>
-                                :
-                                <li key={index} title={menuName}>
-                                    <IconFont type="earthjinru1" />
-                                    <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
-                                </li>
+                        thirdModules.map(({ menuName, url, hasParam }, index) =>
+                            <li key={index} title={menuName}>
+                                {url ?
+                                    <>
+                                        <IconFont type="earthlianjie" />
+                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName)}>{menuName}</a>
+                                    </>
+                                    :
+                                    hasParam ?
+                                        <>
+                                            <IconFont type="earthjinru1" />
+                                            <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                        </>
+                                        :
+                                        <>
+                                            <IconFont type="earthyunhang" />
+                                            <span onClick={() => { this.runApp(menuName, currentMenu2); this.setApp(menuName) }}>{menuName}</span>
+                                        </>
+                                }
+                            </li>
                         )
                         : null}
                 </Modal>
                 <Drawer
+                    className="doc"
                     title={docTitle}
                     placement="right"
                     closable={false}
@@ -291,9 +419,9 @@ export default class ModuleList extends React.Component {
                     visible={drawerVisible}
                     width={500}
                 >
-                    <p>{docContent}</p>
+                    {docContent.split("\n").map((p, index) => <p key={index}>{p}</p>)}
                 </Drawer>
-            </div>
+            </div >
         );
     };
 };

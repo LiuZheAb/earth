@@ -109,7 +109,7 @@ export default class RecentVisit extends React.Component {
                     bodyStyle={{ height: "100%" }}
                     width="calc(50% - 5px)"
                 >
-                    <IconFont type="earthbaseline-close-px" onClick={this.onClose} style={{ float: "right", margin: "-10px" }}></IconFont>
+                    <IconFont type="earthbaseline-close-px" onClick={this.onClose} style={{ float: "right", margin: "-10px",color:"#1890ff" }}></IconFont>
                     {typeof (searchResult) === "string" ?
                         <Result
                             status="warning"
