@@ -230,8 +230,7 @@ class NewApp extends React.Component {
                         headers: {
                             "Content-Type": "application/json"
                         }
-                    })
-                        .then(function (response) {
+                    }).then(function (response) {
                             if (response.data.state === 1) {
                                 //提交成功后将button设置不可点
                                 _this.setState({
@@ -269,8 +268,7 @@ class NewApp extends React.Component {
                                     visible: true
                                 });
                             };
-                        })
-                        .catch(function (error) {
+                        }).catch(function (error) {
                             _this.setState({
                                 submitResult: {
                                     state: -1,

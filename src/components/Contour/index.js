@@ -451,7 +451,7 @@ export default class Contour extends React.Component {
         myChart.setOption(option);
     };
     render() {
-        let { data } = this.props;
+        let { data, message } = this.props;
         return (
             <div style={{ margin: "20px", height: "100%" }}>
                 {data ?
@@ -468,13 +468,13 @@ export default class Contour extends React.Component {
                         </Select>
                     </>
                     :
-                    <Result
-                        status="error"
-                        title="运行失败!"
-                    >
-                        <p style={{ textAlign: "center" }}>请检查参数是否输入正确</p>
-                        <p style={{ textAlign: "center" }}>请确认docker能够正确运行</p>
-                    </Result>
+                    message ?
+                        <Result status="info" title={message} />
+                        :
+                        <Result status="error" title="运行失败!">
+                            <p style={{ textAlign: "center" }}>请检查参数是否输入正确</p>
+                            <p style={{ textAlign: "center" }}>请确认docker能够正确运行</p>
+                        </Result>
                 }
                 <div id='hot-map' style={{ width: '100%', height: '80%', marginTop: "20px" }}></div>
                 <input type="file" id="fileMatlab" onChange={this.importData.bind(this)} />

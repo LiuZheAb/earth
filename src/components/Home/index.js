@@ -36,20 +36,18 @@ export default class Home extends React.Component {
           userName: this.state.userName
         },
         headers: { 'Content-Type': 'application/json' },
-      })
-        .then(function (response) {
-          let { email, mobile, avatar, nickname, description } = response.data;
-          _this.setState({
-            email: email,
-            mobile: mobile,
-            avatar: avatar,
-            nickname: nickname,
-            description: description
-          });
-        })
-        .catch(function (error) {
-          message.error("服务器无响应", 2);
+      }).then(function (response) {
+        let { email, mobile, avatar, nickname, description } = response.data;
+        _this.setState({
+          email: email,
+          mobile: mobile,
+          avatar: avatar,
+          nickname: nickname,
+          description: description
         });
+      }).catch(function (error) {
+        message.error("服务器无响应", 2);
+      });
     }
   };
   // 点击按钮时将点击的按钮保存到sessionStorage中
@@ -61,7 +59,7 @@ export default class Home extends React.Component {
     this.setState({ visible: true })
   }
   // 点击确定调用
-  handleOk = e => {
+  handleOk = () => {
     this.setState({
       visible: false,
     });

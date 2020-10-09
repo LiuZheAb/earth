@@ -237,13 +237,22 @@ class Details extends React.Component {
                     'Content-Type': 'application/json'
                 }
             }).then(function (response) {
+                let { uri, data } = response.data;
+                let msg = response.data.message;
                 _this.setState({
-                    resMessage: response.data.message,
+                    resMessage: msg,
                     loading: false,
-                    content:  /* <Vtkview/>,*/response.data.data ? <Contour data={response.data.data} /> : <Contour message={response.data.message} />,
+                    content:  /* <Vtkview/>,*/data ? <Contour data={data} /> : uri ? <Contour message="请在新窗口中查看运行结果" /> : <Contour message={msg} />,
                     listener: <Listener />
                 });
-                if (response.data.uri) window.open(response.data.uri);
+                if (uri) {
+                    message.loading("应用启动中", 4);
+                    setTimeout(() => {
+                        window.open(uri);
+                    }, 4000);
+                } else if (msg) {
+                    message.info(msg, 2)
+                }
             }).catch(function (error) {
                 message.error("服务器无响应")
                 _this.setState({ loading: false });
