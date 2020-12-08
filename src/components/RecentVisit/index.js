@@ -10,11 +10,12 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Input, Row, Col, message, Drawer, Result, Modal } from "antd";
 import IconFont from '../IconFont';
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import loadable from '../../utils/lazyLoad';
 import { getCookie } from '../../utils/cookies';
 import "./index.css";
 
+let api = "";
 const LoginModal = loadable(() => import('../LoginModal'));
 
 export default class RecentVisit extends React.Component {
@@ -26,19 +27,22 @@ export default class RecentVisit extends React.Component {
     };
     componentDidMount() {
         const _this = this;
-        if (this.state.userName) {
-            axios.get(apiurl + "recentvisit", {
-                params: {
-                    userName: _this.state.userName,
-                }
-            }).then(function (response) {
-                _this.setState({
-                    recentVisit: response.data.message
-                })
-            }).catch(function (error) {
-                message.error("服务器无响应", 2)
-            });
-        };
+        apiPromise.then(res => {
+            api = res.data.api;
+            if (this.state.userName) {
+                axios.get(api + "recentvisit", {
+                    params: {
+                        userName: _this.state.userName,
+                    }
+                }).then(function (response) {
+                    _this.setState({
+                        recentVisit: response.data.message
+                    })
+                }).catch(function (error) {
+                    message.error("服务器无响应", 2)
+                });
+            };
+        });
     };
     // 点击应用将其名称保存到sessionStotage中
     setApp(appName) {
@@ -50,7 +54,7 @@ export default class RecentVisit extends React.Component {
         if (appName) {
             axios({
                 method: 'post',
-                url: apiurl + 'search',
+                url: api + 'search',
                 responseType: 'json',
                 data: {
                     projectName: appName
@@ -91,73 +95,77 @@ export default class RecentVisit extends React.Component {
     render() {
         let { visible, searchResult, userName, recentVisit } = this.state;
         return (
-            <div className="search-area box-shadow" style={{ position: 'relative', }}>
-                <div className="searcher" >
-                    <Input.Search
-                        className="search-box"
-                        placeholder="请输入关键词"
-                        onSearch={this.searchApp.bind(this)}
-                    />
-                </div>
-                <Drawer
-                    placement="right"
-                    closable={false}
-                    onClose={this.onClose}
-                    visible={visible}
-                    getContainer={false}
-                    style={{ position: 'absolute' }}
-                    bodyStyle={{ height: "100%" }}
-                    width="calc(50% - 5px)"
-                >
-                    <IconFont type="earthbaseline-close-px" onClick={this.onClose} style={{ float: "right", margin: "-10px",color:"#1890ff" }}></IconFont>
-                    {typeof (searchResult) === "string" ?
-                        <Result
-                            status="warning"
-                            title="查询不到相关应用"
+            <Col lg={12} xs={24} style={{ display: "flex", alignItems: "stretch", marginTop: 10 }}>
+                <div className="search-area box-shadow" style={{ position: 'relative', width: "100%", height: "100%" }}>
+                    <div className="searcher" >
+                        <Input.Search
+                            className="search-box"
+                            placeholder="请输入关键词"
+                            onSearch={this.searchApp.bind(this)}
                         />
-                        :
-                        <>
-                            已为您匹配最佳结果
-                        <hr style={{ margin: "5px" }} />
-                            <Row className="recent-visit" gutter={10}>
-                                {searchResult.map((app, appIndex) => {
-                                    return (
-                                        <Col span={8} key={appIndex}>
-                                            <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
-                                        </Col>
-                                    )
-                                })}
-                            </Row>
-                        </>
-                    }
-                </Drawer>
-                {userName ?
-                    <div className="recent-visit">
-                        <p className="title">最近访问</p>
-                        {recentVisit ?
-                            <div className="recent-visit-list">
-                                {recentVisit.map((app, appIndex) => {
-                                    return (
-                                        <div className="recent-visit-item" key={appIndex}>
-                                            <IconFont className="icon-link" type="earthlianjie" />
-                                            <Link to="/details" onClick={this.setApp.bind(this, app)} title={app}>{app}</Link>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                            : null}
-                        <Modal
-                            visible={this.state.visible2}
-                            onOk={this.handleOk}
-                            onCancel={this.handleOk}
-                            footer={null}
-                            bodyStyle={{ padding: "40px 40px 20px" }}
-                            style={{ width: "300px", maxWidth: "500px" }}>
-                            <LoginModal parent={this} />
-                        </Modal>
                     </div>
-                    : null}
-            </div>
+                    <Drawer
+                        placement="right"
+                        closable={false}
+                        onClose={this.onClose}
+                        visible={visible}
+                        getContainer={false}
+                        style={{ position: 'absolute' }}
+                        bodyStyle={{ height: "100%" }}
+                        width="calc(50% - 5px)"
+                    >
+                        <IconFont type="earthbaseline-close-px" onClick={this.onClose} style={{ float: "right", margin: "-10px", color: "#1890ff" }}></IconFont>
+                        {typeof (searchResult) === "string" ?
+                            <Result
+                                status="warning"
+                                title="查询不到相关应用"
+                            />
+                            :
+                            <>
+                                已为您匹配最佳结果
+                        <hr style={{ margin: "5px" }} />
+                                <Row className="recent-visit" gutter={10}>
+                                    {searchResult.map((app, appIndex) => {
+                                        return (
+                                            <Col span={8} key={appIndex}>
+                                                <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
+                                            </Col>
+                                        )
+                                    })}
+                                </Row>
+                            </>
+                        }
+                    </Drawer>
+                    {userName ?
+                        <div className="recent-visit">
+                            <p className="title">最近访问</p>
+                            {recentVisit ?
+                                <div className="recent-visit-list">
+                                    {recentVisit.map((app, appIndex) => {
+                                        return (
+                                            <div className="recent-visit-item" key={appIndex}>
+                                                <IconFont className="icon-link" type="earthlianjie" />
+                                                <Link to="/details" onClick={this.setApp.bind(this, app)} title={app}>{app}</Link>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                : null}
+                            <Modal
+                                visible={this.state.visible2}
+                                onOk={this.handleOk}
+                                onCancel={this.handleOk}
+                                footer={null}
+                                bodyStyle={{ padding: "40px 40px 20px" }}
+                                style={{ width: "300px", maxWidth: "500px" }}>
+                                <LoginModal parent={this} />
+                            </Modal>
+                        </div>
+                        : <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "calc(100% - 32px)" }}>
+                            <Link to="/login">您还未登录，请先登录</Link>
+                        </div>}
+                </div>
+            </Col>
         );
     };
 };

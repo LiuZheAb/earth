@@ -10,11 +10,13 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Row, Col, message, Modal } from 'antd';
 import { getCookie } from '../../utils/cookies';
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import loadable from '../../utils/lazyLoad';
 import './index.css';
 
+let api = "";
 const RecentVisit = loadable(() => import('../RecentVisit'));
+const Example = loadable(() => import('../Example'));
 const ModuleList = loadable(() => import('../ModuleList'));
 const LoginModal = loadable(() => import('../LoginModal'));
 
@@ -27,28 +29,31 @@ export default class Home extends React.Component {
   };
   componentDidMount() {
     const _this = this;
-    if (this.state.userName) {
-      axios({
-        method: 'post',
-        url: apiurl + 'user',
-        responseType: 'json',
-        data: {
-          userName: this.state.userName
-        },
-        headers: { 'Content-Type': 'application/json' },
-      }).then(function (response) {
-        let { email, mobile, avatar, nickname, description } = response.data;
-        _this.setState({
-          email: email,
-          mobile: mobile,
-          avatar: avatar,
-          nickname: nickname,
-          description: description
+    apiPromise.then(res => {
+      api = res.data.api;
+      if (this.state.userName) {
+        axios({
+          method: 'post',
+          url: api + 'user',
+          responseType: 'json',
+          data: {
+            userName: this.state.userName
+          },
+          headers: { 'Content-Type': 'application/json' },
+        }).then(function (response) {
+          let { email, mobile, avatar, nickname, description } = response.data;
+          _this.setState({
+            email: email,
+            mobile: mobile,
+            avatar: avatar,
+            nickname: nickname,
+            description: description
+          });
+        }).catch(function (error) {
+          message.error("服务器无响应", 2);
         });
-      }).catch(function (error) {
-        message.error("服务器无响应", 2);
-      });
-    }
+      }
+    });
   };
   // 点击按钮时将点击的按钮保存到sessionStorage中
   setSiderkey(index) {
@@ -68,12 +73,12 @@ export default class Home extends React.Component {
     let { userName, mobile, email, avatar, nickname } = this.state;
     return (
       <div className="homepage">
-        <Row gutter={10} style={{ marginBottom: "10px" }}>
+        <Row gutter={10}>
           <Col lg={12} xs={24}>
-            <div>个人中心</div>
+            <div className="title">个人中心</div>
             <div className="top-block person box-shadow">
               <div className="avatar" style={{ backgroundColor: avatar ? null : "#d7e9f0" }}>
-                <img src={avatar ? apiurl + avatar : require("../../assets/images/avatar.png")} alt="头像" />
+                <img src={avatar ? api + avatar : require("../../assets/images/avatar.png")} alt="头像" />
               </div>
               <div className="personality">
                 {userName ?
@@ -90,16 +95,16 @@ export default class Home extends React.Component {
                       <li>{email ? email : "未设置邮箱"}</li>
                       <li>{mobile ? mobile : "未设置电话"}</li>
                     </ul>
-                    <ul className="prop-btn">
+                    {/* <ul className="prop-btn">
                       <li></li>
                       <li><Link to="personal" onClick={this.setSiderkey.bind(this, "1")}>编辑</Link></li>
                       <li><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
                       <li><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
-                    </ul>
+                    </ul> */}
                   </>
                   :
                   <div className="login-btn">
-                    <span onClick={this.showModal}>您还未登录，请先登录</span>
+                    <Link to="/login">您还未登录，请先登录</Link>
                   </div>
                 }
               </div>
@@ -128,9 +133,12 @@ export default class Home extends React.Component {
             </div>
           </Col>
         </Row>
-        <RecentVisit />
+        <Row gutter={10} style={{ display: "flex", alignItems: "stretch", flexWrap: "wrap" }}>
+          <RecentVisit />
+          <Example />
+        </Row>
         <ModuleList />
-      </div>
+      </div >
     );
   };
 };

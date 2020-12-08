@@ -3,7 +3,7 @@
 }
 
 .homepage .top-block {
-    height: 220px;
+    height: 260px;
     background-color: #fff;
     margin-top: 10px;
     display: flex;
@@ -16,9 +16,10 @@
 
 .homepage .avatar {
     width: 180px;
-    height: 180px;
+    height: 220px;
     border-radius: 5px;
     padding: 10px;
+    line-height: 200px;
 }
 
 .homepage .avatar img {
@@ -36,7 +37,7 @@
     text-align: center;
 }
 
-.personality .login-btn span {
+.personality .login-btn a {
     color: #1890ff;
     cursor: pointer;
     line-height: 144px;
@@ -49,7 +50,10 @@
 .homepage .personality ul {
     margin-bottom: 0;
     padding-left: 0;
-    display: inline-block;
+    height: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .homepage .personality li {
@@ -61,18 +65,18 @@
 }
 
 .homepage .personality .prop-name {
-    width: 60px;
+    width: 70px;
     text-align: right;
     white-space: nowrap;
 }
 
 .homepage .personality .prop {
-    width: calc(100% - 120px);
+    width: calc(100% - 70px);
     padding-left: 20px;
 }
 
 .homepage .personality .prop-btn {
-    width: 60px;
+    width: 80px;
     white-space: nowrap;
 }
 
@@ -96,10 +100,11 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    font-size: 1.1em;
 }
 
 .homepage .textarea p {
-    max-height: 144px;
+    max-height: 170px;
     text-indent: 2em;
     margin-bottom: 5px;
     overflow: hidden;

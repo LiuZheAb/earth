@@ -9,9 +9,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter, Link } from "react-router-dom";
 import { Form, Icon, Input, Button, message } from "antd";
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { setCookie } from '../../utils/cookies';
 import './index.css';
+
+let api = "";
 
 class LoginForm extends Component {
     constructor(props) {
@@ -30,36 +32,39 @@ class LoginForm extends Component {
     };
     componentDidMount() {
         const _this = this;
-        //获取验证码
-        axios.get(apiurl + 'firstgetcaptcha')
-            .then(function (response) {
-                _this.setState({
-                    captchaId: response.data["getCaptchaID"],
-                    captchaUrl: apiurl + "captcha/" + response.data["getCaptchaID"] + '.png',
-                    isLoaded: true,
-                    invisible: true
+        apiPromise.then(res => {
+            api = res.data.api;
+            //获取验证码
+            axios.get(api + 'firstgetcaptcha')
+                .then(function (response) {
+                    _this.setState({
+                        captchaId: response.data["getCaptchaID"],
+                        captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
+                        isLoaded: true,
+                        invisible: true
+                    });
+                })
+                .catch(function (error) {
+                    message.error("服务器无响应", 2);
+                    _this.setState({
+                        isLoaded: false,
+                        invisible: false,
+                        error: error
+                    });
                 });
-            })
-            .catch(function (error) {
-                message.error("服务器无响应", 2);
-                _this.setState({
-                    isLoaded: false,
-                    invisible: false,
-                    error: error
-                });
-            });
+        });
     };
     //点击验证码时调用，刷新验证码
     handleClick = () => {
         if (this.state.captchaId) {
-            this.setState({ captchaUrl: apiurl + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime() });
+            this.setState({ captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime() });
         } else {
             const _this = this;
-            axios.get(apiurl + 'firstgetcaptcha')
+            axios.get(api + 'firstgetcaptcha')
                 .then(function (response) {
                     _this.setState({
                         captchaId: response.data["getCaptchaID"],
-                        captchaUrl: apiurl + "captcha/" + response.data["getCaptchaID"] + '.png',
+                        captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                     });
                 })
@@ -124,7 +129,7 @@ class LoginForm extends Component {
                         'Content-Type': 'application/json'
                     },
                     method: 'post',
-                    url: apiurl + 'login',
+                    url: api + 'login',
                     responseType: 'json',
                     data: {
                         username: username,
@@ -145,21 +150,21 @@ class LoginForm extends Component {
                                     //若登陆失败，将登录状态重置为4，为了将错误信息重置
                                     setTimeout(_this.setState({
                                         loginState: 4,
-                                        captchaUrl: apiurl + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
+                                        captchaUrl: api + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
                                     }), 3000);
                                     break;
                                 }
                                 case 1: {
                                     setTimeout(_this.setState({
                                         loginState: 4,
-                                        captchaUrl: apiurl + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
+                                        captchaUrl: api + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
                                     }), 3000);
                                     break;
                                 }
                                 case 2: {
                                     setTimeout(_this.setState({
                                         loginState: 4,
-                                        captchaUrl: apiurl + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
+                                        captchaUrl: api + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
                                     }), 3000);
                                     break;
                                 }

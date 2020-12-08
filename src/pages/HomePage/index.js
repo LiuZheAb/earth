@@ -11,7 +11,9 @@ import { Layout, BackTop, Alert, message } from 'antd';
 import HomeNavbar from '../../components/HomeNavbar';
 import Sidebar from '../../components/SideBar';
 import Container from '../../components/Container';
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
+
+let api = "";
 
 export default class Homepage extends React.Component {
     state = {
@@ -25,18 +27,21 @@ export default class Homepage extends React.Component {
     };
     componentDidMount() {
         const _this = this;
-        axios.get(apiurl)
-            .then(function (response) {
-                _this.setState({
-                    invisible: true
+        apiPromise.then(res => {
+            api = res.data.api;
+            axios.get(api)
+                .then(function (response) {
+                    _this.setState({
+                        invisible: true
+                    });
+                })
+                .catch(function (error) {
+                    _this.setState({
+                        invisible: false
+                    });
+                    message.error("服务器无响应", 2);
                 });
-            })
-            .catch(function (error) {
-                _this.setState({
-                    invisible: false
-                });
-                message.error("服务器无响应", 2);
-            });
+        });
     };
     render() {
         const { invisible } = this.state;

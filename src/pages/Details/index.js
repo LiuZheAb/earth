@@ -14,10 +14,11 @@ import IconFont from '../../components/IconFont';
 import Listener from "../../components/Listener";
 import Contour from "../../components/Contour";
 import checkNullvalue from "../../utils/checkNullvalue";
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 
+let api = "", viewApi = "";
 const { Content, Header, Sider } = Layout;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
@@ -37,10 +38,11 @@ class Details extends React.Component {
             uploadBoxs: [],
             appName: sessionStorage.getItem("appName") ? sessionStorage.getItem("appName") : "",
             moduleName: sessionStorage.getItem("moduleName") ? sessionStorage.getItem("moduleName") : "",
+            idenMod: sessionStorage.getItem("idenMod") ? Number(sessionStorage.getItem("idenMod")) : "",
             resMessage: "",
             loading: false,
-            content: <Empty style={{ height: "250px" }} description="程序未运行" />,
-            listener: <Empty style={{ height: "250px" }} description="程序未运行" />
+            content: <Empty description="程序未运行" />,
+            listener: <Empty description="程序未运行" />
             // activeData: getActiveData()
         };
         this.importJson = this.importJson.bind(this);
@@ -52,33 +54,38 @@ class Details extends React.Component {
     componentDidMount() {
         const _this = this;
         //根据应用名称向服务端请求并获取数据
-        if (_this.state.appName) {
-            axios({
-                method: 'post',
-                url: apiurl + 'render',
-                data: {
-                    projectName: _this.state.appName,
-                    userName: getCookie("userName") ? getCookie("userName") : ""
-                },
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(function (response) {
-                let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs } = response.data.projectparams;
-                _this.setState({
-                    textBoxs: texts,
-                    selectBoxs: selects,
-                    radioBoxs: radios,
-                    checkBoxs,
-                    textAreas,
-                    uploadBoxs
+        apiPromise.then(res => {
+            api = res.data.api;
+            viewApi = res.data.viewApi;
+            if (_this.state.appName) {
+                axios({
+                    method: 'post',
+                    url: api + 'render',
+                    data: {
+                        projectName: _this.state.appName,
+                        idenMod: _this.state.idenMod,
+                        userName: getCookie("userName") ? getCookie("userName") : ""
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (response) {
+                    let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs } = response.data.projectparams;
+                    _this.setState({
+                        textBoxs: texts,
+                        selectBoxs: selects,
+                        radioBoxs: radios,
+                        checkBoxs,
+                        textAreas,
+                        uploadBoxs
+                    });
+                }).catch(function (error) {
+                    message.error("服务器无响应");
                 });
-            }).catch(function (error) {
-                message.error("服务器无响应");
-            });
-        } else {
-            message.error("未获取到应用名称,请返回首页");
-        };
+            } else {
+                message.error("未获取到应用名称,请返回首页");
+            };
+        });
     };
     //改变sidebar收缩状态时调用
     toggle = () => {
@@ -200,7 +207,7 @@ class Details extends React.Component {
         //判断文件是否上传完成
         let _this = this;
         this.setState({ loading: true });
-        let { textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, appName, moduleName } = this.state;
+        let { textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, appName, moduleName, idenMod } = this.state;
         let params = {};
         function formatData(array) {
             if (array) {
@@ -226,12 +233,13 @@ class Details extends React.Component {
         if (checkNullvalue(textBoxs) && checkNullvalue(selectBoxs) && checkNullvalue(uploadBoxs) && checkNullvalue(radioBoxs) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
             axios({
                 method: 'post',
-                url: apiurl + 'runContain',
+                url: api + 'runContain',
                 data: {
                     appName,
                     params,
                     fileList,
-                    moduleName
+                    moduleName,
+                    idenMod
                 },
                 headers: {
                     'Content-Type': 'application/json'
@@ -248,7 +256,7 @@ class Details extends React.Component {
                 if (uri) {
                     message.loading("应用启动中", 4);
                     setTimeout(() => {
-                        window.open(uri);
+                        window.open(viewApi + uri);
                     }, 4000);
                 } else if (msg) {
                     message.info(msg, 2)
@@ -275,7 +283,7 @@ class Details extends React.Component {
         const { appName, collapsed, textBoxs, selectBoxs, radioBoxs, checkBoxs, textAreas, uploadBoxs, loading, content, listener } = this.state;
         const uploadProps = {
             name: "uploadfile",
-            action: apiurl + "upload",
+            action: api + "upload",
             headers: {
                 authorization: "authorization-text"
             },
@@ -319,7 +327,7 @@ class Details extends React.Component {
                 </Sider>
                 <Content className="details-content">
                     <Row style={{ height: "100%", width: "100%" }}>
-                        <Col span={6} className="details-card">
+                        <Col sm={6} xs={24} className="details-card">
                             <Card title="参数数据" bordered={false} className="params-card">
                                 <Form {...formItemLayout} onSubmit={this.handleSubmit} className="details-form">
                                     {textBoxs === undefined && selectBoxs === undefined && uploadBoxs === undefined && radioBoxs === undefined && checkBoxs === undefined && textAreas === undefined ?
@@ -403,12 +411,12 @@ class Details extends React.Component {
                                 </Form>
                             </Card>
                         </Col>
-                        <Col span={8} className="details-card">
+                        <Col sm={8} xs={24} className="details-card">
                             <Card title="运行监控" bordered={false}>
                                 {listener}
                             </Card>
                         </Col>
-                        <Col span={10} className="details-card">
+                        <Col sm={10} xs={24} className="details-card">
                             <Card title="后处理显示" bordered={false} bodyStyle={{ padding: 0, overflow: "hidden" }}>
                                 {content}
                             </Card>

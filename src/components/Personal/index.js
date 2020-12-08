@@ -9,10 +9,11 @@ import React from 'react';
 import axios from 'axios';
 import { Layout, Menu, Card, Form, Input, Button, Modal, message, Tooltip, Icon, Upload } from 'antd';
 import EditApp from './EditApp.js';
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { getCookie } from "../../utils/cookies";
 import "./index.css";
 
+let api = "";
 const { Sider, Content } = Layout;
 const { TextArea } = Input;
 
@@ -60,38 +61,41 @@ class Personal extends React.Component {
     componentDidMount() {
         const _this = this;
         let { userName } = this.state;
-        if (userName) {
-            axios({
-                method: 'post',
-                url: apiurl + 'user',
-                responseType: 'json',
-                data: {
-                    userName: getCookie("userName")
-                },
-                headers: { 'Content-Type': 'application/json' },
-            })
-                .then(function (response) {
-                    let { password, email, mobile, avatar, nickname, description, address, status, area } = response.data;
-                    _this.setState({
-                        psd: password,
-                        email: email,
-                        editEmail: email,
-                        mobile: mobile,
-                        editMobile: mobile,
-                        avatar: avatar,
-                        nickname: nickname,
-                        description: description,
-                        address: address,
-                        accountStatus: status,
-                        area: area,
-                    });
+        apiPromise.then(res => {
+            api = res.data.api;
+            if (userName) {
+                axios({
+                    method: 'post',
+                    url: api + 'user',
+                    responseType: 'json',
+                    data: {
+                        userName: getCookie("userName")
+                    },
+                    headers: { 'Content-Type': 'application/json' },
                 })
-                .catch(function (error) {
-                    message.error("服务器无响应", 2);
-                });
-        } else {
-            message.error("用户信息过期，请重新登录", 2);
-        }
+                    .then(function (response) {
+                        let { password, email, mobile, avatar, nickname, description, address, status, area } = response.data;
+                        _this.setState({
+                            psd: password,
+                            email: email,
+                            editEmail: email,
+                            mobile: mobile,
+                            editMobile: mobile,
+                            avatar: avatar,
+                            nickname: nickname,
+                            description: description,
+                            address: address,
+                            accountStatus: status,
+                            area: area,
+                        });
+                    })
+                    .catch(function (error) {
+                        message.error("服务器无响应", 2);
+                    });
+            } else {
+                message.error("用户信息过期，请重新登录", 2);
+            }
+        });
     };
     //更换侧边栏
     changeSider(props) {
@@ -174,7 +178,7 @@ class Personal extends React.Component {
                 //判断文件是否上传完成
                 axios({
                     method: 'post',
-                    url: apiurl + 'userchange',
+                    url: api + 'userchange',
                     data: {
                         userName: userName,
                         nickname: nickname,
@@ -204,7 +208,7 @@ class Personal extends React.Component {
             } else {
                 axios({
                     method: 'post',
-                    url: apiurl + 'usercenter',
+                    url: api + 'usercenter',
                     data: {
                         userName: userName,
                         mobile: editMobile,
@@ -236,7 +240,7 @@ class Personal extends React.Component {
             } else {
                 axios({
                     method: 'post',
-                    url: apiurl + 'usercenter',
+                    url: api + 'usercenter',
                     data: {
                         userName: userName,
                         email: editEmail,
@@ -271,7 +275,7 @@ class Personal extends React.Component {
                 } else {
                     axios({
                         method: 'post',
-                        url: apiurl + 'usercenter',
+                        url: api + 'usercenter',
                         data: {
                             userName: userName,
                             password: password,
@@ -315,7 +319,7 @@ class Personal extends React.Component {
         let { userName } = this.state;
         axios({
             method: 'post',
-            url: apiurl + 'usercenter',
+            url: api + 'usercenter',
             data: {
                 userName: userName,
                 status: 2
@@ -351,12 +355,12 @@ class Personal extends React.Component {
                                 listType="picture-card"
                                 className="avatar-uploader"
                                 showUploadList={false}
-                                action={apiurl + "useravatar"}
+                                action={api + "useravatar"}
                                 data={{ userName: userName }}
                                 beforeUpload={this.beforeUpload}
                                 onChange={this.handleChangeAvatar}
                             >
-                                {avatar ? <img src={apiurl + avatar} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                                {avatar ? <img src={api + avatar} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                             </Upload>
                         </Form.Item>
                         <Form.Item label="用户名">

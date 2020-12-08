@@ -9,10 +9,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter, Link } from "react-router-dom";
 import { Form, Icon, Input, Button, message, Checkbox, AutoComplete, Tooltip } from "antd";
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { setCookie } from '../../utils/cookies';
 import './index.css';
 
+let api = "";
 const AutoCompleteOption = AutoComplete.Option;
 
 class RegisterForm extends Component {
@@ -35,34 +36,37 @@ class RegisterForm extends Component {
     };
     componentDidMount() {
         const _this = this;
-        //获取验证码
-        axios.get(apiurl + 'firstgetcaptcha')
-            .then(function (response) {
-                _this.setState({
-                    captchaId: response.data["getCaptchaID"],
-                    captchaUrl: apiurl + "captcha/" + response.data["getCaptchaID"] + '.png',
-                    isLoaded: true,
-                    invisible: true
+        apiPromise.then(res => {
+            api = res.data.api;
+            //获取验证码
+            axios.get(api + 'firstgetcaptcha')
+                .then(function (response) {
+                    _this.setState({
+                        captchaId: response.data["getCaptchaID"],
+                        captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
+                        isLoaded: true,
+                        invisible: true
+                    });
+                }).catch(function (error) {
+                    message.error("服务器无响应", 2);
+                    _this.setState({
+                        isLoaded: false,
+                        invisible: false
+                    });
                 });
-            }).catch(function (error) {
-                message.error("服务器无响应", 2);
-                _this.setState({
-                    isLoaded: false,
-                    invisible: false
-                });
-            });
+        });
     };
     //刷新验证码
     handleClick = () => {
         if (this.state.captchaId) {
-            this.setState({ captchaUrl: apiurl + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime() });
+            this.setState({ captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime() });
         } else {
             const _this = this;
-            axios.get(apiurl + 'firstgetcaptcha')
+            axios.get(api + 'firstgetcaptcha')
                 .then(function (response) {
                     _this.setState({
                         captchaId: response.data["getCaptchaID"],
-                        captchaUrl: apiurl + "captcha/" + response.data["getCaptchaID"] + '.png',
+                        captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                     });
                 }).catch(function (error) {
@@ -160,7 +164,7 @@ class RegisterForm extends Component {
             if (!err) {
                 axios({
                     method: 'post',
-                    url: apiurl + 'register',
+                    url: api + 'register',
                     responseType: 'json',
                     data: {
                         username: username,
@@ -182,7 +186,7 @@ class RegisterForm extends Component {
                                 case 0: {
                                     setTimeout(_this.setState({
                                         registerState: 4,
-                                        captchaUrl: apiurl + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
+                                        captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
                                     }), 3000);
                                     break;
                                 }
@@ -197,14 +201,14 @@ class RegisterForm extends Component {
                                 case 2: {
                                     setTimeout(_this.setState({
                                         registerState: 4,
-                                        captchaUrl: apiurl + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
+                                        captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
                                     }), 3000);
                                     break;
                                 }
                                 case 3: {
                                     setTimeout(_this.setState({
                                         registerState: 4,
-                                        captchaUrl: apiurl + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
+                                        captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
                                     }), 3000);
                                     break;
                                 }

@@ -68,7 +68,7 @@ class HomeNavbar extends React.Component {
                         <IconFont className="quit-icon" type="earthzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
                     </div>
                     :
-                    <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={this.showModal}>登录</span>
+                    <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={() => { this.props.history.push("login"); }}>登录</span>
                 }
                 <Modal
                     visible={visible}

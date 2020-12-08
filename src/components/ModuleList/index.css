@@ -3,11 +3,6 @@
     align-items: stretch;
 }
 
-#moudule-list .ant-col {
-    display: flex;
-    align-items: stretch;
-}
-
 .app {
     width: 100%;
     margin-top: 10px;
@@ -15,16 +10,16 @@
 }
 
 .app-des {
-    width: calc(100% - 80px);
+    width: calc(100% - 180px);
     height: auto;
     background: white;
-    padding: 15px 20px;
+    padding: 15px 40px;
 }
 
 .app-icon {
     height: auto;
-    width: 80px;
-    font-size: 36px;
+    width: 180px;
+    font-size: 64px;
     color: #3294dd;
     background: #fff;
     border-right: 1px solid #d9d9d9;
@@ -77,7 +72,6 @@
 }
 
 .doc .ant-drawer-title {
-    font-size: 18px;
     font-weight: bold;
 }
 
@@ -105,4 +99,58 @@
 
 .pdf-modal .ant-pagination {
     text-align: center;
+}
+
+.ant-modal-body, .ant-modal-title {
+    font-size: 20px;
+}
+
+@media(max-width:1440px) {
+    .app-des {
+        width: calc(100% - 140px);
+        padding: 15px 35px;
+    }
+    .app-icon {
+        width: 140px;
+        font-size: 56px;
+    }
+}
+
+@media(max-width:1200px) {
+    .app-des {
+        width: calc(100% - 120px);
+        padding: 15px 20px;
+    }
+    .app-icon {
+        width: 120px;
+        font-size: 48px;
+    }
+}
+
+@media(max-width:998px) {
+    .app-des {
+        width: calc(100% - 100px);
+        padding: 15px 20px;
+    }
+    .app-icon {
+        width: 100px;
+        font-size: 48px;
+    }
+}
+
+@media(max-width:576px) {
+    .app-des {
+        width: calc(100% - 80px);
+        padding: 15px 10px;
+    }
+    .app-icon {
+        width: 80px;
+        font-size: 48px;
+    }
+    .ant-modal-body {
+        font-size: 14px;
+    }
+    .ant-modal-title {
+        font-size: 16px;
+    }
 }

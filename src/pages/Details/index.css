@@ -144,11 +144,13 @@
     height: calc(100% - 40px);
     border-right: 1px solid #e6e9ed;
     overflow-y: auto;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
-.details-card .ant-card-body .ant-empty-image{
+
+.details-card .ant-card-body .ant-empty-image {
     height: 100%;
 }
+
 .details-form .ant-form-item {
     margin-bottom: 5px;
 }
@@ -180,5 +182,15 @@
 @media screen and (max-width: 965px) {
     .details-logo span {
         display: none;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .details {
+        min-height: 100vh;
+        height: auto;
+    }
+    .details .details-card {
+        height: auto !important;
     }
 }

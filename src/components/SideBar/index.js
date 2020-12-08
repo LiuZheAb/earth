@@ -54,17 +54,17 @@ class Sidebar extends React.Component {
                 <Menu theme="light" mode="inline">
                     <Menu.Item key="1" >
                         <Link to="/home">
-                            <Icon type="appstore" theme="filled" style={{ fontSize: '18px' }} />
+                            <Icon type="appstore" theme="filled" style={{ fontSize: '22px' }} />
                             <span>应用与服务</span>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="2" onClick={this.handleClick.bind(this)}>
-                        <IconFont type="earthxinjianxiangmu" style={{ fontSize: '18px' }} />
+                        <IconFont type="earthxinjianxiangmu" style={{ fontSize: '22px' }} />
                         <span>新建应用</span>
                     </Menu.Item>
                     <Menu.Item key="3">
                         <Link to="/datarender">
-                            <IconFont type="earthfl-shuazi" style={{ fontSize: '18px' }} />
+                            <IconFont type="earthfl-shuazi" style={{ fontSize: '22px' }} />
                             <span>数据渲染</span>
                         </Link>
                     </Menu.Item>

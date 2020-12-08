@@ -12,10 +12,11 @@ import { Row, Col, Result, Spin, Modal, Drawer, message, Pagination } from 'antd
 import { Document, Page } from 'react-pdf';
 import { pdfjs } from 'react-pdf';
 import IconFont from '../IconFont';
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 
+let api = "";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default class ModuleList extends React.Component {
@@ -40,23 +41,28 @@ export default class ModuleList extends React.Component {
     componentDidMount() {
         const _this = this;
         //获取模块名和应用列表数组
-        axios.get(apiurl + 'home')
-            .then(function (response) {
-                _this.setState({
-                    modules: Object.keys(response.data),
-                    subModules: response.data,
-                    loading: "done"
+        apiPromise.then(res => {
+            api = res.data.api;
+            axios.get(api + 'home')
+                .then(function ({ data }) {
+                    delete data["典型示范 (Decomonstration)"];
+                    _this.setState({
+                        modules: Object.keys(data),
+                        subModules: data,
+                        loading: "done"
+                    });
+                }).catch(function (error) {
+                    _this.setState({
+                        loading: "error"
+                    });
                 });
-            }).catch(function (error) {
-                _this.setState({
-                    loading: "error"
-                });
-            });
+        });
     };
     //点击应用时将所点的应用名称保存到sessionStorage中
-    setApp(appName, moduleName) {
+    setApp(appName, moduleName, idenMod) {
         sessionStorage.setItem("appName", appName);
         sessionStorage.setItem("moduleName", this.state.currentMenu2 || this.state.currentMenu || moduleName);
+        sessionStorage.setItem("idenMod", idenMod);
         this.submitClickedApp(appName);
     };
     // 显示二级菜单
@@ -65,7 +71,7 @@ export default class ModuleList extends React.Component {
             secondModules: []
         });
         let _this = this;
-        axios.get(apiurl + 'subHome', {
+        axios.get(api + 'subHome', {
             params: {
                 subModule: menuName
             }
@@ -96,7 +102,7 @@ export default class ModuleList extends React.Component {
             thirdModules: []
         });
         let _this = this;
-        axios.get(apiurl + 'twoSubHome', {
+        axios.get(api + 'twoSubHome', {
             params: {
                 twoSubModule: menuName
             }
@@ -158,7 +164,7 @@ export default class ModuleList extends React.Component {
             docContent: ""
         });
         let _this = this;
-        axios.get(apiurl + 'mod/doc', {
+        axios.get(api + 'mod/doc', {
             params: {
                 modIndex: index + 1
             }
@@ -184,7 +190,7 @@ export default class ModuleList extends React.Component {
     submitClickedApp = appName => {
         axios({
             method: 'post',
-            url: apiurl + 'recentvisit',
+            url: api + 'recentvisit',
             responseType: 'json',
             data: {
                 userName: getCookie("userName"),
@@ -200,10 +206,9 @@ export default class ModuleList extends React.Component {
         this.setState({ pageNumber: page });
     };
     runApp(appName, moduleName) {
-        console.log(appName, moduleName);
         axios({
             method: 'post',
-            url: apiurl + 'runContain',
+            url: api + 'runContain',
             data: {
                 appName,
                 moduleName
@@ -223,7 +228,7 @@ export default class ModuleList extends React.Component {
                 message.info(msg, 2)
             }
         }).catch(function (error) {
-            message.error("服务器无响应")
+            message.error("服务器无响应");
         });
     }
     render() {
@@ -268,12 +273,12 @@ export default class ModuleList extends React.Component {
                                                 </div>
                                                 <div className="app-list">
                                                     <ul>
-                                                        {subModules[module].map(({ menuName, url, hasSub, hasParam }, index) =>
+                                                        {subModules[module].map(({ menuName, url, hasSub, hasParam, idenMod }, index) =>
                                                             <li key={index} title={menuName}>
                                                                 {url ?
                                                                     <>
                                                                         <IconFont type="earthlianjie" />
-                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, module)}>{menuName}</a>
+                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, module, idenMod)}>{menuName}</a>
                                                                     </>
                                                                     :
                                                                     hasSub ?
@@ -287,16 +292,16 @@ export default class ModuleList extends React.Component {
                                                                             hasParam ?
                                                                                 <>
                                                                                     <IconFont type="earthjinru1" />
-                                                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName, module, idenMod)}>{menuName}</Link>
                                                                                 </>
                                                                                 :
                                                                                 <>
                                                                                     <IconFont type="earthyunhang" />
-                                                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName) }}>{menuName}</span>
+                                                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName, module, idenMod) }}>{menuName}</span>
                                                                                 </>
                                                                             :
                                                                             <>
-                                                                                <IconFont type="earthcaidan2" />
+                                                                                <IconFont type="earthjinru1" />
                                                                                 <span onClick={this.showPdfModal.bind(this, menuName)}>{menuName}</span>
                                                                             </>
                                                                 }
@@ -348,12 +353,12 @@ export default class ModuleList extends React.Component {
                 >
                     {currentMenu ?
                         <ul>
-                            {secondModules.map(({ menuName, url, hasSub, hasParam }, index) =>
+                            {secondModules.map(({ menuName, url, hasSub, hasParam, idenMod }, index) =>
                                 <li key={index} title={menuName}>
                                     {url ?
                                         <>
                                             <IconFont type="earthlianjie" />
-                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName)}>{menuName}</a>
+                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</a>
                                         </>
                                         : hasSub ?
                                             <>
@@ -364,12 +369,12 @@ export default class ModuleList extends React.Component {
                                             hasParam ?
                                                 <>
                                                     <IconFont type="earthjinru1" />
-                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
                                                 </>
                                                 :
                                                 <>
                                                     <IconFont type="earthyunhang" />
-                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName) }}>{menuName}</span>
+                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName, undefined, idenMod) }}>{menuName}</span>
                                                 </>
                                     }
                                 </li>
@@ -387,23 +392,23 @@ export default class ModuleList extends React.Component {
                     style={{ top: 150 }}
                 >
                     {currentMenu2 ?
-                        thirdModules.map(({ menuName, url, hasParam }, index) =>
+                        thirdModules.map(({ menuName, url, hasParam, idenMod }, index) =>
                             <li key={index} title={menuName}>
                                 {url ?
                                     <>
                                         <IconFont type="earthlianjie" />
-                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName)}>{menuName}</a>
+                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</a>
                                     </>
                                     :
                                     hasParam ?
                                         <>
                                             <IconFont type="earthjinru1" />
-                                            <Link to="/details" onClick={this.setApp.bind(this, menuName)}>{menuName}</Link>
+                                            <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
                                         </>
                                         :
                                         <>
                                             <IconFont type="earthyunhang" />
-                                            <span onClick={() => { this.runApp(menuName, currentMenu2); this.setApp(menuName) }}>{menuName}</span>
+                                            <span onClick={() => { this.runApp(menuName, currentMenu2); this.setApp(menuName, undefined, idenMod) }}>{menuName}</span>
                                         </>
                                 }
                             </li>

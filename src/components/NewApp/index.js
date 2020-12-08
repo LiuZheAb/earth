@@ -9,10 +9,11 @@ import React from "react";
 import axios from "axios";
 import { withRouter } from 'react-router-dom'
 import { Form, Button, InputNumber, Select, Input, Upload, Icon, message, Row, Col, Modal, Result } from "antd";
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { getCookie, getUserCookie } from '../../utils/cookies';
 import "./index.css";
 
+let api = "";
 const { Option } = Select;
 
 class NewApp extends React.Component {
@@ -48,18 +49,21 @@ class NewApp extends React.Component {
     componentDidMount() {
         const _this = this;
         //获取模块列表
-        axios.get(apiurl + "homelanguage")
-            .then(function (response) {
-                let { modules, subModules, langType } = response.data
-                _this.setState({
-                    parentModules: modules,
-                    modules: subModules,
-                    langTypes: langType
+        apiPromise.then(res => {
+            api = res.data.api;
+            axios.get(api + "homelanguage")
+                .then(function (response) {
+                    let { modules, subModules, langType } = response.data
+                    _this.setState({
+                        parentModules: modules,
+                        modules: subModules,
+                        langTypes: langType
+                    });
+                })
+                .catch(function (error) {
+                    message.error("服务器无响应", 2);
                 });
-            })
-            .catch(function (error) {
-                message.error("服务器无响应", 2);
-            });
+        });
     };
     //获取输入框的内容
     changeAppName(e) {
@@ -216,7 +220,7 @@ class NewApp extends React.Component {
                     });
                     axios({
                         method: "post",
-                        url: apiurl + "upload",
+                        url: api + "upload",
                         data: {
                             userName: getCookie("userName"),
                             appName: appName,
@@ -231,55 +235,55 @@ class NewApp extends React.Component {
                             "Content-Type": "application/json"
                         }
                     }).then(function (response) {
-                            if (response.data.state === 1) {
-                                //提交成功后将button设置不可点
-                                _this.setState({
-                                    submitResult: {
-                                        state: 1,
-                                        status: "success",
-                                        title: "提交成功",
-                                    },
-                                    disabled: true,
-                                    loading: false,
-                                    visible: true
-                                });
-                            } if (response.data.state === 2) {
-                                //提交失败将button设置可点
-                                _this.setState({
-                                    submitResult: {
-                                        state: 2,
-                                        status: "error",
-                                        title: "提交失败,应用名称已存在!"
-                                    },
-                                    disabled: false,
-                                    loading: false,
-                                    visible: true
-                                });
-                            } if (response.data.state === 0) {
-                                //提交失败将button设置可点
-                                _this.setState({
-                                    submitResult: {
-                                        state: 0,
-                                        status: "error",
-                                        title: "提交失败,您上传的文件不是docker镜像!"
-                                    },
-                                    disabled: false,
-                                    loading: false,
-                                    visible: true
-                                });
-                            };
-                        }).catch(function (error) {
+                        if (response.data.state === 1) {
+                            //提交成功后将button设置不可点
                             _this.setState({
                                 submitResult: {
-                                    state: -1,
+                                    state: 1,
+                                    status: "success",
+                                    title: "提交成功",
+                                },
+                                disabled: true,
+                                loading: false,
+                                visible: true
+                            });
+                        } if (response.data.state === 2) {
+                            //提交失败将button设置可点
+                            _this.setState({
+                                submitResult: {
+                                    state: 2,
                                     status: "error",
-                                    title: "提交失败"
+                                    title: "提交失败,应用名称已存在!"
                                 },
                                 disabled: false,
-                                visible: false,
-                                loading: true
+                                loading: false,
+                                visible: true
                             });
+                        } if (response.data.state === 0) {
+                            //提交失败将button设置可点
+                            _this.setState({
+                                submitResult: {
+                                    state: 0,
+                                    status: "error",
+                                    title: "提交失败,您上传的文件不是docker镜像!"
+                                },
+                                disabled: false,
+                                loading: false,
+                                visible: true
+                            });
+                        };
+                    }).catch(function (error) {
+                        _this.setState({
+                            submitResult: {
+                                state: -1,
+                                status: "error",
+                                title: "提交失败"
+                            },
+                            disabled: false,
+                            visible: false,
+                            loading: true
                         });
+                    });
                 };
             });
         } else {
@@ -333,7 +337,7 @@ class NewApp extends React.Component {
         //上传文件
         const uploadProps = {
             name: "uploadfile",
-            action: apiurl + "upload",
+            action: api + "upload",
             headers: {
                 authorization: "authorization-text"
             },

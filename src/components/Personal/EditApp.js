@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Table, Card, Form, Input, Button, Modal, message, Icon, Row, Col, Select, InputNumber } from 'antd';
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
 import { getCookie } from "../../utils/cookies";
 import "./index.css";
 
+let api = "";
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -25,25 +26,28 @@ class EditApp extends Component {
     componentDidMount() {
         let _this = this;
         //获取应用数据
-        axios({
-            method: 'post',
-            url: apiurl + 'project/check',
-            responseType: 'json',
-            data: {
-                userName: getCookie("userName")
-            },
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(function (response) {
-                if (response.data.status) {
-                    _this.setState({
-                        project: response.data.message
-                    });
-                };
+        apiPromise.then(res => {
+            api = res.data.api;
+            axios({
+                method: 'post',
+                url: api + 'project/check',
+                responseType: 'json',
+                data: {
+                    userName: getCookie("userName")
+                },
+                headers: { 'Content-Type': 'application/json' },
             })
-            .catch(function (error) {
-                message.error("服务器无响应", 2);
-            });
+                .then(function (response) {
+                    if (response.data.status) {
+                        _this.setState({
+                            project: response.data.message
+                        });
+                    };
+                })
+                .catch(function (error) {
+                    message.error("服务器无响应", 2);
+                });
+        });
     }
     //编辑应用
     changeAppname(e) {
@@ -159,7 +163,7 @@ class EditApp extends Component {
         let { appName, module, params, runPath } = this.state;
         axios({
             method: 'post',
-            url: apiurl + 'project/check',
+            url: api + 'project/check',
             data: {
                 userName: getCookie("userName"),
                 appName: appName,
@@ -189,7 +193,7 @@ class EditApp extends Component {
                 _this.setState({ project });
                 // axios({
                 //     method: 'post',
-                //     url: apiurl + '/project/check',
+                //     url: api + '/project/check',
                 //     responseType: 'json',
                 //     data: {
                 //         userName: getCookie("userName"),
@@ -235,7 +239,7 @@ class EditApp extends Component {
         // //文件上传
         // const props = {
         //     name: 'uploadfile',
-        //     action: apiurl + 'upload',
+        //     action: api + 'upload',
         //     headers: {
         //         authorization: 'authorization-text',
         //     },

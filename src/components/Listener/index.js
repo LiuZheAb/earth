@@ -10,7 +10,9 @@ import axios from 'axios';
 import DataSet from "@antv/data-set";
 import { Divider, message } from 'antd';
 import { Chart, Geom, Axis, Tooltip, Coord, Label, View, } from "bizcharts";
-import { apiurl } from '../../assets/url.js';
+import apiPromise from '../../assets/url.js';
+
+let api = "";
 
 export default class Listener extends React.Component {
     constructor(props) {
@@ -28,12 +30,13 @@ export default class Listener extends React.Component {
     componentDidMount() {
         this.getPieData();
         this.getLineData();
+        apiPromise.then(res => api = res.data.api);
     }
     // 获取内存饼图数据
     getPieData = () => {
         const _this = this;
         this.pieTimer = window.setTimeout(() => {
-            axios.get(apiurl + 'monitor/memory')
+            axios.get(api + 'monitor/memory')
                 .then(function (response) {
                     _this.setState({
                         pieData: response.data,
@@ -42,7 +45,7 @@ export default class Listener extends React.Component {
                             let pieData = _this.state.pieData;
                             if (pieData[1].value < 50) {
                                 pieData[1].value += 50
-                                _this.setState({ pieData: pieData }) 
+                                _this.setState({ pieData: pieData })
                             };
                             _this.getPieData();
                         });
@@ -57,7 +60,7 @@ export default class Listener extends React.Component {
         const _this = this;
         this.requestRef = requestAnimationFrame(() => {
             this.lineTimer = window.setTimeout(() => {
-                axios.get(apiurl + 'monitor/cpu')
+                axios.get(api + 'monitor/cpu')
                     .then(function (response) {
                         let arr = [];
                         for (let i = 0; i < response.data.length; i++) {
@@ -166,7 +169,7 @@ export default class Listener extends React.Component {
                 <p style={{ textAlign: "center" }}>CPU使用率</p>
                 <Chart height={300} data={lineData} scale={cols1} forceFit padding="auto">
                     <Axis name="time" label={null} tickLine={null} />
-                    <Axis name="value"/>
+                    <Axis name="value" />
                     <Tooltip crosshairs={{ type: "cross" }} shared={false} />
                     <Geom type="area" position="time*value" color="#81c5fd" />
                     <Geom type="line" position="time*value" size={2} />

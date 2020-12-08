@@ -7,7 +7,6 @@
 }
 
 .register-fun {
-    font-size: 18px;
     color: #535353;
     font-weight: normal;
 }
@@ -15,7 +14,7 @@
 .changeform {
     color: #B5B5B5;
     float: right;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 25px;
     text-decoration: none;
 }
@@ -62,6 +61,10 @@
 
 .register .register-form .ant-select-selection {
     height: 44px;
+}
+
+.register-form .ant-checkbox-wrapper{
+    font-size: 16px;
 }
 
 @media screen and (max-width: 1065px) {

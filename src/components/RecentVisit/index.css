@@ -17,7 +17,6 @@
 
 .search-area .searcher .anticon-search {
     color: rgba(50, 148, 221);
-    font-size: 20px;
 }
 
 .search-area .ant-result {
@@ -73,10 +72,4 @@
 
 .recent-visit .recent-visit-item a:hover {
     color: #40a9ff;
-}
-
-@media(min-width:992px) {
-    .search-area .searcher .search-box {
-        width: 50%;
-    }
 }

@@ -32,6 +32,7 @@
 
 .personal-sider #personal-menu .ant-menu-item {
     width: 100%;
+    font-size: 20px;
 }
 
 .personal-sider #personal-menu .ant-menu-item-selected {
@@ -46,6 +47,14 @@
 
 #personal-form {
     max-width: 400px;
+}
+
+#personal-form .ant-form-item label {
+    font-size: 18px;
+}
+
+#personal-form .ant-input {
+    font-size: 18px;
 }
 
 .personal-content .avatar-uploader>.ant-upload {
@@ -127,5 +136,18 @@
     }
     #personal-menu-h {
         display: block;
+    }
+}
+
+@media(max-width:576px) {
+    .personal-sider #personal-menu .ant-menu-item {
+        width: 100%;
+        font-size: 14px;
+    }
+    #personal-form .ant-form-item label {
+        font-size: 14px;
+    }
+    #personal-form .ant-input {
+        font-size: 14px;
     }
 }
