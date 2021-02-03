@@ -9,10 +9,10 @@ import { message } from "antd";
 
 export default function checkNullvalue(param) {
     if (param) {
-        if (param.length === 0) {
-            message.error("参数值不能为空，请填写后重新提交", 2);
-            return false;
-        } else {
+        // if (param.length === 0) {
+        //     message.error("参数值不能为空，请填写后重新提交", 2);
+        //     return false;
+        // } else {
             let checks = true;
             for (let i = 0, len = param.length; i < len; i++) {
                 if (param[i].currentValue === undefined || param[i].currentValue === "" || param[i].currentValue.length === 0) {
@@ -23,7 +23,7 @@ export default function checkNullvalue(param) {
                 }
             };
             return checks;
-        };
+        // };
     } else {
         return true;
     };

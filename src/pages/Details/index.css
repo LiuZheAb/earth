@@ -22,25 +22,17 @@
     font-size: 18px;
 }
 
-.details-menu-btn {
-    position: fixed;
-    left: 0;
-    height: 50px;
-    width: 50px;
-    border-radius: 0;
-    background: #04b0e9;
-    border: none;
-}
-
 .details-logo {
     position: fixed;
-    left: 70px;
+    left: 20px;
     color: rgb(102, 102, 102);
 }
 
 .details-logo img {
     margin-right: 10px;
     height: 24px;
+    position: relative;
+    top: -3px;
 }
 
 .details-quit {
@@ -50,71 +42,6 @@
     margin-right: 20px;
     font-size: 24px;
     color: #04b0e9;
-}
-
-.details-sider {
-    min-width: 120px !important;
-    width: 120px !important;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    z-index: 10;
-}
-
-.details-sider, .details-menu {
-    background: #04b0e9;
-    border-right: none;
-}
-
-.details-sider .details-collapse {
-    font-size: 36px;
-    color: #fff;
-    line-height: 80px;
-    height: 80px;
-}
-
-.details-menu .ant-menu-item {
-    height: 50px;
-    padding: 0 !important;
-    text-align: center;
-    color: #fff;
-    font-size: 16px;
-}
-
-.details-menu .ant-menu-item a {
-    color: #fff;
-}
-
-.details-menu .ant-menu-item a:hover {
-    color: #fff;
-    text-decoration: none;
-}
-
-.details-menu .ant-menu-item::after {
-    border-right: none;
-}
-
-.details-menu .ant-menu-item-selected {
-    background: #04b0e9 !important;
-}
-
-.details-sider .ant-menu-inline-collapsed {
-    width: 0 !important;
-}
-
-.open-file #file {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 120px;
-    font-size: 0;
-}
-
-.details .ant-layout-sider-collapsed {
-    min-width: 0 !important;
-    width: 0 !important;
 }
 
 .details-content {
@@ -179,6 +106,27 @@
     height: 100%;
 }
 
+.loginfo-modal {
+    width: 100% !important;
+    max-width: 1200px;
+}
+
+.loginfo-modal .ant-modal-close-x {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+}
+
+/* .loginfo-modal .ant-modal-close-x svg {
+    fill: #fff;
+} */
+
+.loginfo-modal p {
+    /* color: #fff; */
+    font-family: "consolas";
+    font-size: 16px;
+}
+
 @media screen and (max-width: 965px) {
     .details-logo span {
         display: none;
@@ -192,5 +140,24 @@
     }
     .details .details-card {
         height: auto !important;
+    }
+    .ant-col-xs-24.ant-form-item-label {
+        display: block;
+        margin: 0;
+        padding: 0 0 8px;
+        line-height: 1.5;
+        white-space: initial;
+        text-align: left;
+    }
+}
+
+@media (max-width: 575px) {
+    .ant-col-xs-24.ant-form-item-label {
+        display: block;
+        margin: 0;
+        padding: 0 0 8px;
+        line-height: 1.5;
+        white-space: initial;
+        text-align: left;
     }
 }

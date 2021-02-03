@@ -1,0 +1,196 @@
+.details {
+    height: 100vh;
+    width: 100vw;
+    padding-top: 50px;
+    overflow: hidden;
+}
+
+.details-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    line-height: 50px;
+    padding: 0;
+    border-bottom: 1px solid #e6e9ed;
+    text-align: center;
+}
+
+.details-title {
+    font-size: 18px;
+}
+
+.details-menu-btn {
+    position: fixed;
+    left: 0;
+    height: 50px;
+    width: 50px;
+    border-radius: 0;
+    background: #04b0e9;
+    border: none;
+}
+
+.details-logo {
+    position: fixed;
+    left: 70px;
+    color: rgb(102, 102, 102);
+}
+
+.details-logo img {
+    margin-right: 10px;
+    height: 24px;
+}
+
+.details-quit {
+    position: fixed;
+    right: 0;
+    line-height: 50px;
+    margin-right: 20px;
+    font-size: 24px;
+    color: #04b0e9;
+}
+
+.details-sider {
+    min-width: 120px !important;
+    width: 120px !important;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+}
+
+.details-sider, .details-menu {
+    background: #04b0e9;
+    border-right: none;
+}
+
+.details-sider .details-collapse {
+    font-size: 36px;
+    color: #fff;
+    line-height: 80px;
+    height: 80px;
+}
+
+.details-menu .ant-menu-item {
+    height: 50px;
+    padding: 0 !important;
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+}
+
+.details-menu .ant-menu-item a {
+    color: #fff;
+}
+
+.details-menu .ant-menu-item a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.details-menu .ant-menu-item::after {
+    border-right: none;
+}
+
+.details-menu .ant-menu-item-selected {
+    background: #04b0e9 !important;
+}
+
+.details-sider .ant-menu-inline-collapsed {
+    width: 0 !important;
+}
+
+.open-file #file {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 120px;
+    font-size: 0;
+}
+
+.details .ant-layout-sider-collapsed {
+    min-width: 0 !important;
+    width: 0 !important;
+}
+
+.details-content {
+    height: 100%;
+}
+
+.details-card {
+    height: 100%;
+}
+
+.details-card .ant-card {
+    height: 100%;
+}
+
+.details-card .ant-card-head {
+    min-height: 40px;
+}
+
+.details-card .ant-card-head-title {
+    font-size: 16px;
+    font-weight: 400;
+    padding: 8px 0;
+}
+
+.details-card .ant-card-body {
+    padding: 15px;
+    height: calc(100% - 40px);
+    border-right: 1px solid #e6e9ed;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.details-card .ant-card-body .ant-empty-image {
+    height: 100%;
+}
+
+.details-form .ant-form-item {
+    margin-bottom: 5px;
+}
+
+.details-form .ant-form-item-required::before {
+    display: none;
+}
+
+.details-form .ant-form-item-label label {
+    font-weight: 500;
+}
+
+.details-form .ant-checkbox-group {
+    line-height: unset;
+}
+
+.app-button {
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    padding: 20px 30px 0;
+}
+
+.details-map {
+    width: 100%;
+    height: 100%;
+}
+
+@media screen and (max-width: 965px) {
+    .details-logo span {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .details {
+        min-height: 100vh;
+        height: auto;
+    }
+    .details .details-card {
+        height: auto !important;
+    }
+}

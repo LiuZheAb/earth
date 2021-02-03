@@ -9,7 +9,7 @@ import React from 'react';
 import axios from 'axios';
 import { Layout, BackTop, Alert, message } from 'antd';
 import HomeNavbar from '../../components/HomeNavbar';
-import Sidebar from '../../components/SideBar';
+// import Sidebar from '../../components/SideBar';
 import Container from '../../components/Container';
 import apiPromise from '../../assets/url.js';
 
@@ -58,7 +58,7 @@ export default class Homepage extends React.Component {
                         banner
                     />}
                 <HomeNavbar style={invisible ? {} : { position: "fixed", top: "37px" }} />
-                <Sidebar style={invisible ? {} : { position: "fixed", top: "87px" }} />
+                {/* <Sidebar style={invisible ? {} : { position: "fixed", top: "87px" }} /> */}
                 <Container style={invisible ? { marginTop: "49px" } : { marginTop: "87px" }} />
                 <BackTop />
             </Layout>

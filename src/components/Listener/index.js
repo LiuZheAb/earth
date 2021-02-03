@@ -10,9 +10,6 @@ import axios from 'axios';
 import DataSet from "@antv/data-set";
 import { Divider, message } from 'antd';
 import { Chart, Geom, Axis, Tooltip, Coord, Label, View, } from "bizcharts";
-import apiPromise from '../../assets/url.js';
-
-let api = "";
 
 export default class Listener extends React.Component {
     constructor(props) {
@@ -21,7 +18,8 @@ export default class Listener extends React.Component {
             pieData: [],
             lineData: [],
             maxLineData: 5,
-            minLineData: 0
+            minLineData: 0,
+            ip: props.ip || props.uri.split("://")[1].split(":")[0]
         };
     };
     pieTimer = undefined;
@@ -30,13 +28,12 @@ export default class Listener extends React.Component {
     componentDidMount() {
         this.getPieData();
         this.getLineData();
-        apiPromise.then(res => api = res.data.api);
     }
     // 获取内存饼图数据
     getPieData = () => {
         const _this = this;
         this.pieTimer = window.setTimeout(() => {
-            axios.get(api + 'monitor/memory')
+            axios.get("http://" + this.state.ip + ':8080/monitor/memory')
                 .then(function (response) {
                     _this.setState({
                         pieData: response.data,
@@ -53,14 +50,14 @@ export default class Listener extends React.Component {
                 .catch(function (error) {
                     message.error("服务器无响应", 2);
                 });
-        }, 1000);
+        }, 3000);
     };
     // 获取CPU折线图数据
     getLineData = () => {
         const _this = this;
         this.requestRef = requestAnimationFrame(() => {
             this.lineTimer = window.setTimeout(() => {
-                axios.get(api + 'monitor/cpu')
+                axios.get("http://" + this.state.ip + ':8080/monitor/cpu')
                     .then(function (response) {
                         let arr = [];
                         for (let i = 0; i < response.data.length; i++) {
