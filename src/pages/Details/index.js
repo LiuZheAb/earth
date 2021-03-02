@@ -15,6 +15,7 @@ import checkNullvalue from "../../utils/checkNullvalue";
 import apiPromise from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import apiData from "./data.json";
+import Vis from "./vis";
 import './index.css';
 
 let api = "";
@@ -36,10 +37,12 @@ class Details extends React.Component {
             checkBoxs: null,
             textAreas: null,
             uploadBoxs: null,
+            inputFiles: null,
             appName: sessionStorage.getItem("appName") ? sessionStorage.getItem("appName") : undefined,
             moduleName: sessionStorage.getItem("moduleName") ? sessionStorage.getItem("moduleName") : undefined,
             idenMod: sessionStorage.getItem("idenMod") ? Number(sessionStorage.getItem("idenMod")) : undefined,
-            idenMod2: sessionStorage.getItem("idenMod2") ? Number(sessionStorage.getItem("idenMod2")) : undefined,
+            stepNum: sessionStorage.getItem("stepNum") ? Number(sessionStorage.getItem("stepNum")) : undefined,
+            nowStep: sessionStorage.getItem("nowStep") ? Number(sessionStorage.getItem("nowStep")) : undefined,
             username: getCookie("userName") ? getCookie("userName") : "",
             dockerID: "",
             dockerIP: "",
@@ -48,30 +51,29 @@ class Details extends React.Component {
             loading: false,
             listener: <Empty description="容器未启动" />,
             currentStep: 0,
+            currentStep2: 0,
             resultData: [],
             staticURL: [],
             isComputing: false,
-            hasParam: false,
             uri: undefined,
-            dataFileStatus: false,
-            modelFileStatus: false,
             logInfoArray: [],
             modalVisible: false,
-            status: undefined,
+            dockerType: undefined,
+            started: false,
             computed: false,
-            currentStep2: undefined,
             disabled: false,
             proList: [],
             proIndex: undefined,
             baseUrl: "",
             calcApi: "",
+            requestMethod: undefined,
             calcResData: {},
-            calcStatus: true
+            calcStatus: true,
+            resType: undefined
         };
     };
     logTimer = undefined;
     componentDidMount() {
-        //根据应用名称向服务端请求并获取数据
         apiPromise.then(res => {
             api = res.data.api;
         });
@@ -122,29 +124,25 @@ class Details extends React.Component {
             this.setState({ uploaded: false });
         };
     };
-    // handleUploadStatus(param, e) {
-    //     this.setState({
-    //         [param]: e.target.value
-    //     })
-    // }
-    // handleUploadFile(info) {
-    //     if (info.file.status === "done") {
-    //         message.success(`${info.file.name} 上传成功`);
-    //     } else if (info.file.status === "error") {
-    //         message.error(`${info.file.name} 上传失败`);
-    //     };
-    // };
+    changeInputFile(index, e) {
+        let { inputFiles } = this.state;
+        inputFiles[index].currentValue = e.target.files[0];
+        this.setState({ inputFiles });
+        //将value置空，避免不能重复读取同一文件
+        e.target.value = "";
+    };
     //启动容器
     startDocker = () => {
         let _this = this;
-        let { username, idenMod, currentStep } = this.state;
+        let { username, idenMod, currentStep, appName } = this.state;
         this.setState({ loading: true });
         axios({
             method: 'post',
             url: api + 'runContain',
             data: {
                 username,
-                idenMod
+                idenMod,
+                modName: appName
             },
             headers: {
                 'Content-Type': 'application/json'
@@ -153,7 +151,8 @@ class Details extends React.Component {
             let { data, status, uri, proList } = response.data;
             _this.setState({
                 loading: false,
-                status
+                dockerType: status,
+                started: true,
             });
             switch (status) {
                 case 0:
@@ -212,16 +211,21 @@ class Details extends React.Component {
     }
     //重&磁选择计算接口
     handleSelectApi = value => {
-        let { calcApi, texts, selects, radios, checkBoxs, textAreas, uploadBoxs } = apiData[value];
+        //深拷贝apiData对象
+        let data = JSON.parse(JSON.stringify(apiData[value]));
+        let { calcApi, params, requestMethod } = data;
+        let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs, inputFiles } = params;
         this.setState({
             loading: false,
             calcApi,
+            requestMethod,
             texts: texts ? texts : [],
             selects: selects ? selects : [],
             radios: radios ? radios : [],
             checkBoxs: checkBoxs ? checkBoxs : [],
             textAreas: textAreas ? textAreas : [],
-            uploadBoxs: uploadBoxs ? uploadBoxs : []
+            uploadBoxs: uploadBoxs ? uploadBoxs : [],
+            inputFiles: inputFiles ? inputFiles : []
         });
     }
     //获取参数
@@ -239,14 +243,15 @@ class Details extends React.Component {
                 'Content-Type': 'application/json'
             }
         }).then(function (response) {
-            let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs } = response.data.projectparams;
+            let { texts, selects, radios, checkBoxs, textAreas, uploadBoxs, inputFiles } = response.data.projectparams;
             _this.setState({
                 texts: texts ? texts : [],
                 selects: selects ? selects : [],
                 radios: radios ? radios : [],
                 checkBoxs: checkBoxs ? checkBoxs : [],
                 textAreas: textAreas ? textAreas : [],
-                uploadBoxs: uploadBoxs ? uploadBoxs : []
+                uploadBoxs: uploadBoxs ? uploadBoxs : [],
+                inputFiles: inputFiles ? inputFiles : []
             });
         }).catch(function (error) {
             message.error("服务器无响应");
@@ -255,21 +260,63 @@ class Details extends React.Component {
     //提交参数文件
     createPFile = e => {
         e.preventDefault();
-        let { texts, selects, radios, checkBoxs, textAreas, idenMod, uploadBoxs, dockerID, dockerIP, vport, currentStep, moduleName, currentStep2, idenMod2, proIndex, status, baseUrl, calcApi } = this.state;
+        let { texts, selects, radios, checkBoxs, textAreas, inputFiles, idenMod, uploadBoxs, dockerID, dockerIP, vport, currentStep, moduleName, currentStep2, nowStep, proIndex, dockerType, baseUrl, calcApi, requestMethod } = this.state;
         let _this = this;
-        if (status === 5) {
+        if (dockerType === 5) {
             if (calcApi) {
                 if (checkNullvalue(texts) && checkNullvalue(selects) && checkNullvalue(radios) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
-                    let params = {};
-                    for (let i = 0, len = texts.length; i < len; i++) {
-                        params[texts[i].paramName] = isNaN(Number(texts[i].currentValue)) ? texts[i].currentValue : Number(texts[i].currentValue);
-                    }
-                    _this.setState({
-                        loading: true,
-                        isComputing: true
-                    });
-                    axios.get(baseUrl + calcApi, { params })
-                        .then(function (response) {
+                    baseUrl = "http://139.217.82.132:5050";
+                    if (requestMethod === "get" && Array.isArray(texts)) {
+                        let params = {};
+                        for (let i = 0, len = texts.length; i < len; i++) {
+                            params[texts[i].paramName] = isNaN(Number(texts[i].currentValue)) ? texts[i].currentValue : Number(texts[i].currentValue);
+                        }
+                        _this.setState({
+                            loading: true,
+                            isComputing: true
+                        });
+                        axios.get(baseUrl + calcApi, { params })
+                            .then(function (response) {
+                                _this.setState({
+                                    loading: false,
+                                    isComputing: false
+                                });
+                                if (typeof (response.data) === "string") {
+                                    _this.setState({
+                                        calcResData: { message: response.data }
+                                    });
+                                } else if (response.data.result) {
+                                    _this.setState({
+                                        calcResData: { message: response.data.result }
+                                    });
+                                } else {
+                                    _this.setState({ calcResData: response.data });
+                                }
+
+                            }).catch(function (error) {
+                                _this.setState({ loading: false, isComputing: false, calcStatus: false });
+                                message.error(error.message);
+                            });
+                    } else if (requestMethod === "post" && Array.isArray(texts)) {
+                        let params = new FormData();
+                        for (let i = 0, len = texts.length; i < len; i++) {
+                            params.append(texts[i].paramName, isNaN(Number(texts[i].currentValue)) ? texts[i].currentValue : Number(texts[i].currentValue));
+                        }
+                        for (let i = 0, len = inputFiles.length; i < len; i++) {
+                            params.append(inputFiles[i].paramName, inputFiles[i].currentValue);
+                        }
+                        _this.setState({
+                            loading: true,
+                            isComputing: true
+                        });
+                        axios({
+                            method: 'post',
+                            url: baseUrl + calcApi,
+                            data: params,
+                            headers: {
+                                'Content-Type': 'multipart/formdata'
+                            }
+                        }).then(function (response) {
                             _this.setState({
                                 loading: false,
                                 isComputing: false
@@ -288,20 +335,24 @@ class Details extends React.Component {
 
                         }).catch(function (error) {
                             _this.setState({ loading: false, isComputing: false, calcStatus: false });
-                            message.error("服务器无响应");
+                            console.log(error);
+                            message.error(error.message);
                         });
+                    }
                 }
             } else {
                 message.error("请选择程序");
             }
         } else {
             if (proIndex) {
-                for (let i = 0, len = texts.length; i < len; i++) {
-                    if (texts[i].paramName === "iter_max" || texts[i].paramName === "time_after_earthquake") {
-                        texts[i].currentValue = "+" + texts[i].currentValue;
-                    }
-                }
                 if (checkNullvalue(texts) && checkNullvalue(selects) && checkNullvalue(radios) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
+                    if (Array.isArray(texts)) {
+                        for (let i = 0, len = texts.length; i < len; i++) {
+                            if (texts[i].paramName === "iter_max" || texts[i].paramName === "time_after_earthquake") {
+                                texts[i].currentValue = "+" + texts[i].currentValue;
+                            }
+                        }
+                    }
                     let makeJson = `{ "texts" :${JSON.stringify(texts)}
                         ,"selects" :${JSON.stringify(selects)}
                         ,"radios" :${JSON.stringify(radios)}
@@ -312,7 +363,7 @@ class Details extends React.Component {
                         method: 'post',
                         url: api + 'createPFile',
                         data: {
-                            idenMod: typeof (currentStep2) === "number" ? idenMod2 : idenMod,
+                            idenMod: idenMod * Math.pow(10, nowStep - 1),
                             params: makeJson,
                             dockerID,
                             dockerIP,
@@ -328,7 +379,7 @@ class Details extends React.Component {
                         _this.setState({ loading: false });
                         if (status === "success") {
                             message.success(data, 2);
-                            if (typeof (currentStep2) === "number") {
+                            if (nowStep > 1) {
                                 _this.setState({
                                     currentStep2: currentStep2 + 1
                                 });
@@ -353,30 +404,34 @@ class Details extends React.Component {
     //运行
     runDocker = () => {
         let _this = this;
-        let { username, idenMod, dockerID, dockerIP, vport, idenMod2, currentStep2, proIndex } = this.state;
+        let { username, idenMod, dockerID, dockerIP, vport, nowStep, stepNum, proIndex, appName } = this.state;
         this.setState({ loading: true, isComputing: true });
         axios({
             method: 'post',
             url: api + 'computeContain',
             data: {
                 username,
-                idenMod: typeof (currentStep2) === "number" ? idenMod2 : idenMod,
+                idenMod: idenMod * Math.pow(10, nowStep - 1),
                 dockerID,
                 dockerIP,
                 vport,
-                index: proIndex
+                index: proIndex,
+                modName: appName
             },
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(function (response) {
-            let { data, status, staticURL } = response.data;
+            let { status, data, staticURL } = response.data;
             clearInterval(_this.logTimer);
             _this.setState({
                 loading: false,
                 computed: true,
-                disabled: typeof (currentStep2) === "number" ? true : false,
-                modalVisible: false
+                isComputing: false,
+                nowStep: nowStep < stepNum ? nowStep + 1 : nowStep,
+                disabled: nowStep === stepNum ? true : false,
+                modalVisible: false,
+                resType: status
             });
             switch (status) {
                 case 0:
@@ -385,17 +440,17 @@ class Details extends React.Component {
                 case 1:
                     message.success("计算完成");
                     _this.setState({
-                        isComputing: false,
                         resultData: data,
                         staticURL
                     });
                     break;
                 case 2:
+                    message.success("计算完成");
+                    _this.setState({
+                        resultData: data
+                    });
                     break;
                 default:
-                    // _this.setState({
-                    //     isComputing: false,
-                    // });
                     break;
             }
         }).catch(function (error) {
@@ -426,13 +481,11 @@ class Details extends React.Component {
             }).then(function (res) {
                 let data = res.data.data.split("Calculation begins...")[1].split("\r\n");
                 for (let i = 0, len = data.length; i < len; i++) {
-                    if (data[i].toLowerCase().indexOf("matlab") >= 0) {
+                    if (data[i].toLowerCase().replace(/ +/g, "").indexOf("matlab") >= 0) {
                         data[i] = "\r\n";
                     }
                 }
-                _this.setState({
-                    logInfoArray: data
-                })
+                _this.setState({ logInfoArray: data });
             }).catch(function () {
                 message.error("服务器无响应");
                 times += 1;
@@ -445,9 +498,7 @@ class Details extends React.Component {
     //关闭运行状态模态框
     handleCancleModal = () => {
         clearInterval(this.logTimer);
-        this.setState({
-            modalVisible: false
-        })
+        this.setState({ modalVisible: false });
     }
     //停止docker
     handleKillContain = () => {
@@ -465,22 +516,20 @@ class Details extends React.Component {
             }
         }).then(function () {
             message.success("应用已停止");
-            _this.setState({
-                isComputing: false
-            });
+            _this.setState({ isComputing: false });
         }).catch(function () {
             message.error("服务器无响应");
         });
     }
     //下一步
     nextStep = () => {
-        let { currentStep, idenMod2 } = this.state;
+        let { nowStep, idenMod } = this.state;
         let _this = this;
         axios({
             method: 'post',
             url: api + 'render',
             data: {
-                idenMod: idenMod2,
+                idenMod: idenMod * Math.pow(10, nowStep),
                 index: 1
             },
             headers: {
@@ -495,12 +544,39 @@ class Details extends React.Component {
                 checkBoxs: checkBoxs ? checkBoxs : [],
                 textAreas: textAreas ? textAreas : [],
                 uploadBoxs: uploadBoxs ? uploadBoxs : [],
-                currentStep: currentStep + 1,
+                nowStep: nowStep + 1,
                 currentStep2: 0
             });
         }).catch(function (error) {
             message.error("服务器无响应");
         });
+    }
+    getCsvData = path => {
+        let { dockerIP, vport } = this.state;
+        axios.get("http://" + dockerIP + ":" + vport + "/resInfo", {
+            params: {
+                path
+            }
+        }).then(function (response) {
+            console.log(response.data)
+        }).catch(function (error) {
+            message.error("服务器错误");
+        });
+
+        // axios({
+        //     method: "post",
+        //     url: "http://" + dockerIP + ":" + vport + "/resInfo",
+        //     data: {
+        //         path
+        //     },
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     }
+        // }).then(function (response) {
+        //     console.log(response.data)
+        // }).catch(function (error) {
+        //     message.error("服务器错误");
+        // });
     }
     render() {
         const formItemLayout = {
@@ -513,54 +589,21 @@ class Details extends React.Component {
                 sm: { span: 16 },
             },
         };
-        const { username, appName, texts, selects, radios, checkBoxs, textAreas, uploadBoxs, loading, listener, currentStep,
-            resultData, staticURL, isComputing, dataFileStatus, modelFileStatus, idenMod, dockerID, dockerIP, vport, logInfoArray,
-            modalVisible, uri, status, computed, idenMod2, currentStep2, disabled, proList, calcResData, calcStatus } = this.state;
+        const { username, appName, texts, selects, radios, checkBoxs, textAreas, uploadBoxs, inputFiles, loading, listener, currentStep,
+            resultData, staticURL, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, proIndex, modalVisible, uri,
+            dockerType, started, computed, nowStep, stepNum, currentStep2, disabled, proList, calcResData, calcStatus, resType } = this.state;
         const uploadProps = {
             name: "uploadParamFile",
-            action: api + "upParam",
-            headers: {
-                authorization: "authorization-text"
-            },
+            action: "http://" + dockerIP + ":" + vport + "/upFile",
             data: {
                 username,
-                idenMod: typeof (currentStep2) === "number" ? idenMod2 : idenMod,
+                idenMod: idenMod * Math.pow(10, nowStep - 1),
                 dockerID,
                 dockerIP,
                 vport,
-                orderNum: 1
+                index: proIndex
             }
         };
-        // const upParam = {
-        //     name: "uploadParamFile",
-        //     action: api + "upParam",
-        //     headers: {
-        //         authorization: "authorization-text"
-        //     },
-        //     data: {
-        //         username,
-        //         idenMod: typeof (currentStep2) === "number" ? idenMod2 : idenMod,
-        //         dockerID,
-        //         dockerIP,
-        //         vport,
-        //         orderNum: 1
-        //     }
-        // };
-        // const upTwoParam = {
-        //     name: "uploadParamFile",
-        //     action: api + "upTwoParam",
-        //     headers: {
-        //         authorization: "authorization-text"
-        //     },
-        //     data: {
-        //         username,
-        //         idenMod: typeof (currentStep2) === "number" ? idenMod2 : idenMod,
-        //         dockerID,
-        //         dockerIP,
-        //         vport,
-        //         orderNum: 2
-        //     }
-        // };
         return (
             <div className="details">
                 <Header className="details-header">
@@ -577,9 +620,9 @@ class Details extends React.Component {
                     <Row style={{ height: "100%", width: "100%" }}>
                         <Col sm={8} xs={24} className="details-card">
                             <Card title="参数数据" bordered={false} className="params-card">
-                                {status === 2 &&
+                                {dockerType === 2 &&
                                     (
-                                        idenMod2 && computed && typeof (currentStep2) === "number" ?
+                                        nowStep > 1 && started ?
                                             <Steps current={currentStep2}>
                                                 <Step title="生成参数文件"></Step>
                                                 <Step title="应用服务计算"></Step>
@@ -593,21 +636,21 @@ class Details extends React.Component {
                                     )
                                 }
                                 <div style={{ height: "calc(100% - 32px)" }}>
-                                    {currentStep === 0 && status !== 5 ?
+                                    {nowStep === 1 && currentStep === 0 && dockerType !== 5 ?
                                         <div style={{ textAlign: "center", paddingTop: 50 }}>
                                             <Button type="primary" loading={loading} onClick={this.startDocker}>启动容器</Button>
                                         </div>
                                         : null
                                     }
-                                    {currentStep === 1 || currentStep2 === 0 || status === 5 ?
+                                    {(nowStep === 1 && currentStep === 1) || (nowStep > 1 && currentStep2 === 0) || dockerType === 5 ?
                                         <>
                                             {proList.length > 1 &&
                                                 <Row style={{ margin: "20px 0 10px" }}>
                                                     <Col xs={24} sm={8} className="ant-form-item-label">
-                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择程序：</label>
+                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择测试模型</label>
                                                     </Col>
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
-                                                        <Select onChange={this.handleSelectPro} placeholder="--请选择程序--" style={{ width: "100%" }}>
+                                                        <Select onChange={this.handleSelectPro} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
                                                             {proList.map((value, index) => {
                                                                 return (
                                                                     <Option key={index} value={index + 1}>
@@ -620,13 +663,13 @@ class Details extends React.Component {
                                                     </Col>
                                                 </Row>
                                             }
-                                            {status === 5 &&
+                                            {dockerType === 5 &&
                                                 <Row style={{ marginBottom: 10 }}>
                                                     <Col xs={24} sm={8} className="ant-form-item-label">
-                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择程序</label>
+                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择模型</label>
                                                     </Col>
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
-                                                        <Select onChange={this.handleSelectApi} placeholder="--请选择程序--" style={{ width: "100%" }}>
+                                                        <Select onChange={this.handleSelectApi} placeholder="--请选择模型--" style={{ width: "100%" }}>
                                                             {Object.keys(apiData).map((value, index) => {
                                                                 return (
                                                                     <Option key={index} value={value}>
@@ -637,9 +680,10 @@ class Details extends React.Component {
                                                             )}
                                                         </Select>
                                                     </Col>
-                                                </Row>}
+                                                </Row>
+                                            }
                                             <div style={{ paddingTop: 30 }}>
-                                                {texts === undefined && selects === undefined && uploadBoxs === undefined && radios === undefined && checkBoxs === undefined && textAreas === undefined ?
+                                                {texts === undefined && selects === undefined && uploadBoxs === undefined && radios === undefined && checkBoxs === undefined && textAreas === undefined && inputFiles === undefined ?
                                                     <Result
                                                         status="warning"
                                                         title="参数列表获取失败!"
@@ -648,6 +692,18 @@ class Details extends React.Component {
                                                     </Result>
                                                     :
                                                     <Form {...formItemLayout} onSubmit={this.createPFile} className="details-form">
+                                                        {inputFiles === null ? null : inputFiles.map((inputFile, index) => {
+                                                            return (
+                                                                <Form.Item className="input-file-wrapper" label={<label title={inputFile.paramNameCN}>{inputFile.paramName}</label>} key={index}>
+                                                                    <Tooltip title={inputFile.tip}>
+                                                                        <span className="ant-btn ant-btn-default input-file">选择文件
+                                                                        <input type="file" id="file" onChange={this.changeInputFile.bind(this, index)} />
+                                                                        </span>
+                                                                    </Tooltip>
+                                                                    <div style={{ marginLeft: 10 }}>{inputFile.currentValue && inputFile.currentValue.name}</div>
+                                                                </Form.Item>
+                                                            );
+                                                        })}
                                                         {texts === null ? null : texts.map((textBox, index) => {
                                                             return (
                                                                 <Form.Item label={<label title={textBox.paramNameCN}>{textBox.paramName}</label>} key={index}>
@@ -713,45 +769,8 @@ class Details extends React.Component {
                                                                 </Form.Item>
                                                             );
                                                         })}
-                                                        {/* {texts === null && selects === null && uploadBoxs === null && radios === null && checkBoxs === null && textAreas === null ?
-                                                                null
-                                                                :
-                                                                status !== 5 &&
-                                                                <>
-                                                                    <Form.Item label="是否上传初始数据">
-                                                                        <RadioGroup onChange={this.handleUploadStatus.bind(this, "dataFileStatus")} value={dataFileStatus}>
-                                                                            <Radio value={true}>是</Radio>
-                                                                            <Radio value={false}>否</Radio>
-                                                                        </RadioGroup>
-                                                                    </Form.Item>
-                                                                    {dataFileStatus &&
-                                                                        <Form.Item label="上传初始数据">
-                                                                            <Upload {...upParam}
-                                                                                onChange={this.handleUploadFile}
-                                                                            >
-                                                                                <Button type="default"><Icon type="upload" />上传</Button>
-                                                                            </Upload>
-                                                                        </Form.Item>
-                                                                    }
-                                                                    <Form.Item label="是否上传模型文件">
-                                                                        <RadioGroup onChange={this.handleUploadStatus.bind(this, "modelFileStatus")} value={modelFileStatus}>
-                                                                            <Radio value={true}>是</Radio>
-                                                                            <Radio value={false}>否</Radio>
-                                                                        </RadioGroup>
-                                                                    </Form.Item>
-                                                                    {modelFileStatus &&
-                                                                        <Form.Item label="上传模型文件">
-                                                                            <Upload {...upTwoParam}
-                                                                                onChange={this.handleUploadFile}
-                                                                            >
-                                                                                <Button type="default"><Icon type="upload" />上传</Button>
-                                                                            </Upload>
-                                                                        </Form.Item>
-                                                                    }
-                                                                </>
-                                                            } */}
                                                         <Row className="app-button">
-                                                            {status === 5 ?
+                                                            {dockerType === 5 ?
                                                                 <Button type="primary" htmlType="submit" loading={loading}>提交参数</Button>
                                                                 :
                                                                 <Button type="primary" htmlType="submit">提交参数</Button>
@@ -763,9 +782,9 @@ class Details extends React.Component {
                                         </>
                                         : null
                                     }
-                                    {currentStep === 2 || currentStep2 === 1 ?
+                                    {(nowStep === 1 && currentStep === 2) || (nowStep > 1 && currentStep2 === 1) ?
                                         <div style={{ textAlign: "center", paddingTop: 50, display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%", alignItems: "center" }}>
-                                            {idenMod2 && computed && !currentStep2 ?
+                                            {nowStep < stepNum && computed && !isComputing ?
                                                 <Button type="primary" onClick={this.nextStep} style={{ width: 140, marginBottom: 20 }}>下一步</Button>
                                                 :
                                                 <Button type="primary" loading={loading} onClick={this.runDocker} style={{ width: 140, marginBottom: 20 }} disabled={disabled}>应用服务计算</Button>
@@ -795,38 +814,50 @@ class Details extends React.Component {
                         </Col>
                         <Col sm={8} xs={24} className="details-card">
                             <Card title="运行结果" bordered={false}>
-                                {isComputing || staticURL.length > 0 || staticURL.length > 0 || uri || Object.keys(calcResData).length > 0 || !calcStatus ? null : <Empty description="程序未运行" />}
+                                {isComputing || resType || Object.keys(calcResData).length > 0 || !calcStatus || computed ? null : <Empty description="程序未运行" />}
                                 {isComputing &&
                                     <div style={{ textAlign: "center", padding: "50px 0" }}>
                                         <p>正在计算...</p>
                                         <Spin size="large" />
                                     </div>
                                 }
-                                {!calcStatus && <Result status="error" title="计算错误" />}
-                                {!isComputing && staticURL.length > 0 &&
-                                    <div style={{ borderBottom: "1px solid #eee" }}>
-                                        <p style={{ fontWeight: "bold", marginBottom: 10 }}>数据文件目录</p>
-                                        {staticURL.map((item, index) =>
-                                            <p key={index} style={{ marginBottom: 4 }}>
-                                                <a href={item} target="_blank" rel="noopener noreferrer">{item.split("/").pop()}</a>
-                                            </p>
-                                        )}
-                                    </div>
-                                }
-                                {!isComputing && staticURL.length > 0 &&
-                                    <div>
-                                        <p style={{ fontWeight: "bold", marginBottom: 10 }}>计算日志</p>
-                                        {resultData.map((item, index) => <p key={index} style={{ marginBottom: 2 }}>{item}</p>)}
-                                    </div>
-                                }
-                                {uri &&
+                                {dockerType === 1 && uri &&
                                     <div style={{ textAlign: "center", paddingTop: 35 }}>
                                         <p>请在新窗口中查看</p>
                                         <p>如未弹出新窗口，请点击此<a href={uri} target="_blank" rel="noopener noreferrer">链接</a></p>
                                     </div>
                                 }
-                                {!isComputing && Object.keys(calcResData).length > 0 &&
-                                    Object.keys(calcResData).map((item, index) => <p key={index}>{(item === "message" ? "" : item + "：") + calcResData[item]}</p>)
+                                {dockerType === 2 && !isComputing ?
+                                    resType === 1 ?
+                                        <>
+                                            <div style={{ borderBottom: "1px solid #eee" }}>
+                                                <p style={{ fontWeight: "bold", marginBottom: 10 }}>数据文件目录</p>
+                                                {Array.isArray(staticURL) && staticURL.map((item, index) =>
+                                                    <p key={index} style={{ marginBottom: 4 }}>
+                                                        <a href={item} target="_blank" rel="noopener noreferrer">{item.split("/").pop()}</a>
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p style={{ fontWeight: "bold", marginBottom: 10 }}>计算日志</p>
+                                                {resultData.map((item, index) => <p key={index} style={{ marginBottom: 2 }}>{item}</p>)}
+                                            </div>
+                                        </>
+                                        : resType === 2 && <div>
+                                            <p style={{ fontWeight: "bold", marginBottom: 10 }}>数据文件（点击进行可视化）</p>
+                                            {Object.keys(resultData).map((item, i) => <p key={i} onClick={this.getCsvData.bind(this, resultData[item])}>{item}</p>)}
+                                        </div>
+                                    : null
+                                }
+                                {dockerType === 5 && !isComputing ?
+                                    calcStatus ?
+                                        Object.keys(calcResData).length > 0 &&
+                                        <>
+                                            {Object.keys(calcResData).map((item, index) => <p key={index}>{(item === "message" ? "" : item + "：") + calcResData[item]}</p>)}
+                                            <Vis shouldReq dockerID dockerIP vport idenMod index data dataType />
+                                        </>
+                                        : <Result status="error" title="计算错误" />
+                                    : null
                                 }
                             </Card>
                         </Col>

@@ -127,6 +127,31 @@
     font-size: 16px;
 }
 
+.input-file-wrapper .ant-form-item-control-wrapper,.input-file-wrapper .ant-form-item-control,.input-file-wrapper .ant-form-item-children {
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.input-file {
+    cursor: pointer;
+    overflow: hidden;
+    line-height: 32px;
+}
+
+.input-file input {
+    position: absolute;
+    font-size: 18px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.input-file:hover {
+    cursor: pointer;
+}
+
 @media screen and (max-width: 965px) {
     .details-logo span {
         display: none;

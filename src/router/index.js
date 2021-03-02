@@ -14,17 +14,21 @@ const LoginRegister = loadable(() => import('../pages/LoginRegister'));
 const Details = loadable(() => import('../pages/Details'));
 const ErrorPage = loadable(() => import('../pages/ErrorPage'));
 const About = loadable(() => import('../pages/About'));
+const Test = loadable(() => import('../pages/Test'));
 
 export default class EarthRouter extends React.Component {
     render() {
         return (
             <Router>
                 <Switch>
-                    <Route path={["/home", "/newapp", "/personal", "/datarender"]}>
+                    <Route path={["/home", "/console", "/newapp", "/personal", "/datarender"]}>
                         <Homepage />
                     </Route>
                     <Route exact path="/details">
                         <Details />
+                    </Route>
+                    <Route exact path="/test">
+                        <Test />
                     </Route>
                     <Route exact path="/">
                         <Redirect to="/home" />

@@ -240,9 +240,6 @@ class EditApp extends Component {
         // const props = {
         //     name: 'uploadfile',
         //     action: api + 'upload',
-        //     headers: {
-        //         authorization: 'authorization-text',
-        //     },
         //     onChange(info) {
         //         if (info.file.status !== 'uploading') {
         //         };

@@ -338,9 +338,6 @@ class NewApp extends React.Component {
         const uploadProps = {
             name: "uploadfile",
             action: api + "upload",
-            headers: {
-                authorization: "authorization-text"
-            },
             data: {
                 userName: getCookie("userName")
             },

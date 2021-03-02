@@ -58,13 +58,12 @@ export default class ModuleList extends React.Component {
         });
     };
     //点击应用时将所点的应用名称保存到sessionStorage中
-    setApp(appName, moduleName, idenMod, hasStep) {
+    setApp(appName, moduleName, idenMod, stepNum) {
         sessionStorage.setItem("appName", appName);
         sessionStorage.setItem("moduleName", this.state.currentMenu2 || this.state.currentMenu || moduleName);
         sessionStorage.setItem("idenMod", idenMod);
-        if (hasStep) {
-            sessionStorage.setItem("idenMod2", hasStep ? idenMod + "0" : idenMod);
-        }
+        sessionStorage.setItem("stepNum", stepNum);
+        sessionStorage.setItem("nowStep", 1);
         this.submitClickedApp(appName);
     };
     // 显示二级菜单
@@ -275,12 +274,12 @@ export default class ModuleList extends React.Component {
                                                 </div>
                                                 <div className="app-list">
                                                     <ul>
-                                                        {subModules[module].map(({ menuName, url, hasSub, hasParam, idenMod, hasStep }, index) =>
+                                                        {subModules[module].map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
                                                             <li key={index} title={menuName}>
                                                                 {url ?
                                                                     <>
                                                                         <IconFont type="earthlianjie" />
-                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, module, idenMod, hasStep)}>{menuName}</a>
+                                                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</a>
                                                                     </>
                                                                     :
                                                                     hasSub ?
@@ -293,7 +292,7 @@ export default class ModuleList extends React.Component {
                                                                             ?
                                                                             <>
                                                                                 <IconFont type="earthjinru1" />
-                                                                                <Link to="/details" onClick={this.setApp.bind(this, menuName, module, idenMod, hasStep)}>{menuName}</Link>
+                                                                                <Link to="/details" onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                                             </>
                                                                             :
                                                                             <>
@@ -349,12 +348,12 @@ export default class ModuleList extends React.Component {
                 >
                     {currentMenu ?
                         <ul>
-                            {secondModules.map(({ menuName, url, hasSub, hasParam, idenMod, hasStep }, index) =>
+                            {secondModules.map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
                                 <li key={index} title={menuName}>
                                     {url ?
                                         <>
                                             <IconFont type="earthlianjie" />
-                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, hasStep)}>{menuName}</a>
+                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</a>
                                         </>
                                         : hasSub ?
                                             <>
@@ -364,7 +363,7 @@ export default class ModuleList extends React.Component {
                                             :
                                             <>
                                                 <IconFont type="earthjinru1" />
-                                                <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod, hasStep)}>{menuName}</Link>
+                                                <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                             </>
                                     }
                                 </li>
@@ -377,22 +376,22 @@ export default class ModuleList extends React.Component {
                     title={currentMenu2}
                     visible={modalVisible2}
                     onOk={this.handleOk2}
-                    onCancel={this.handleCancel2} 
+                    onCancel={this.handleCancel2}
                     footer={null}
                     style={{ top: 150, left: 50 }}
                 >
                     {currentMenu2 ?
-                        thirdModules.map(({ menuName, url, hasParam, idenMod, hasStep }, index) =>
+                        thirdModules.map(({ menuName, url, hasParam, idenMod, stepNum }, index) =>
                             <li key={index} title={menuName}>
                                 {url ?
                                     <>
                                         <IconFont type="earthlianjie" />
-                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, hasStep)}>{menuName}</a>
+                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</a>
                                     </>
                                     :
                                     <>
                                         <IconFont type="earthjinru1" />
-                                        <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod, hasStep)}>{menuName}</Link>
+                                        <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                     </>
                                 }
                             </li>

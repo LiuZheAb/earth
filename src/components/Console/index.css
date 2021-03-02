@@ -1,0 +1,40 @@
+#console {
+    width: 100%;
+    margin: 0 auto;
+    border: 1px solid #eee;
+    background: #fff;
+    padding: 20px;
+    display: inline-block;
+    overflow: auto;
+}
+
+#console .ant-table {
+    font-size: 18px;
+}
+
+#console .ant-tag {
+    font-size: 14px;
+    line-height: 24px;
+    margin-right: 0;
+}
+
+#console .ant-btn {
+    font-size: 16px;
+}
+
+.loginfo-modal {
+    width: 100% !important;
+    max-width: 1200px;
+}
+
+.loginfo-modal .ant-modal-close-x {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+}
+
+.loginfo-modal p {
+    /* color: #fff; */
+    font-family: "consolas";
+    font-size: 16px;
+}

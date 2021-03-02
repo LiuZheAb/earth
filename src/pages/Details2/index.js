@@ -353,9 +353,6 @@ class Details extends React.Component {
         const uploadProps = {
             name: "uploadfile",
             action: api + "upload",
-            headers: {
-                authorization: "authorization-text"
-            },
             data: {
                 project: appName
             }

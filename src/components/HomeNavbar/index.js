@@ -62,6 +62,9 @@ class HomeNavbar extends React.Component {
                 </Link>
                 {userName ?
                     <div className="icon-area">
+                        <Link to="/console">
+                            <IconFont type="earthconsole" title="控制台" />
+                        </Link>
                         <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
                             <IconFont type="earthtouxiang" title="个人中心" />
                         </Link>

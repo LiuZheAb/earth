@@ -1,1037 +1,1232 @@
 {
     "重力数据网格化": {
         "calcApi": "/data_gridder",
-        "texts": [
-            {
-                "paramName": "xNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "yNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "xNum",
+                    "paramNameCN": "设置X方向个数",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "yNum",
+                    "paramNameCN": "设置Y方向个数",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "gravity fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     },
     "数据去趋势": {
         "calcApi": "/data_trend",
-        "texts": null,
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["a","path"]
+        "requestMethod": "post",
+        "params": {
+            "texts": null,
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "gravity file",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
+        "calcResKeys": [
+            "a",
+            "path"
+        ]
     },
     "重力观测数据反演（多约束反演）": {
         "calcApi": "/grav_data_inversion",
-        "texts": [
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2).",
-                "defaultValue": null,
-                "currentValue": "0,4100,0,10000",
-                "tip": "根据实际观测资料设置"
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx).ny-南北向数据",
-                "defaultValue": null,
-                "currentValue": "41,100",
-                "tip": ""
-            },
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "0,4100,0,10000,0,500",
-                "tip": "根据实际观测资料设置"
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10,10,10",
-                "tip": "根据实际观测资料设置"
-            },
-            {
-                "paramName": "am",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1000",
-                "tip": ""
-            },
-            {
-                "paramName": "ax",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "ay",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "az",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "z00",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "10000",
-                "tip": ""
-            },
-            {
-                "paramName": "beta",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["Hyperparameter Lambda value is","Inversion residual","Standard Deviation","反演结果已保存至"]
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2).",
+                    "defaultValue": null,
+                    "currentValue": "0,4100,0,10000",
+                    "tip": "根据实际观测资料设置"
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx).ny-南北向数据",
+                    "defaultValue": null,
+                    "currentValue": "41,100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "0,4100,0,10000,0,500",
+                    "tip": "根据实际观测资料设置"
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10,10,10",
+                    "tip": "根据实际观测资料设置"
+                },
+                {
+                    "paramName": "am",
+                    "paramNameCN": "全局空间约束因子",
+                    "defaultValue": null,
+                    "currentValue": "1000",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ax",
+                    "paramNameCN": "X方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ay",
+                    "paramNameCN": "Y方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "az",
+                    "paramNameCN": "Z方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z00",
+                    "paramNameCN": "深度加权常数",
+                    "defaultValue": null,
+                    "currentValue": "200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "beta",
+                    "paramNameCN": "深度加权因子",
+                    "defaultValue": null,
+                    "currentValue": "1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "gravity fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
+        "calcResKeys": [
+            "Hyperparameter Lambda value is",
+            "Inversion residual",
+            "Standard Deviation",
+            "反演结果已保存至"
+        ]
     },
     "重力数据求偏导": {
         "calcApi": "/grav_deriv",
-        "texts": [
-            {
-                "paramName": "deriv_direction",
-                "paramNameCN": "输入求导方向",
-                "defaultValue": null,
-                "currentValue": "z",
-                "tip": "可选项（x, y, z）"
-            },
-            {
-                "paramName": "xNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "yNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["result"]
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "deriv_direction",
+                    "paramNameCN": "输入求导方向",
+                    "defaultValue": null,
+                    "currentValue": "z",
+                    "tip": "可选项（x, y, z）"
+                },
+                {
+                    "paramName": "xNum",
+                    "paramNameCN": "设置X方向个数",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "yNum",
+                    "paramNameCN": "设置Y方向个数",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-2",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "gravity fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
+        "calcResKeys": [
+            "result"
+        ]
     },
     "​六面体模型重力异常正演": {
         "calcApi": "/grav_forward",
-        "texts": [
-            {
-                "paramName": "g_component",
-                "paramNameCN": "输入重力分量",
-                "defaultValue": null,
-                "currentValue": "gz",
-                "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）"
-            },
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10, 15, 15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200, 200, -200, 200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20, 20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "g_component",
+                    "paramNameCN": "输入重力分量",
+                    "defaultValue": null,
+                    "currentValue": "gz",
+                    "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）"
+                },
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10, 15, 15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200, 200, -200, 200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20, 20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
         "calcResKeys": []
     },
     "球型棱柱体模型重力异常正演": {
         "calcApi": "/grav_forward_tesseroid",
-        "texts": [
-            {
-                "paramName": "g_component",
-                "paramNameCN": "输入重力分量",
-                "defaultValue": null,
-                "currentValue": "gz",
-                "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）"
-            },
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "40,50,40,50,0,-500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10,15,15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1,x2,y1,y2)",
-                "defaultValue": null,
-                "currentValue": "40, 50, 40, 50",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20, 20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "g_component",
+                    "paramNameCN": "输入重力分量",
+                    "defaultValue": null,
+                    "currentValue": "gz",
+                    "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）"
+                },
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "40,50,40,50,0,-500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10,15,15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1,x2,y1,y2)",
+                    "defaultValue": null,
+                    "currentValue": "40, 50, 40, 50",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20, 20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
         "calcResKeys": []
     },
     "​典型矿区仿真数据反演一（最小模型约束反演）": {
         "calcApi": "/grav_inversion_regu0",
-        "texts": [
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10,15,15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200, 200, -200, 200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20,20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["Hyperparameter Lambda value is","Inversion residual","Standard Deviation","反演结果已保存至"]
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10,15,15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200, 200, -200, 200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20,20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
+        "calcResKeys": [
+            "Hyperparameter Lambda value is",
+            "Inversion residual",
+            "Standard Deviation",
+            "反演结果已保存至"
+        ]
     },
     "​典型矿区仿真数据反演二（深度加权约束反演）": {
         "calcApi": "/grav_inversion_regu1",
-        "texts": [
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10, 15, 15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200, 200, -200, 200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20, 20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "am",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1000",
-                "tip": ""
-            },
-            {
-                "paramName": "z00",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "10000",
-                "tip": ""
-            },
-            {
-                "paramName": "beta",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["Hyperparameter Lambda value is","Inversion residual","Standard Deviation","反演结果已保存至"]
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10, 15, 15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200, 200, -200, 200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20, 20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "am",
+                    "paramNameCN": "全局空间约束因子",
+                    "defaultValue": null,
+                    "currentValue": "1000",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z00",
+                    "paramNameCN": "深度加权常数",
+                    "defaultValue": null,
+                    "currentValue": "10000",
+                    "tip": ""
+                },
+                {
+                    "paramName": "beta",
+                    "paramNameCN": "深度加权因子",
+                    "defaultValue": null,
+                    "currentValue": "1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
+        "calcResKeys": [
+            "Hyperparameter Lambda value is",
+            "Inversion residual",
+            "Standard Deviation",
+            "反演结果已保存至"
+        ]
     },
-    "典型矿区仿真数据反演三 (光滑约束反演)": {
+    "典型矿区仿真数据反演三（光滑约束反演）": {
         "calcApi": "/grav_inversion_regu2",
-        "texts": [
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10, 15, 15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200, 200, -200, 200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20, 20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "am",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1000",
-                "tip": ""
-            },
-            {
-                "paramName": "ax",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "ay",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "az",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "z00",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "10000",
-                "tip": ""
-            },
-            {
-                "paramName": "beta",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["Hyperparameter Lambda value is","Inversion residual","Standard Deviation","反演结果已保存至"]
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10, 15, 15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200, 200, -200, 200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20, 20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "am",
+                    "paramNameCN": "全局空间约束因子",
+                    "defaultValue": null,
+                    "currentValue": "1000",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ax",
+                    "paramNameCN": "X方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ay",
+                    "paramNameCN": "Y方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "az",
+                    "paramNameCN": "Z方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z00",
+                    "paramNameCN": "深度加权常数",
+                    "defaultValue": null,
+                    "currentValue": "200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "beta",
+                    "paramNameCN": "深度加权因子",
+                    "defaultValue": null,
+                    "currentValue": "1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
+        "calcResKeys": [
+            "Hyperparameter Lambda value is",
+            "Inversion residual",
+            "Standard Deviation",
+            "反演结果已保存至"
+        ]
     },
-    "典型矿区仿真数据反演四 (多约束反演)": {
+    "典型矿区仿真数据反演四（多约束反演）": {
         "calcApi": "/grav_inversion_regu3",
-        "texts": [
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10, 15, 15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200, 200, -200, 200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20, 20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "am",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1000",
-                "tip": ""
-            },
-            {
-                "paramName": "ax",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "ay",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "az",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "z00",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "10000",
-                "tip": ""
-            },
-            {
-                "paramName": "beta",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["Hyperparameter Lambda value is","Inversion residual","Standard Deviation","反演结果已保存至"]
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10, 15, 15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200, 200, -200, 200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20, 20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "am",
+                    "paramNameCN": "全局空间约束因子",
+                    "defaultValue": null,
+                    "currentValue": "1000",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ax",
+                    "paramNameCN": "X方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ay",
+                    "paramNameCN": "Y方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "az",
+                    "paramNameCN": "Z方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z00",
+                    "paramNameCN": "深度加权常数",
+                    "defaultValue": null,
+                    "currentValue": "200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "beta",
+                    "paramNameCN": "深度加权因子",
+                    "defaultValue": null,
+                    "currentValue": "1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
+        "calcResKeys": [
+            "Hyperparameter Lambda value is",
+            "Inversion residual",
+            "Standard Deviation",
+            "反演结果已保存至"
+        ]
     },
     "典型矿区仿真数据反演五（全变分约束）": {
         "calcApi": "/grav_inversion_regu4",
-        "texts": [
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10, 15, 15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200, 200, -200, 200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20, 20",
-                "tip": ""
-            },
-            {
-                "paramName": "den_region_1",
-                "paramNameCN": "重力观测区域网格划分(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "density_1",
-                "paramNameCN": "密度值设置",
-                "defaultValue": null,
-                "currentValue": "0.5",
-                "tip": ""
-            },
-            {
-                "paramName": "am",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1000",
-                "tip": ""
-            },
-            {
-                "paramName": "ax",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "ay",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "az",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "300",
-                "tip": ""
-            },
-            {
-                "paramName": "z00",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "200",
-                "tip": ""
-            },
-            {
-                "paramName": "beta",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "1",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            },
-            {
-                "paramName": "tvalue",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "0.0001",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
-        "calcResKeys": ["Hyperparameter Lambda value is","Inversion residual","Standard Deviation","反演结果已保存至"]
+        "requestMethod": "get",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10, 15, 15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200, 200, -200, 200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20, 20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "den_region_1",
+                    "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "density_1",
+                    "paramNameCN": "密度值设置",
+                    "defaultValue": null,
+                    "currentValue": "0.5",
+                    "tip": ""
+                },
+                {
+                    "paramName": "am",
+                    "paramNameCN": "全局空间约束因子",
+                    "defaultValue": null,
+                    "currentValue": "1000",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ax",
+                    "paramNameCN": "X方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "ay",
+                    "paramNameCN": "Y方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "az",
+                    "paramNameCN": "Z方向平滑因子",
+                    "defaultValue": null,
+                    "currentValue": "300",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z00",
+                    "paramNameCN": "深度加权常数",
+                    "defaultValue": null,
+                    "currentValue": "200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "beta",
+                    "paramNameCN": "深度加权因子",
+                    "defaultValue": null,
+                    "currentValue": "1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "tvalue",
+                    "paramNameCN": "全变分约束参数",
+                    "defaultValue": null,
+                    "currentValue": "0.0001",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles":null
+        },
+        "calcResKeys": [
+            "Hyperparameter Lambda value is",
+            "Inversion residual",
+            "Standard Deviation",
+            "反演结果已保存至"
+        ]
     },
     "重力数据投影": {
         "calcApi": "/grav_projections",
-        "texts": null,
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "method",
+                    "paramNameCN": "投影方法选择",
+                    "defaultValue": null,
+                    "currentValue": "jw",
+                    "tip": "jw 投影 或 lcc 投影"
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "ynyx_grav fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     },
     "重力数据延拓": {
         "calcApi": "/grav_upcontinue",
-        "texts": [
-            {
-                "paramName": "hight",
-                "paramNameCN": "延拓高度",
-                "defaultValue": null,
-                "currentValue": "10",
-                "tip": ""
-            },
-            {
-                "paramName": "xNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "yNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "hight",
+                    "paramNameCN": "延拓高度",
+                    "defaultValue": null,
+                    "currentValue": "10",
+                    "tip": ""
+                },
+                {
+                    "paramName": "xNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "yNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "gravity fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     },
     "重力异常计算": {
         "calcApi": "/gravity_corrections",
-        "texts": null,
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": null,
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "ynyx_grav file",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     },
     "磁场方向导数求取": {
         "calcApi": "/mag_deriv",
-        "texts": [
-            {
-                "paramName": "deriv_direction",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "z",
-                "tip": "可选项(x, y, z, tga)"
-            },
-            {
-                "paramName": "xNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "yNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            },
-            {
-                "paramName": "hight",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "10",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "deriv_direction",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "z",
+                    "tip": "可选项(x, y, z, tga)"
+                },
+                {
+                    "paramName": "xNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "yNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "hight",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "10",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "magnetic fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     },
     "磁场模型正演": {
         "calcApi": "/mag_forward",
-        "texts": [
-            {
-                "paramName": "mag_component",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "z",
-                "tip": "可选项(x, y, z, tf)"
-            },
-            {
-                "paramName": "area",
-                "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                "defaultValue": null,
-                "currentValue": "-100,100,-100,100,0,500",
-                "tip": ""
-            },
-            {
-                "paramName": "shape",
-                "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                "defaultValue": null,
-                "currentValue": "10,15,15",
-                "tip": ""
-            },
-            {
-                "paramName": "narea",
-                "paramNameCN": "磁场观测区域（x1, x2, y1, y2)",
-                "defaultValue": null,
-                "currentValue": "-200,200,-200,200",
-                "tip": ""
-            },
-            {
-                "paramName": "nshape",
-                "paramNameCN": "磁场观测区域网格划分(ny, nx)",
-                "defaultValue": null,
-                "currentValue": "20,20",
-                "tip": ""
-            },
-            {
-                "paramName": "mag_region_1",
-                "paramNameCN": "磁化率设置区域(nz, ny, nx)",
-                "defaultValue": null,
-                "currentValue": "4,6,7,9,7,9",
-                "tip": ""
-            },
-            {
-                "paramName": "mag_1",
-                "paramNameCN": "磁化率设置",
-                "defaultValue": null,
-                "currentValue": "1",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            },
-            {
-                "paramName": "inc",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "30",
-                "tip": ""
-            },
-            {
-                "paramName": "dec",
-                "paramNameCN": "观测面深度",
-                "defaultValue": null,
-                "currentValue": "-4",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "mag_component",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "z",
+                    "tip": "可选项(x, y, z, tf)"
+                },
+                {
+                    "paramName": "area",
+                    "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                    "defaultValue": null,
+                    "currentValue": "-100,100,-100,100,0,500",
+                    "tip": ""
+                },
+                {
+                    "paramName": "shape",
+                    "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                    "defaultValue": null,
+                    "currentValue": "10,15,15",
+                    "tip": ""
+                },
+                {
+                    "paramName": "narea",
+                    "paramNameCN": "磁场观测区域（x1, x2, y1, y2)",
+                    "defaultValue": null,
+                    "currentValue": "-200,200,-200,200",
+                    "tip": ""
+                },
+                {
+                    "paramName": "nshape",
+                    "paramNameCN": "磁场观测区域网格划分(ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "20,20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "mag_region_1",
+                    "paramNameCN": "磁化率设置区域(nz, ny, nx)",
+                    "defaultValue": null,
+                    "currentValue": "4,6,7,9,7,9",
+                    "tip": ""
+                },
+                {
+                    "paramName": "mag_1",
+                    "paramNameCN": "磁化率设置",
+                    "defaultValue": null,
+                    "currentValue": "1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "inc",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "30",
+                    "tip": ""
+                },
+                {
+                    "paramName": "dec",
+                    "paramNameCN": "观测面深度",
+                    "defaultValue": null,
+                    "currentValue": "-4",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": null
+        },
         "calcResKeys": []
     },
     "磁场空间延拓": {
         "calcApi": "/mag_upcontinue",
-        "texts": [
-            {
-                "paramName": "hight",
-                "paramNameCN": "延拓高度",
-                "defaultValue": null,
-                "currentValue": "10",
-                "tip": ""
-            },
-            {
-                "paramName": "xNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "yNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "hight",
+                    "paramNameCN": "延拓高度",
+                    "defaultValue": null,
+                    "currentValue": "10",
+                    "tip": ""
+                },
+                {
+                    "paramName": "xNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "yNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "magnetic fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     },
     "磁化极": {
         "calcApi": "/reduce_to_pole",
-        "texts": [
-            {
-                "paramName": "xNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "yNum",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "100",
-                "tip": ""
-            },
-            {
-                "paramName": "z0",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-1",
-                "tip": ""
-            },
-            {
-                "paramName": "inc",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-60",
-                "tip": ""
-            },
-            {
-                "paramName": "dec",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "23",
-                "tip": ""
-            },
-            {
-                "paramName": "sdec",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-20",
-                "tip": ""
-            },
-            {
-                "paramName": "sinc",
-                "paramNameCN": "",
-                "defaultValue": null,
-                "currentValue": "-30",
-                "tip": ""
-            }
-        ],
-        "selects": null,
-        "radios": null,
-        "checkBoxs": null,
-        "textAreas": null,
-        "uploadBoxs": null,
+        "requestMethod": "post",
+        "params": {
+            "texts": [
+                {
+                    "paramName": "xNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "yNum",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "100",
+                    "tip": ""
+                },
+                {
+                    "paramName": "z0",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-1",
+                    "tip": ""
+                },
+                {
+                    "paramName": "inc",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-60",
+                    "tip": ""
+                },
+                {
+                    "paramName": "dec",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "23",
+                    "tip": ""
+                },
+                {
+                    "paramName": "sdec",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-20",
+                    "tip": ""
+                },
+                {
+                    "paramName": "sinc",
+                    "paramNameCN": "",
+                    "defaultValue": null,
+                    "currentValue": "-30",
+                    "tip": ""
+                }
+            ],
+            "selects": null,
+            "radios": null,
+            "checkBoxs": null,
+            "textAreas": null,
+            "uploadBoxs": null,
+            "inputFiles": [
+                {
+                    "paramName": "upfile",
+                    "paramNameCN": "magnetic fileparameters",
+                    "defaultValue": null,
+                    "currentValue": "",
+                    "tip": ""
+                }
+            ]
+        },
         "calcResKeys": []
     }
 }

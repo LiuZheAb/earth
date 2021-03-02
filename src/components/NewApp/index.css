@@ -3,6 +3,7 @@
     height: 100%;
     margin: 0 auto;
     border: 1px solid #eee;
+    background: #fff;
     padding: 20px;
     display: inline-block;
     overflow: auto;
@@ -80,7 +81,6 @@
         vertical-align: middle;
         padding: 0;
     }
-
     .newapp .ant-form-item-label::after {
         content: ':';
         position: relative;
