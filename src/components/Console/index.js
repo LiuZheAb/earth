@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
-import { Table, Button, Tag, Drawer, message, List, Modal } from "antd";
+import { Table, Button, Tag, Drawer, message, List, Modal, Badge, Menu, Dropdown, Icon } from "antd";
 import apiPromise from '../../assets/url.js';
 import axios from "axios";
 import { getCookie } from '../../utils/cookies';
 import "./index.css";
+
+const menu = (
+    <Menu>
+        <Menu.Item>Action 1</Menu.Item>
+        <Menu.Item>Action 2</Menu.Item>
+    </Menu>
+);
 
 let api = "";
 const createCloumns = _this =>
@@ -47,6 +54,90 @@ const createCloumns = _this =>
             render: (text, info) => <Button type="danger" onClick={() => _this.handleKill(info)}>停止</Button>
         }
     ];
+
+function NestedTable() {
+    const expandedRowRender = () => {
+        const columns = [
+            { title: 'Date', dataIndex: 'date', key: 'date' },
+            { title: 'Name', dataIndex: 'name', key: 'name' },
+            {
+                title: 'Status',
+                key: 'state',
+                render: () => (
+                    <span>
+                        <Badge status="success" />
+                  Finished
+                    </span>
+                ),
+            },
+            { title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum' },
+            {
+                title: 'Action',
+                dataIndex: 'operation',
+                key: 'operation',
+                render: () => (
+                    <span className="table-operation">
+                        <a>Pause</a>
+                        <a>Stop</a>
+                        <Dropdown overlay={menu}>
+                            <a>
+                                More <Icon type="down" />
+                            </a>
+                        </Dropdown>
+                    </span>
+                ),
+            },
+        ];
+
+        const data = [];
+        for (let i = 0; i < 3; ++i) {
+            data.push({
+                key: i,
+                date: '2014-12-24 23:12:00',
+                name: 'This is production name',
+                upgradeNum: 'Upgraded: 56',
+            });
+        }
+        return <Table columns={columns} dataSource={data} pagination={false} />;
+    };
+
+    const columns = [
+        { title: 'Name', dataIndex: 'name', key: 'name' },
+        { title: 'Platform', dataIndex: 'platform', key: 'platform' },
+        { title: 'Version', dataIndex: 'version', key: 'version' },
+        { title: 'Upgraded', dataIndex: 'upgradeNum', key: 'upgradeNum' },
+        { title: 'Creator', dataIndex: 'creator', key: 'creator' },
+        { title: 'Date', dataIndex: 'createdAt', key: 'createdAt' },
+        { title: 'Action', key: 'operation', render: () => <a>Publish</a> },
+    ];
+
+    const data = [];
+    for (let i = 0; i < 3; ++i) {
+        data.push({
+            key: i,
+            name: 'Screem',
+            platform: 'iOS',
+            version: '10.3.4.5654',
+            upgradeNum: 500,
+            creator: 'Jack',
+            createdAt: '2014-12-24 23:12:00',
+        });
+    }
+
+    return (
+        <Table
+            className="components-table-demo-nested"
+            columns={columns}
+            defaultExpandedRowKeys={[0]}
+            expandable={{
+                expandedRowRender: record => <p style={{ margin: 0 }}>{record.name}</p>,
+                rowExpandable: record => record.key === 0,
+            }}
+            // expandedRowRender={(record, index, indent, expanded) => { console.log({ record, index, indent, expanded }); if (record.key === 0) return expandedRowRender() }}
+            dataSource={data}
+        />
+    );
+}
 export default class index extends Component {
     state = {
         username: getCookie("userName") ? getCookie("userName") : "",
@@ -194,6 +285,7 @@ export default class index extends Component {
         const { dataSource, resDrawerVisible, resFileList, logModalVisible, logInfoArray } = this.state;
         return (
             <div id="console" className="box-shadow" >
+                <NestedTable />
                 <Table dataSource={dataSource} columns={createCloumns(this)} />
                 <Drawer title="运行结果" placement="right" visible={resDrawerVisible} onClose={this.handleClose} width={500}>
                     <List
