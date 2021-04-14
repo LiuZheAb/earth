@@ -1,0 +1,301 @@
+#operate-main {
+    width: 100%;
+    height: 100vh;
+    font-size: 14px;
+}
+
+.operate-header {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    padding: 0 20px;
+    border-bottom: 1px solid #e6e9ed;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.operate-logo {
+    color: rgb(102, 102, 102);
+}
+
+.operate-logo img {
+    height: 24px;
+}
+
+.operate-title {
+    font-size: 18px;
+}
+
+.operate-quit {
+    width: 72px;
+    text-align: right;
+    font-size: 24px;
+    color: #04b0e9;
+}
+
+.operate-content {
+    height: calc(100% - 50px);
+    padding: 16px 8px 16px 16px;
+    display: flex;
+    align-items: flex-start;
+}
+
+#operate-main .ant-tree {
+    width: 100%;
+    height: 200px;
+    overflow-y: auto;
+    padding-top: 8px;
+}
+
+#operate-main .ant-tree .ant-tree-switcher {
+    width: 0;
+    display: none;
+}
+
+#operate-main .ant-tree .ant-tree-node-content-wrapper {
+    width: 100%;
+}
+
+#operate-main .ant-tree .ant-tree-iconEle {
+    float: right;
+}
+
+#operate-main .ant-tree li {
+    padding: 2px 0;
+}
+
+.chart-container {
+    width: 100%;
+    height: 33.33333333%;
+    position: relative;
+}
+
+.chart-container .chart, .chart-container .loading_mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.chart-container .loading_mask {
+    background: rgba(255, 255, 255, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-container:before {
+    position: absolute;
+    top: -10px;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    z-index: 999;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.chart-container:first-child:before {
+    content: "A->B";
+}
+
+.chart-container:nth-child(2):before {
+    content: "B->A";
+}
+
+.chart-container:last-child:before {
+    content: "SYM";
+}
+
+.box {
+    height: auto;
+    border: 1px solid #666;
+    margin: 16px 0;
+    position: relative;
+    padding: 16px 0;
+}
+
+.box .box-title {
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background-color: #fff;
+    padding: 0 5px;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.box-content {
+    display: flex;
+    font-size: 14px;
+    padding: 0 8px;
+}
+
+.box-content .column {
+    width: 50%;
+}
+
+.box-content .column:first-child {
+    padding-right: 8px;
+}
+
+.box-content .column:last-child {
+    padding-left: 8px;
+}
+
+.box-content .column label {
+    width: 70px;
+    text-align: right;
+    line-height: 32px;
+    padding-right: 5px;
+}
+
+.box-content .column label::after {
+    content: ":"
+}
+
+.box-content .column .ant-input {
+    width: calc(100% - 70px);
+}
+
+.box-content .column .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.child-box {
+    border: 1px solid #666;
+    margin: 16px 0 8px;
+    position: relative;
+    padding: 16px 16px 0;
+}
+
+.box-content .ant-radio-group {
+    width: 100%;
+}
+
+.help-mask {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    padding: 58px 8px 8px;
+    display: flex;
+}
+
+.help-mask::before {
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    position: absolute;
+    text-align: center;
+    color: #fff;
+    font-size: 34px;
+    content: "点击任意处关闭";
+    font-weight: bold;
+}
+
+.help-mask .mask-tip {
+    position: absolute;
+}
+
+.help-mask .column {
+    height: 100%;
+}
+
+.help-mask .column .dot-box {
+    width: 100%;
+    border: 2px dashed transparent;
+    border-radius: 4px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+.help-mask .column:nth-child(1) {
+    width: 316px;
+    padding: 12px 3px 0;
+}
+
+.help-mask .column:nth-child(1) .dot-box:nth-child(1) {
+    height: 220px;
+    border-color: orangered;
+    color: orangered;
+}
+
+.help-mask .column:nth-child(1) .dot-box:nth-child(2) {
+    height: 200px;
+    border-color: orange;
+    color: orange;
+}
+
+.help-mask .column:nth-child(1) .dot-box:nth-child(3) {
+    height: 70px;
+    border-color: chocolate;
+    color: chocolate;
+}
+
+.help-mask .column:nth-child(1) .dot-box:nth-child(4) {
+    height: 80px;
+    border-color: coral;
+    color: coral;
+}
+
+.help-mask .column:nth-child(1) .dot-box:nth-child(5) {
+    height: 50px;
+    border-color: #f50;
+    color: #f50;
+    line-height: 24px;
+}
+
+.help-mask .column:nth-child(2) {
+    width: calc((100% - 316px) / 3 * 2);
+    padding-right: 3px;
+}
+
+.help-mask .column:nth-child(2) .dot-box {
+    height: calc((100% - 20px)/3);
+}
+
+.help-mask .column:nth-child(2) .dot-box:nth-child(1) {
+    border-color: blue;
+    color: blue;
+}
+
+.help-mask .column:nth-child(2) .dot-box:nth-child(2) {
+    border-color: cornflowerblue;
+    color: cornflowerblue;
+}
+
+.help-mask .column:nth-child(2) .dot-box:nth-child(3) {
+    height: calc(100% / 3 + 4px);
+    border-color: rgb(72, 170, 209);
+    color: rgb(72, 170, 209);
+}
+
+.help-mask .column:nth-child(3) {
+    width: calc((100% - 316px) / 3);
+}
+
+.help-mask .column:nth-child(3) .dot-box {
+    height: calc(100% - (1px / 3) - 5px);
+    border-color: limegreen;
+    color: limegreen;
+}
+
+@media(min-height:739px) {
+    .help-mask {
+        overflow: hidden;
+    }
+}

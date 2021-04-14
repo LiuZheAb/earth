@@ -1,0 +1,95 @@
+.comsol {
+    width: 100vw;
+    height: 100vh;
+}
+
+.comsol-header {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    padding: 0 20px;
+    border-bottom: 1px solid #e6e9ed;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comsol-header .comsol-logo {
+    color: rgb(102, 102, 102);
+}
+
+.comsol-header .comsol-logo img {
+    height: 24px;
+}
+
+.comsol-header .comsol-title {
+    font-size: 18px;
+}
+
+.comsol-header .comsol-quit {
+    width: 72px;
+    text-align: right;
+    font-size: 24px;
+    color: #04b0e9;
+}
+
+.comsol .ant-row {
+    height: calc(100% - 50px);
+}
+
+.comsol .ant-col {
+    height: 100%;
+}
+
+.comsol .ant-col .ant-card {
+    height: 100%;
+}
+
+.comsol .ant-col .ant-card .ant-card-body {
+    height: calc(100% - 38px);
+}
+
+.comsol .ant-card-head {
+    min-height: 39px;
+}
+
+.comsol .ant-card-head-title {
+    padding: 7px 0;
+}
+
+#context-menu {
+    width: 200px;
+    height: auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding: 3px;
+    margin: 0;
+    box-shadow: 2px 2px 2px #929292;
+}
+
+.context-menu-item {
+    width: 100%;
+    border: 1px solid #fff;
+    height: 24px;
+    line-height: 22px;
+    background-color: #fff;
+    padding: 0 30px;
+    font-size: 14px;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.context-menu-item:hover {
+    border: 1px solid rgb(130, 196, 212);
+    background-color: #e0f1ff;
+}
+
+.comsol .tree-panel {}
+
+.comsol .prop-panel {}
+
+.comsol .vis-panel {}

@@ -59,7 +59,6 @@ class Personal extends React.Component {
     };
     // 根据用户名获取到用户信息
     componentDidMount() {
-        const _this = this;
         let { userName } = this.state;
         apiPromise.then(res => {
             api = res.data.api;
@@ -72,26 +71,24 @@ class Personal extends React.Component {
                         userName: getCookie("userName")
                     },
                     headers: { 'Content-Type': 'application/json' },
-                })
-                    .then(function (response) {
-                        let { password, email, mobile, avatar, nickname, description, address, status, area } = response.data;
-                        _this.setState({
-                            psd: password,
-                            email: email,
-                            editEmail: email,
-                            mobile: mobile,
-                            editMobile: mobile,
-                            avatar: avatar,
-                            nickname: nickname,
-                            description: description,
-                            address: address,
-                            accountStatus: status,
-                            area: area,
-                        });
-                    })
-                    .catch(function (error) {
-                        message.error("服务器无响应", 2);
+                }).then(response => {
+                    let { password, email, mobile, avatar, nickname, description, address, status, area } = response.data;
+                    this.setState({
+                        psd: password,
+                        email: email,
+                        editEmail: email,
+                        mobile: mobile,
+                        editMobile: mobile,
+                        avatar: avatar,
+                        nickname: nickname,
+                        description: description,
+                        address: address,
+                        accountStatus: status,
+                        area: area,
                     });
+                }).catch(error => {
+                    message.error("服务器无响应", 2);
+                });
             } else {
                 message.error("用户信息过期，请重新登录", 2);
             }
@@ -169,11 +166,10 @@ class Personal extends React.Component {
         };
     };
     // 个人信息页数据提交
-    handleSubmit(e) {
+    handleSubmit = e => {
         e.preventDefault();
         let { userName, nickname, description, address, area } = this.state;
-        let _this = this;
-        _this.props.form.validateFields({ force: true }, (err, values) => {
+        this.props.form.validateFields({ force: true }, (err, values) => {
             if (!err) {
                 //判断文件是否上传完成
                 axios({
@@ -189,18 +185,17 @@ class Personal extends React.Component {
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function (response) {
+                }).then(response => {
                     message.success("修改成功", 2);
-                }).catch(function (error) {
+                }).catch(error => {
                     message.error("服务器无响应", 2);
                 });
             };
         });
     };
     //修改手机号码
-    handleChangeMobile(e) {
+    handleChangeMobile = e => {
         e.preventDefault();
-        let _this = this;
         let { editMobile, visible, userName } = this.state;
         if (checkNullvalue("手机号", editMobile)) {
             if (/^[1]([3-9])[0-9]{9}$/.test(editMobile) === false) {
@@ -216,23 +211,22 @@ class Personal extends React.Component {
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function (response) {
+                }).then(response => {
                     visible[0] = false;
-                    _this.setState({
+                    this.setState({
                         visible: visible,
                         mobile: editMobile
                     });
                     message.success("修改成功", 2);
-                }).catch(function (error) {
+                }).catch(error => {
                     message.error("服务器无响应", 2);
                 });
             };
         };
     };
     //修改邮箱地址
-    handleChangeEmail(e) {
+    handleChangeEmail = e => {
         e.preventDefault();
-        let _this = this;
         let { editEmail, visible, userName } = this.state;
         if (checkNullvalue("邮箱", editEmail)) {
             if (/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(editEmail) === false) {
@@ -248,23 +242,22 @@ class Personal extends React.Component {
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function (response) {
+                }).then(response => {
                     visible[1] = false;
-                    _this.setState({
+                    this.setState({
                         visible: visible,
                         email: editEmail
                     });
                     message.success("修改成功", 2);
-                }).catch(function (error) {
+                }).catch(error => {
                     message.error("服务器无响应", 2);
                 });
             };
         };
     };
     //修改密码
-    handleChangePsd(e) {
+    handleChangePsd = e => {
         e.preventDefault();
-        let _this = this;
         let { userName, password, newPassword, confirmPassword, visible } = this.state;
         if (checkNullvalue("旧密码", password) && checkNullvalue("新密码", newPassword) && checkNullvalue("确认密码", confirmPassword)) {
             if (/^[0-9a-zA-Z]{4,16}$/.test(newPassword) === false) {
@@ -284,7 +277,7 @@ class Personal extends React.Component {
                         headers: {
                             'Content-Type': 'application/json'
                         }
-                    }).then(function (response) {
+                    }).then(response => {
                         let { status, msg } = response.data;
                         switch (status) {
                             case -1:
@@ -296,7 +289,7 @@ class Personal extends React.Component {
                             case 1:
                                 message.success(msg, 2);
                                 visible[2] = false;
-                                _this.setState({
+                                this.setState({
                                     visible: visible,
                                 });
                                 break;
@@ -306,7 +299,7 @@ class Personal extends React.Component {
                             default:
                                 break;
                         };
-                    }).catch(function (error) {
+                    }).catch(error => {
                         message.error("服务器无响应", 2);
                     });
                 };
@@ -315,7 +308,6 @@ class Personal extends React.Component {
     };
     //账号申诉
     accountAppeal() {
-        let _this = this;
         let { userName } = this.state;
         axios({
             method: 'post',
@@ -327,11 +319,11 @@ class Personal extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (response) {
-            _this.setState({
+        }).then(response => {
+            this.setState({
                 accountStatus: response.data.status
             });
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器无响应");
         });
     };

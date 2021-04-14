@@ -19,10 +19,10 @@ export function getCookie(key) {
     return "";
 };
 
-// 设置cookie,默认是24小时
+// 设置cookie,默认是7天
 export function setCookie(key, value) {
     const d = new Date();
-    d.setTime(d.getTime() + (24 * 60 * 60 * 1000));
+    d.setTime(d.getTime() + (1000 * 60 * 60 * 24 * 7));
     const expires = "expires=" + d.toGMTString();
     document.cookie = key + "=" + value + "; " + expires;
 };

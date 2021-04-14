@@ -1,7 +1,14 @@
 .home-content {
-    background-color: rgb(244, 246, 248);
-    margin: 50px 0 0;
+    /* background-color: rgb(244, 246, 248); */
+    margin: 50px auto 0;
     padding: 20px;
     min-height: calc(100vh - 50px);
     width: 100%;
+    max-width: 2160px;
+}
+
+@media(max-width:768px) {
+    .home-content {
+        padding: 0px;
+    }
 }

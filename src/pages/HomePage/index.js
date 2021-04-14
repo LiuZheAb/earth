@@ -20,23 +20,21 @@ export default class Homepage extends React.Component {
         invisible: true
     };
     // 关闭顶部提示栏
-    handleClose() {
+    handleClose = () => {
         this.setState({
             invisible: true
         });
     };
     componentDidMount() {
-        const _this = this;
         apiPromise.then(res => {
             api = res.data.api;
             axios.get(api)
-                .then(function (response) {
-                    _this.setState({
+                .then(response => {
+                    this.setState({
                         invisible: true
                     });
-                })
-                .catch(function (error) {
-                    _this.setState({
+                }).catch(error => {
+                    this.setState({
                         invisible: false
                     });
                     message.error("服务器无响应", 2);
@@ -50,16 +48,16 @@ export default class Homepage extends React.Component {
                 {invisible ? (
                     null
                 ) : <Alert
-                        message="服务器无响应，请刷新重试"
-                        type="error"
-                        closable
-                        afterClose={this.handleClose.bind(this)}
-                        style={invisible ? {} : { position: "fixed", top: "0", width: "100%", zIndex: "9" }}
-                        banner
-                    />}
-                <HomeNavbar style={invisible ? {} : { position: "fixed", top: "37px" }} />
+                    message="服务器连接失败，请检查网络连接并刷新重试"
+                    type="error"
+                    closable
+                    afterClose={this.handleClose}
+                    style={invisible ? {} : { position: "fixed", top: 0, width: "100%", zIndex: 9 }}
+                    banner
+                />}
+                <HomeNavbar style={invisible ? {} : { position: "fixed", top: 37 }} />
                 {/* <Sidebar style={invisible ? {} : { position: "fixed", top: "87px" }} /> */}
-                <Container style={invisible ? { marginTop: "49px" } : { marginTop: "87px" }} />
+                <Container style={{ marginTop: invisible ? 49 : 87 }} />
                 <BackTop />
             </Layout>
         );

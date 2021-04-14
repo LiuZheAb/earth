@@ -1,0 +1,263 @@
+.calculate {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.calculate-header {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    line-height: 50px;
+    padding: 0 20px;
+    border-bottom: 1px solid #e6e9ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calculate-title {
+    font-size: 18px;
+    white-space: nowrap;
+    max-width: calc(100% - 184px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.calculate-logo {
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.calculate-logo img {
+    height: 24px;
+}
+
+.calculate-quit {
+    width: 72px;
+    text-align: right;
+    font-size: 24px;
+    color: #04b0e9;
+}
+
+.calculate-content {
+    height: calc(100% - 50px);
+}
+
+.calculate-col {
+    height: 100%;
+    transition: all .3s;
+}
+
+.calculate-col .ant-card {
+    height: 100%;
+}
+
+.calculate-col .ant-card .ant-card-extra {
+    padding: 0;
+}
+
+.calculate-col .ant-card-head {
+    height: 40px;
+}
+
+.calculate-col .ant-card-head-title {
+    font-size: 16px;
+    font-weight: 400;
+    padding: 8px 0;
+}
+
+.calculate-col .ant-card-body {
+    padding: 15px;
+    height: calc(100% - 48px);
+    border-right: 1px solid #e6e9ed;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.calculate-col .ant-card-body .ant-empty-image {
+    height: 100%;
+}
+
+.calculate-form .ant-form-item {
+    margin-bottom: 5px;
+}
+
+.calculate-form .ant-form-item-required::before {
+    display: none;
+}
+
+.calculate-form .ant-form-item-label label {
+    font-weight: 500;
+}
+
+.calculate-form .ant-checkbox-group {
+    line-height: unset;
+}
+
+.app-button {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 30px 0;
+}
+
+.calculate-map {
+    width: 100%;
+    height: 100%;
+}
+
+.loginfo-modal {
+    width: 100% !important;
+    max-width: 1000px;
+    top: 0;
+}
+
+.loginfo-modal .ant-modal-close-x {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    float: right;
+}
+
+.loginfo-modal .ant-modal-close {
+    width: 100%;
+    max-width: 1200px;
+    position: fixed;
+    top: 0;
+    right: unset;
+}
+
+/* .loginfo-modal .ant-modal-close-x svg {
+    fill: #fff;
+} */
+
+.loginfo-modal p {
+    /* color: #fff; */
+    font-family: "consolas";
+    font-size: 16px;
+}
+
+.input-file-wrapper .ant-form-item-control-wrapper, .input-file-wrapper .ant-form-item-control, .input-file-wrapper .ant-form-item-children {
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.input-file {
+    cursor: pointer;
+    overflow: hidden;
+    line-height: 32px;
+}
+
+.input-file input {
+    position: absolute;
+    font-size: 18px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.input-file:hover {
+    cursor: pointer;
+}
+
+.calculate .ant-btn:not(.input-file) {
+    height: 44px;
+    font-size: 16px;
+}
+
+.resdata-p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+}
+
+.data-loading-mask {
+    background-color: rgba(0, 0, 0, 0.15);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.vis-modal {
+    width: 100vw !important;
+    height: 100vh;
+    top: 0;
+}
+
+.vis-modal .ant-modal-close {
+    z-index: 9999;
+}
+
+.vis-modal .ant-modal-close-x {
+    float: right;
+    z-index: 999999;
+}
+
+.vis-modal .ant-modal-body {
+    padding: 0;
+}
+
+.listener {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: calc(100% - 9px);
+    padding: 0 8px;
+    height: 30px;
+    line-height: 30px;
+    border-top: 1px solid #e6e9ed;
+    background: #fff;
+}
+
+.listener-btn {
+    float: right;
+    color: #1890ff;
+    cursor: pointer;
+}
+
+.listener-btn:hover {
+    color: #40a9ff;
+}
+
+.listener-modal {
+    top: 0;
+    padding: 0;
+}
+
+
+@media (max-width: 576px) {
+    .calculate {
+        min-height: 100vh;
+        height: auto;
+    }
+    .calculate .calculate-col {
+        height: auto !important;
+    }
+    .calculate-header {
+        padding: 0 10px;
+    }
+    .calculate-title {
+        max-width: calc(100% - 164px);
+    }
+    .ant-col-xs-24.ant-form-item-label {
+        display: block;
+        margin: 0;
+        padding: 0 0 8px;
+        line-height: 1.5;
+        white-space: initial;
+        text-align: left;
+    }
+}

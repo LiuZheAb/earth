@@ -11,11 +11,9 @@ import { Link } from "react-router-dom";
 import { Row, Col, Result, Spin, Modal, Drawer, message, Pagination } from 'antd';
 import { Document, Page, pdfjs } from 'react-pdf';
 import IconFont from '../IconFont';
-import apiPromise from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 
-let api = "";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default class ModuleList extends React.Component {
@@ -38,24 +36,18 @@ export default class ModuleList extends React.Component {
         pageNumber: 1
     };
     componentDidMount() {
-        const _this = this;
-        //获取模块名和应用列表数组
-        apiPromise.then(res => {
-            api = res.data.api;
-            axios.get(api + 'home')
-                .then(function ({ data }) {
-                    delete data["典型示范 (Decomonstration)"];
-                    _this.setState({
-                        modules: Object.keys(data),
-                        subModules: data,
-                        loading: "done"
-                    });
-                }).catch(function (error) {
-                    _this.setState({
-                        loading: "error"
-                    });
-                });
+        let { data, loading, api } = this.props;
+        this.setState({
+            loading,
+            api
         });
+        if (data) {
+            delete data["典型示范 (Demonstration)"];
+            this.setState({
+                modules: Object.keys(this.props.data),
+                subModules: this.props.data,
+            });
+        }
     };
     //点击应用时将所点的应用名称保存到sessionStorage中
     setApp(appName, moduleName, idenMod, stepNum) {
@@ -71,16 +63,15 @@ export default class ModuleList extends React.Component {
         this.setState({
             secondModules: []
         });
-        let _this = this;
-        axios.get(api + 'subHome', {
+        axios.get(this.state.api + 'subHome', {
             params: {
                 subModule: menuName
             }
-        }).then(function (response) {
-            _this.setState({
+        }).then(response => {
+            this.setState({
                 secondModules: response.data
             })
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器无响应", 2)
         });
         this.setState({
@@ -102,16 +93,15 @@ export default class ModuleList extends React.Component {
         this.setState({
             thirdModules: []
         });
-        let _this = this;
-        axios.get(api + 'twoSubHome', {
+        axios.get(this.state.api + 'twoSubHome', {
             params: {
                 twoSubModule: menuName
             }
-        }).then(function (response) {
-            _this.setState({
+        }).then(response => {
+            this.setState({
                 thirdModules: response.data
             });
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器错误", 2)
         });
         this.setState({
@@ -164,17 +154,16 @@ export default class ModuleList extends React.Component {
             docTitle: "",
             docContent: ""
         });
-        let _this = this;
-        axios.get(api + 'mod/doc', {
+        axios.get(this.state.api + 'mod/doc', {
             params: {
                 modIndex: index + 1
             }
-        }).then(function (response) {
-            _this.setState({
+        }).then(response => {
+            this.setState({
                 docTitle: response.data.data.docTitle,
                 docContent: response.data.data.docContent
             });
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器错误", 2)
         });
         this.setState({
@@ -191,7 +180,7 @@ export default class ModuleList extends React.Component {
     submitClickedApp = appName => {
         axios({
             method: 'post',
-            url: api + 'recentvisit',
+            url: this.state.api + 'recentvisit',
             responseType: 'json',
             data: {
                 userName: getCookie("userName"),
@@ -209,7 +198,7 @@ export default class ModuleList extends React.Component {
     runApp(appName, moduleName) {
         axios({
             method: 'post',
-            url: api + 'runContain',
+            url: this.state.api + 'runContain',
             data: {
                 appName,
                 moduleName
@@ -217,7 +206,7 @@ export default class ModuleList extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (response) {
+        }).then(response => {
             let { uri } = response.data;
             let msg = response.data.message;
             if (uri) {
@@ -228,9 +217,23 @@ export default class ModuleList extends React.Component {
             } else if (msg) {
                 message.info(msg, 2)
             }
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器无响应");
         });
+    }
+    componentWillReceiveProps(prevProps) {
+        let data = prevProps.data && JSON.parse(JSON.stringify(prevProps.data));
+        this.setState({
+            loading: prevProps.loading,
+            api: prevProps.api
+        })
+        if (data) {
+            delete data["典型示范 (Demonstration)"];
+            this.setState({
+                modules: Object.keys(data),
+                subModules: data,
+            });
+        }
     }
     render() {
         const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2, pdfModalVisible, pageNumber, numPages } = this.state;
@@ -274,7 +277,7 @@ export default class ModuleList extends React.Component {
                                                 </div>
                                                 <div className="app-list">
                                                     <ul>
-                                                        {subModules[module].map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
+                                                        {subModules[module].map(({ menuName, url, hasSub, idenMod, stepNum }, index) =>
                                                             <li key={index} title={menuName}>
                                                                 {url ?
                                                                     <>
@@ -292,7 +295,7 @@ export default class ModuleList extends React.Component {
                                                                             ?
                                                                             <>
                                                                                 <IconFont type="earthjinru1" />
-                                                                                <Link to="/details" onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
+                                                                                <Link to="/calculate" onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                                             </>
                                                                             :
                                                                             <>
@@ -325,9 +328,8 @@ export default class ModuleList extends React.Component {
                     {currentMenu ?
                         <>
                             <Document
-                                file={currentMenu.indexOf("地质参数库") === -1 ? "Geophysics.pdf" : "Geology.pdf"}
+                                file={currentMenu.indexOf("地质参数库") === -1 ? "./Geophysics.pdf" : "./Geology.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
-                                renderMode="svg"
                                 loading="正在努力加载中"
                                 externalLinkTarget="_blank"
                             >
@@ -363,7 +365,7 @@ export default class ModuleList extends React.Component {
                                             :
                                             <>
                                                 <IconFont type="earthjinru1" />
-                                                <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
+                                                <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                             </>
                                     }
                                 </li>
@@ -391,7 +393,7 @@ export default class ModuleList extends React.Component {
                                     :
                                     <>
                                         <IconFont type="earthjinru1" />
-                                        <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
+                                        <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                     </>
                                 }
                             </li>

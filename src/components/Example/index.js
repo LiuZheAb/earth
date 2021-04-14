@@ -1,56 +1,100 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Col, Modal, message } from 'antd';
-import { Link } from "react-router-dom";
+import { Col, Modal, message, Select, Button, Pagination } from 'antd';
+import { Document, Page, pdfjs } from 'react-pdf';
+import { Link, withRouter } from "react-router-dom";
 import IconFont from '../IconFont';
-import apiPromise from '../../assets/url.js';
 import { getCookie } from "../../utils/cookies";
 import "./index.css";
-let api = "";
 
-export default class index extends Component {
+const { Option } = Select;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+class index extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
             data: [],
+            api: "",
             modalVisible: false,
             currentMenu: null,
             secondModules: [],
             thirdModules: [],
             modalVisible2: false,
             currentMenu2: null,
+            geoModalVisible: false,
+            geoModalData1: {},
+            geoModalData2: [],
+            geoModalData3: [],
+            geoModalData4: [],
+            select1: undefined,
+            select2: undefined,
+            select3: undefined,
+            select4: undefined,
+            currentItem: undefined,
+            pdfModalVisible: false,
+            numPages: null,
+            pageNumber: 1
         }
     }
     componentDidMount() {
-        const _this = this;
-        //获取模块名和应用列表数组
-        apiPromise.then(res => {
-            api = res.data.api;
-            axios.get(api + 'home')
-                .then(function (response) {
-                    _this.setState({
-                        data: response.data["典型示范 (Decomonstration)"],
-                    });
-                }).catch(function (error) {
-                });
-        });
+        let { data, api } = this.props;
+        if (data && api) {
+            let geoModalData1 = {
+                "高分辨率地震成像方法与技术": data["高分辨率地震成像方法与技术"],
+                "位场正反演方法与技术": data["位场正反演方法与技术"],
+                "电磁场正反演方法与技术": data["电磁场正反演方法与技术"],
+                "人工智能综合地球物理技术": data["人工智能综合地球物理技术"],
+            };
+            this.setState({
+                data: data["典型示范 (Demonstration)"],
+                api,
+                geoModalData1
+            });
+        }
     }
+    // 显示pdf菜单
+    showPdfModal = menuName => {
+        this.setState({
+            pdfModalVisible: true,
+            currentMenu: menuName,
+            pageNumber: 1
+        })
+    }
+    // 点击pdf菜单确认按钮
+    handlePdfOk = e => {
+        this.setState({
+            pdfModalVisible: false
+        });
+    };
+    // 点击pdf菜单取消按钮
+    handlePdfCancel = e => {
+        this.setState({
+            pdfModalVisible: false,
+            currentMenu: null
+        });
+    };
+    onDocumentLoadSuccess = ({ numPages }) => {
+        this.setState({ numPages });
+    }
+    onPageChange = page => {
+        this.setState({ pageNumber: page });
+    };
     // 显示二级菜单
     showModal = (menuName, module) => {
         this.setState({
             secondModules: []
         });
-        let _this = this;
-        axios.get(api + 'subHome', {
+        axios.get(this.state.api + 'subHome', {
             params: {
                 subModule: menuName
             }
-        }).then(function (response) {
-            _this.setState({
+        }).then(response => {
+            this.setState({
                 secondModules: response.data
             })
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器无响应", 2)
         });
         this.setState({
@@ -62,7 +106,7 @@ export default class index extends Component {
     runApp(appName, moduleName) {
         axios({
             method: 'post',
-            url: api + 'runContain',
+            url: this.state.api + 'runContain',
             data: {
                 appName,
                 moduleName
@@ -70,7 +114,7 @@ export default class index extends Component {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (response) {
+        }).then(response => {
             let { uri } = response.data;
             let msg = response.data.message;
             if (uri) {
@@ -81,38 +125,40 @@ export default class index extends Component {
             } else if (msg) {
                 message.info(msg, 2)
             }
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器无响应");
         });
     }
     //点击应用时将所点的应用名称保存到sessionStorage中
-    setApp(appName, moduleName, idenMod) {
+    setApp(appName, moduleName, idenMod, stepNum) {
         sessionStorage.setItem("appName", appName);
         sessionStorage.setItem("moduleName", this.state.currentMenu2 || this.state.currentMenu || moduleName);
         sessionStorage.setItem("idenMod", idenMod);
+        sessionStorage.setItem("stepNum", stepNum);
+        sessionStorage.setItem("nowStep", 1);
         this.submitClickedApp(appName);
     };
     // 点击二级菜单确认按钮
-    handleOk = e => {
+    handleOk = () => {
         this.setState({
             modalVisible: false
         });
     };
     // 点击二级菜单取消按钮
-    handleCancel = e => {
+    handleCancel = () => {
         this.setState({
             modalVisible: false,
-            currentMenu: null
+            currentMenu: null,
         });
     };
     // 点击三级菜单确认按钮
-    handleOk2 = e => {
+    handleOk2 = () => {
         this.setState({
             modalVisible2: false
         });
     };
     // 点击三级菜单取消按钮
-    handleCancel2 = e => {
+    handleCancel2 = () => {
         this.setState({
             modalVisible2: false,
             currentMenu2: null
@@ -122,7 +168,7 @@ export default class index extends Component {
     submitClickedApp = appName => {
         axios({
             method: 'post',
-            url: api + 'recentvisit',
+            url: this.state.api + 'recentvisit',
             responseType: 'json',
             data: {
                 userName: getCookie("userName"),
@@ -131,50 +177,156 @@ export default class index extends Component {
             headers: { 'Content-Type': 'application/json' }
         })
     }
+    componentWillReceiveProps(prevProps) {
+        let { data, api } = prevProps;
+        if (data && api) {
+            let geoModalData1 = {
+                "高分辨率地震成像方法与技术": data["高分辨率地震成像方法与技术"],
+                "位场正反演方法与技术": data["位场正反演方法与技术"],
+                "电磁场正反演方法与技术": data["电磁场正反演方法与技术"],
+                "人工智能综合地球物理技术": data["人工智能综合地球物理技术"],
+            };
+            this.setState({
+                data: data["典型示范 (Demonstration)"],
+                api,
+                geoModalData1,
+            });
+        }
+    }
+    showGeoModal = menuName => {
+        this.setState({
+            geoModalVisible: true,
+            currentMenu: menuName,
+        })
+    }
+    hideGeoModal = () => {
+        this.setState({
+            geoModalVisible: false,
+            currentMenu: null,
+            select1: undefined,
+            select2: undefined,
+            select3: undefined,
+            select4: undefined,
+            currentItem: undefined
+        });
+    }
+    handleChange1 = value => {
+        let { geoModalData1 } = this.state;
+        this.setState({
+            select1: value,
+            select2: undefined,
+            select3: undefined,
+            select4: undefined,
+            geoModalData2: geoModalData1[value],
+            currentItem: undefined
+        });
+    }
+    handleChange2 = value => {
+        let { geoModalData2 } = this.state;
+        this.setState({
+            select2: value,
+            select3: undefined,
+            select4: undefined,
+            currentItem: undefined
+        })
+        if (geoModalData2[value].hasSub) {
+            axios.get(this.state.api + 'subHome', {
+                params: {
+                    subModule: geoModalData2[value].menuName
+                }
+            }).then(response => {
+                this.setState({
+                    geoModalData3: response.data
+                })
+            }).catch(error => {
+                message.error("服务器无响应", 2)
+            });
+        } else {
+            this.setState({
+                geoModalData3: [],
+                currentItem: geoModalData2[value]
+            })
+        }
+    }
+    handleChange3 = value => {
+        let { geoModalData3 } = this.state;
+        this.setState({
+            select3: value,
+            select4: undefined,
+            currentItem: undefined
+        })
+        if (geoModalData3[value].hasSub) {
+            axios.get(this.state.api + 'twoSubHome', {
+                params: {
+                    twoSubModule: geoModalData3[value].menuName
+                }
+            }).then(response => {
+                this.setState({
+                    geoModalData4: response.data
+                })
+            }).catch(error => {
+                message.error("服务器无响应", 2)
+            });
+        } else {
+            this.setState({
+                geoModalData4: [],
+                currentItem: geoModalData3[value]
+            })
+        }
+    }
+    handleChange4 = value => {
+        let { geoModalData4 } = this.state;
+        this.setState({
+            select4: value,
+            currentItem: geoModalData4[value]
+        })
+    }
+    linkToCalculate = () => {
+        let { menuName, idenMod, stepNum } = this.state.currentItem;
+        this.setApp(menuName, undefined, idenMod, stepNum);
+        this.props.history.push("/calculate");
+    }
     render() {
-        const { data, modalVisible, currentMenu, secondModules, thirdModules, modalVisible2, currentMenu2 } = this.state;
+        const { data, modalVisible, currentMenu, secondModules, thirdModules, modalVisible2, currentMenu2,
+            geoModalVisible, geoModalData1, geoModalData2, geoModalData3, geoModalData4, select1, select2, select3, select4,
+            pdfModalVisible, pageNumber, numPages, currentItem
+        } = this.state;
         return (
-            <Col lg={12} xs={24} style={{ display: "flex", alignItems: "stretch",marginTop:10 }}>
+            <Col lg={12} xs={24} style={{ display: "flex", alignItems: "stretch", marginTop: 10 }}>
                 <div className="box-shadow example-area" style={{ height: "100%", width: "100%" }}>
                     <div className="app-icon">
                         <IconFont type="earthcase" />
                     </div>
                     <div className="app-des">
                         <span className="module-name" style={{ cursor: "default" }}>
-                            典型示范 (Decomonstration)
+                            典型示范 (Demonstration)
                         </span>
                         <div className="app-list">
                             <ul>
-                                {data.map(({ menuName, url, hasSub, hasParam, idenMod }, index) =>
+                                {data.map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
                                     <li key={index} title={menuName}>
                                         {url ?
                                             <>
                                                 <IconFont type="earthlianjie" />
-                                                <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</a>
+                                                <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</a>
                                             </>
                                             :
                                             hasSub ?
                                                 <>
                                                     <IconFont type="earthcaidan2" />
-                                                    <span onClick={this.showModal.bind(this, menuName, undefined)}>{menuName}</span>
+                                                    <span onClick={menuName === "地质模型 (Geological models)" ? this.showGeoModal.bind(this, menuName) : this.showModal.bind(this, menuName, undefined)}>{menuName}</span>
                                                 </>
                                                 :
                                                 menuName.indexOf("参数库") === -1
                                                     ?
-                                                    hasParam ?
-                                                        <>
-                                                            <IconFont type="earthjinru1" />
-                                                            <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
-                                                        </>
-                                                        :
-                                                        <>
-                                                            <IconFont type="earthyunhang" />
-                                                            <span onClick={() => { this.runApp(menuName); this.setApp(menuName, undefined, idenMod) }}>{menuName}</span>
-                                                        </>
-                                                    :
                                                     <>
                                                         <IconFont type="earthjinru1" />
-                                                        <span>{menuName}</span>
+                                                        <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <IconFont type="earthbookresource" />
+                                                        <span onClick={this.showPdfModal.bind(this, menuName)}>{menuName}</span>
                                                     </>
                                         }
                                     </li>
@@ -209,7 +361,7 @@ export default class index extends Component {
                                             hasParam ?
                                                 <>
                                                     <IconFont type="earthjinru1" />
-                                                    <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
+                                                    <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
                                                 </>
                                                 :
                                                 <>
@@ -243,7 +395,7 @@ export default class index extends Component {
                                     hasParam ?
                                         <>
                                             <IconFont type="earthjinru1" />
-                                            <Link to="/details" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
+                                            <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
                                         </>
                                         :
                                         <>
@@ -255,7 +407,72 @@ export default class index extends Component {
                         )
                         : null}
                 </Modal>
+                <Modal
+                    className="pdf-modal"
+                    title={currentMenu}
+                    visible={pdfModalVisible}
+                    onOk={this.handlePdfOk}
+                    onCancel={this.handlePdfCancel}
+                    footer={null}
+                >
+                    {currentMenu ?
+                        <>
+                            <Document
+                                file={currentMenu.indexOf("地质参数库") === -1 ? "./Geophysics.pdf" : "./Geology.pdf"}
+                                onLoadSuccess={this.onDocumentLoadSuccess}
+                                loading="正在努力加载中"
+                                externalLinkTarget="_blank"
+                            >
+                                <Page pageNumber={pageNumber} />
+                            </Document>
+                            <Pagination current={pageNumber} total={numPages} pageSize={1} onChange={this.onPageChange} />
+                        </>
+                        : null
+                    }
+                </Modal>
+                <Modal
+                    title={currentMenu}
+                    className="module-modal"
+                    visible={geoModalVisible}
+                    footer={<Button type="primary" onClick={this.linkToCalculate} disabled={currentItem ? false : true} title={currentItem ? "" : "请选择子模块"}>前往计算</Button>}
+                    onCancel={this.hideGeoModal}
+                >
+                    <div className="module-modal-item">
+                        <span className="module-modal-item-label">模块：</span>
+                        <Select onChange={this.handleChange1} placeholder="请选择模块" value={select1}>
+                            {Object.keys(geoModalData1).map(item =>
+                                <Option value={item} key={item}>{item}</Option>
+                            )}
+                        </Select>
+                    </div>
+                    {select1 && <div className="module-modal-item">
+                        <span className="module-modal-item-label">子模块1：</span>
+                        <Select onChange={this.handleChange2} placeholder="请选择子模块1" value={select2}>
+                            {geoModalData2.map((item, index) =>
+                                <Option value={index} key={item.idenMod}>{item.menuName}</Option>
+                            )}
+                        </Select>
+                    </div>}
+                    {select2 !== undefined && geoModalData3.length > 0 && <div className="module-modal-item">
+                        <span className="module-modal-item-label">子模块2：</span>
+                        <Select onChange={this.handleChange3} placeholder="请选择子模块2" value={select3}>
+                            {geoModalData3.map((item, index) =>
+                                <Option value={index} key={item.idenMod}>{item.menuName}</Option>
+                            )}
+                        </Select>
+                    </div>}
+                    {select3 !== undefined && geoModalData4.length > 0 && <div className="module-modal-item">
+                        <span className="module-modal-item-label">子模块3：</span>
+                        <Select onChange={this.handleChange4} placeholder="请选择子模块3" value={select4}>
+                            {geoModalData4.map((item, index) =>
+                                <Option value={index} key={item.idenMod}>{item.menuName}</Option>
+                            )}
+                        </Select>
+                    </div>}
+                </Modal>
             </Col>
         )
     }
 }
+
+export default withRouter(index);

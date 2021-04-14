@@ -47,20 +47,19 @@ class NewApp extends React.Component {
         this.continue = this.continue.bind(this);
     };
     componentDidMount() {
-        const _this = this;
         //获取模块列表
         apiPromise.then(res => {
             api = res.data.api;
             axios.get(api + "homelanguage")
-                .then(function (response) {
+                .then(response => {
                     let { modules, subModules, langType } = response.data
-                    _this.setState({
+                    this.setState({
                         parentModules: modules,
                         modules: subModules,
                         langTypes: langType
                     });
                 })
-                .catch(function (error) {
+                .catch(error => {
                     message.error("服务器无响应", 2);
                 });
         });
@@ -192,7 +191,7 @@ class NewApp extends React.Component {
         };
     };
     //提交应用数据时调用
-    handleSubmit(e) {
+    handleSubmit = (e) => {
         e.preventDefault();
         let { uploaded, appName, module, subModule, langType, params, path, fileName } = this.state;
         //判断文件是否上传完成
@@ -214,8 +213,7 @@ class NewApp extends React.Component {
                     return false;
                 };
                 if (!err && !checkRepeatName() && getUserCookie()) {
-                    let _this = this;
-                    _this.setState({
+                    this.setState({
                         loading: true
                     });
                     axios({
@@ -234,10 +232,10 @@ class NewApp extends React.Component {
                         headers: {
                             "Content-Type": "application/json"
                         }
-                    }).then(function (response) {
+                    }).then(response => {
                         if (response.data.state === 1) {
                             //提交成功后将button设置不可点
-                            _this.setState({
+                            this.setState({
                                 submitResult: {
                                     state: 1,
                                     status: "success",
@@ -249,7 +247,7 @@ class NewApp extends React.Component {
                             });
                         } if (response.data.state === 2) {
                             //提交失败将button设置可点
-                            _this.setState({
+                            this.setState({
                                 submitResult: {
                                     state: 2,
                                     status: "error",
@@ -261,7 +259,7 @@ class NewApp extends React.Component {
                             });
                         } if (response.data.state === 0) {
                             //提交失败将button设置可点
-                            _this.setState({
+                            this.setState({
                                 submitResult: {
                                     state: 0,
                                     status: "error",
@@ -272,8 +270,8 @@ class NewApp extends React.Component {
                                 visible: true
                             });
                         };
-                    }).catch(function (error) {
-                        _this.setState({
+                    }).catch(error => {
+                        this.setState({
                             submitResult: {
                                 state: -1,
                                 status: "error",
@@ -329,7 +327,7 @@ class NewApp extends React.Component {
     // 点击前往计算时将应用名称保存到sessionStorage中
     setApp(app) {
         sessionStorage.setItem("appName", app);
-        this.props.history.push("/details");
+        this.props.history.push("/calculate");
     };
     render() {
         const { getFieldDecorator } = this.props.form;

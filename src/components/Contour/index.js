@@ -41,13 +41,12 @@ export default class Contour extends React.Component {
     // 读取数据文件
     importData(e) {
         let dataSource = [], rowNum = 0, columnNum = 0, min = 0, max = 0;
-        let _this = this;
         if (e.target.value) {
             let file = document.getElementById('fileMatlab').files[0];
             const reader = new FileReader();
             //外层作用域的重新定义
             reader.readAsText(file);
-            reader.onload = function () {
+            reader.onload =  ()=> {
                 //提取文件中的数据源
                 //读取文件，文件的内容是string
                 var importJson1 = reader.result;
@@ -81,7 +80,7 @@ export default class Contour extends React.Component {
                         if (min > dataSource[i][j]) min = dataSource[i][j];//如果该数小于min，就把其赋值给min 
                     }
                 }
-                _this.showEcharts(rowNum, columnNum, min, max, dataSource);
+                this.showEcharts(rowNum, columnNum, min, max, dataSource);
             };
         }
     };

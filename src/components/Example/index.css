@@ -2,3 +2,27 @@
     background: #fff;
     display: inline-flex;
 }
+
+.module-modal {
+    width: 600px !important;
+}
+
+.module-modal .ant-modal-header {
+    padding-right: 56px;
+}
+
+.module-modal .module-modal-item {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.module-modal .module-modal-item-label {
+    width: 100px;
+    text-align: right;
+    line-height: 32px;
+}
+
+.module-modal .ant-select {
+    width: calc(100% - 100px);
+    max-width: 300px;
+}

@@ -24,7 +24,6 @@ class EditApp extends Component {
         }
     }
     componentDidMount() {
-        let _this = this;
         //获取应用数据
         apiPromise.then(res => {
             api = res.data.api;
@@ -37,14 +36,14 @@ class EditApp extends Component {
                 },
                 headers: { 'Content-Type': 'application/json' },
             })
-                .then(function (response) {
+                .then(response => {
                     if (response.data.status) {
-                        _this.setState({
+                        this.setState({
                             project: response.data.message
                         });
                     };
                 })
-                .catch(function (error) {
+                .catch(error => {
                     message.error("服务器无响应", 2);
                 });
         });
@@ -172,37 +171,23 @@ class EditApp extends Component {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (response) {
+        }).then(response => {
             message.success("修改成功", 2);
-        }).catch(function (error) {
+        }).catch(error => {
             message.error("服务器无响应", 2);
         });
     };
     showDeleteConfirm(index) {
-        let _this = this;
         confirm({
             title: '确定删除这个应用吗?',
             content: '该操作无法撤回！',
             okText: '确定',
             okType: 'danger',
             cancelText: '取消',
-            onOk() {
-                let { project } = _this.state;
-                // let key = project[index];
+            onOk: () => {
+                let { project } = this.state;
                 project.splice(index, 1);
-                _this.setState({ project });
-                // axios({
-                //     method: 'post',
-                //     url: api + '/project/check',
-                //     responseType: 'json',
-                //     data: {
-                //         userName: getCookie("userName"),
-                //         appName: key.appName
-                //     }
-                // }).then(function (response) {
-                //     // eslint-disable-next-line 
-                // }).catch(function (error) {
-                // });
+                this.setState({ project });
             }
         });
     }

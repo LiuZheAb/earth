@@ -15,7 +15,6 @@ const Home = loadable(() => import('../Home'));
 const Console = loadable(() => import('../Console'));
 const NewApp = loadable(() => import('../NewApp'));
 const Personal = loadable(() => import('../Personal'));
-const Example = loadable(() => import('../Example'));
 const { Content } = Layout;
 
 export default class Container extends React.Component {
@@ -26,8 +25,6 @@ export default class Container extends React.Component {
                 <Route path="/console"><Console /></Route>
                 <Route path="/newapp"><NewApp /></Route>
                 <Route path="/personal"><Personal /></Route>
-                <Route path="/example"><Example /></Route>
-                <Route path="/datarender">数据渲染</Route>
             </Content>
         );
     };

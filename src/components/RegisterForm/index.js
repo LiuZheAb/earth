@@ -35,21 +35,20 @@ class RegisterForm extends Component {
         };
     };
     componentDidMount() {
-        const _this = this;
         apiPromise.then(res => {
             api = res.data.api;
             //获取验证码
             axios.get(api + 'firstgetcaptcha')
-                .then(function (response) {
-                    _this.setState({
+                .then(response => {
+                    this.setState({
                         captchaId: response.data["getCaptchaID"],
                         captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                         invisible: true
                     });
-                }).catch(function (error) {
+                }).catch(error => {
                     message.error("服务器无响应", 2);
-                    _this.setState({
+                    this.setState({
                         isLoaded: false,
                         invisible: false
                     });
@@ -61,17 +60,16 @@ class RegisterForm extends Component {
         if (this.state.captchaId) {
             this.setState({ captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime() });
         } else {
-            const _this = this;
             axios.get(api + 'firstgetcaptcha')
-                .then(function (response) {
-                    _this.setState({
+                .then(response => {
+                    this.setState({
                         captchaId: response.data["getCaptchaID"],
                         captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                     });
-                }).catch(function (error) {
+                }).catch(error => {
                     message.error("服务器无响应", 2);
-                    _this.setState({
+                    this.setState({
                         isLoaded: false,
                         error: error
                     });
@@ -156,11 +154,10 @@ class RegisterForm extends Component {
         })
     }
     //注册提交表单时调用
-    handleSubmitregister = (e) => {
+    handleSubmitregister = e => {
         e.preventDefault();
-        const _this = this;
         let { username, password, captcha, captchaId, email } = this.state;
-        _this.props.form.validateFields({ force: true }, (err, values) => {
+        this.props.form.validateFields({ force: true }, (err, values) => {
             if (!err) {
                 axios({
                     method: 'post',
@@ -174,50 +171,48 @@ class RegisterForm extends Component {
                         email: email
                     },
                     headers: { 'Content-Type': 'application/json' },
-                })
-                    .then(function (response) {
-                        _this.setState({
-                            registerState: response.data["status"],
-                            message: response.data["message"]
-                        });
-                        _this.props.form.validateFields({ force: true }, (err, values) => {
-                            // eslint-disable-next-line 
-                            switch (response.data["status"]) {
-                                case 0: {
-                                    setTimeout(_this.setState({
-                                        registerState: 4,
-                                        captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
-                                    }), 3000);
-                                    break;
-                                }
-                                case 1: {
-                                    message.success("注册成功", 1);
-                                    setCookie("userName", username);
-                                    setTimeout(() => {
-                                        _this.props.history.push('/home');
-                                    }, 1000);
-                                    break;
-                                }
-                                case 2: {
-                                    setTimeout(_this.setState({
-                                        registerState: 4,
-                                        captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
-                                    }), 3000);
-                                    break;
-                                }
-                                case 3: {
-                                    setTimeout(_this.setState({
-                                        registerState: 4,
-                                        captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
-                                    }), 3000);
-                                    break;
-                                }
-                            };
-                        });
-                    })
-                    .catch(function (error) {
-                        message.error("注册失败", 2);
+                }).then(response => {
+                    this.setState({
+                        registerState: response.data["status"],
+                        message: response.data["message"]
                     });
+                    this.props.form.validateFields({ force: true }, (err, values) => {
+                        // eslint-disable-next-line 
+                        switch (response.data["status"]) {
+                            case 0: {
+                                setTimeout(this.setState({
+                                    registerState: 4,
+                                    captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
+                                }), 3000);
+                                break;
+                            }
+                            case 1: {
+                                message.success("注册成功", 1);
+                                setCookie("userName", username);
+                                setTimeout(() => {
+                                    this.props.history.push('/home');
+                                }, 1000);
+                                break;
+                            }
+                            case 2: {
+                                setTimeout(this.setState({
+                                    registerState: 4,
+                                    captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
+                                }), 3000);
+                                break;
+                            }
+                            case 3: {
+                                setTimeout(this.setState({
+                                    registerState: 4,
+                                    captchaUrl: api + "captcha/" + captchaId + '.png?reload=' + (new Date()).getTime(),
+                                }), 3000);
+                                break;
+                            }
+                        };
+                    });
+                }).catch(error => {
+                    message.error("注册失败", 2);
+                });
             };
         });
     };

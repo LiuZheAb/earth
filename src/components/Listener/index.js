@@ -11,15 +11,37 @@ import DataSet from "@antv/data-set";
 import { Divider, message } from 'antd';
 import { Chart, Geom, Axis, Tooltip, Coord, Label, View, } from "bizcharts";
 
+//获取最小值
+let getMin = arr => {
+    var min = arr[0];
+    for (var i = 0; i < arr.length; i++) {
+        if (min > arr[i]) {
+            min = arr[i];
+        }
+    }
+    return min;
+}
+//获取最大值
+let getMax = arr => {
+    var max = arr[0];
+    for (var i = 0; i < arr.length; i++) {
+        if (max < arr[i]) {
+            max = arr[i];
+        }
+    }
+    return max;
+}
 export default class Listener extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             pieData: [],
             lineData: [],
-            maxLineData: 5,
             minLineData: 0,
-            ip: props.ip || props.uri.split("://")[1].split(":")[0]
+            maxLineData: 100,
+            ip: props.ip ? props.ip : props.uri && props.uri.split("://")[1].split(":")[0],
+            memoryUsed: undefined,
+            cpuUsed: undefined
         };
     };
     pieTimer = undefined;
@@ -31,55 +53,45 @@ export default class Listener extends React.Component {
     }
     // 获取内存饼图数据
     getPieData = () => {
-        const _this = this;
-        this.pieTimer = window.setTimeout(() => {
-            axios.get("http://" + this.state.ip + ':8080/monitor/memory')
-                .then(function (response) {
-                    _this.setState({
-                        pieData: response.data,
-                    },
-                        () => {
-                            let pieData = _this.state.pieData;
-                            if (pieData[1].value < 50) {
-                                pieData[1].value += 50
-                                _this.setState({ pieData: pieData })
-                            };
-                            _this.getPieData();
+        if (this.state.ip) {
+            this.pieTimer = window.setTimeout(() => {
+                axios.get("http://" + this.state.ip + ':8666/monitor/memory')
+                    .then(response => {
+                        this.setState({
+                            pieData: response.data,
+                            memoryUsed: Number(response.data[0].value.toFixed(2))
+                        }, () => {
+                            this.getPieData();
                         });
-                })
-                .catch(function (error) {
-                    message.error("服务器无响应", 2);
-                });
-        }, 3000);
+                    })
+                    .catch(error => {
+                        message.error("服务器无响应", 2);
+                    });
+            }, 3000);
+        }
     };
     // 获取CPU折线图数据
     getLineData = () => {
-        const _this = this;
-        this.requestRef = requestAnimationFrame(() => {
-            this.lineTimer = window.setTimeout(() => {
-                axios.get("http://" + this.state.ip + ':8080/monitor/cpu')
-                    .then(function (response) {
-                        let arr = [];
-                        for (let i = 0; i < response.data.length; i++) {
-                            arr.push(response.data[i].value);
-                        };
-                        let maxLineData = Math.max.apply(null, arr);
-                        let minLineData = Math.min.apply(null, arr);
-                        _this.setState({
-                            lineData: response.data,
-                            maxLineData: Math.ceil(maxLineData / 5) * 5,
-                            minLineData: Math.floor(minLineData / 5) * 5
-                        },
-                            () => {
-                                _this.getLineData();
-                            }
-                        )
-                    })
-                    .catch(function (error) {
-                        message.error("服务器无响应", 2);
-                    });
-            }, 1000);
-        });
+        if (this.state.ip) {
+            this.requestRef = requestAnimationFrame(() => {
+                this.lineTimer = window.setTimeout(() => {
+                    axios.get("http://" + this.state.ip + ':8666/monitor/cpu')
+                        .then(response => {
+                            let lineData = response.data.map(item => ({ time: item.time, value: Number((100 - item.value).toFixed(2)) }));
+                            let lineValue = response.data.map(item => Number((100 - item.value).toFixed(2)));
+                            let minLineData = Math.floor(Number(getMin(lineValue).toFixed(0)) / 10) * 10;
+                            let maxLineData = Math.ceil(Number(getMax(lineValue).toFixed(0)) / 10) * 10;
+                            this.setState({
+                                lineData, minLineData, maxLineData, cpuUsed: lineValue.pop()
+                            }, () => {
+                                this.getLineData();
+                            })
+                        }).catch(error => {
+                            message.error("服务器无响应", 2);
+                        });
+                }, 2000);
+            });
+        }
     };
     // 页面注销时清空计时器
     componentWillUnmount() {
@@ -88,7 +100,8 @@ export default class Listener extends React.Component {
     };
     render() {
         const { DataView } = DataSet;
-        const { pieData, lineData, minLineData, maxLineData } = this.state;
+        let { pieData, lineData, minLineData, maxLineData, memoryUsed, cpuUsed } = this.state;
+        let { toggle } = this.props;
         const dv = new DataView();
         dv.source(pieData).transform({
             type: "percent",
@@ -113,11 +126,12 @@ export default class Listener extends React.Component {
         });
         const cols1 = {
             value: {
+                alias: "CPU使用率(%)",
                 min: minLineData,
                 max: maxLineData
             },
             time: {
-                range: [0, 1]
+                alias: "时间",
             },
             percent: {
                 formatter: val => {
@@ -126,7 +140,19 @@ export default class Listener extends React.Component {
                 }
             }
         };
-        return (
+        return toggle ?
+            <div style={{ display: "inline-flex", justifyContent: "space-between" }}>
+                <div style={{ width: 140, display: "flex", justifyContent: "space-between" }}>
+                    <span>内存使用率</span>
+                    <span style={{ color: memoryUsed >= 85 ? "#f5222d" : memoryUsed < 50 ? "#52c41a" : memoryUsed !== undefined && "#fa8c16" }}>&nbsp;{memoryUsed}&nbsp;%</span>
+                </div>
+                <Divider type="vertical" style={{ height: 30 }} />
+                <div style={{ width: 140, display: "flex", justifyContent: "space-between" }}>
+                    <span>CPU使用率</span>
+                    <span style={{ color: cpuUsed >= 85 ? "#f5222d" : cpuUsed < 50 ? "#52c41a" : memoryUsed !== undefined && "#fa8c16" }}>&nbsp;{cpuUsed}&nbsp;%</span>
+                </div>
+            </div>
+            :
             <div>
                 <p style={{ textAlign: "center" }}>内存使用率</p>
                 <Chart height={350} data={dv} scale={cols} padding="auto" forceFit>
@@ -166,7 +192,7 @@ export default class Listener extends React.Component {
                 <p style={{ textAlign: "center" }}>CPU使用率</p>
                 <Chart height={300} data={lineData} scale={cols1} forceFit padding="auto">
                     <Axis name="time" label={null} tickLine={null} />
-                    <Axis name="value" />
+                    <Axis name="value" title={true} />
                     <Tooltip crosshairs={{ type: "cross" }} shared={false} />
                     <Geom type="area" position="time*value" color="#81c5fd" />
                     <Geom type="line" position="time*value" size={2} />
@@ -178,6 +204,5 @@ export default class Listener extends React.Component {
                     <span>0</span>
                 </div>
             </div>
-        );
     };
 };

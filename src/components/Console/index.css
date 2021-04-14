@@ -5,11 +5,30 @@
     background: #fff;
     padding: 20px;
     display: inline-block;
-    overflow: auto;
 }
 
 #console .ant-table {
     font-size: 18px;
+}
+
+.ant-table .ellipsis-column {
+    max-width: 200px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    margin: 0;
+}
+
+.ant-table .file-desc {
+    max-width: 120px;
+    margin: 0;
+}
+
+.ant-table-body {
+    overflow: auto hidden !important;
 }
 
 #console .ant-tag {
@@ -22,19 +41,153 @@
     font-size: 16px;
 }
 
-.loginfo-modal {
-    width: 100% !important;
-    max-width: 1200px;
+.data-loading-mask {
+    background-color: rgba(0, 0, 0, 0.15);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
 }
 
-.loginfo-modal .ant-modal-close-x {
+.log-modal, .file-modal {
+    width: 100% !important;
+    max-width: 1000px;
+    top: 0;
+}
+
+.img-modal {
+    width: 800px !important;
+    text-align: center;
+}
+
+.img-modal img {
+    max-width: 100%;
+}
+
+.log-modal .ant-modal-close-x, .file-modal .ant-modal-close-x, .img-modal .ant-modal-close-x {
     width: 28px;
     height: 28px;
     line-height: 28px;
+    float: right;
 }
 
-.loginfo-modal p {
-    /* color: #fff; */
+.log-modal .ant-modal-close, .file-modal .ant-modal-close, .img-modal .ant-modal-close {
+    width: 100%;
+    max-width: 1000px;
+    position: fixed;
+    top: 0;
+    right: unset;
+}
+
+.file-modal {
+    height: 100vh;
+    padding-bottom: 0;
+}
+
+.ant-modal-content, .ant-modal-body {
+    height: 100%;
+}
+
+.file-modal iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.log-modal p {
     font-family: "consolas";
     font-size: 16px;
+}
+
+.ant-notification {
+    width: 460px;
+}
+
+.ant-notification-notice {
+    padding: 16px;
+}
+
+.notice-content {
+    padding: 0;
+}
+
+.notice-content li span {
+    font-size: 14px;
+    display: inline-block;
+    width: 60px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.vis-modal {
+    width: 100vw !important;
+    height: 100vh;
+    top: 0;
+    padding-bottom: 0;
+}
+
+.vis-modal .ant-modal-close {
+    z-index: 9999;
+}
+
+.vis-modal .ant-modal-close-x {
+    float: right;
+    z-index: 999999;
+}
+
+.vis-modal .ant-modal-body {
+    padding: 0;
+}
+
+.filelist-table .ant-table-tbody>tr>td {
+    padding: 16px 8px;
+}
+
+.table-item-name {
+    margin: 0;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+}
+
+.ant-drawer-content-wrapper {
+    max-width: 100%;
+}
+
+.ant-popover-message {
+    display: flex;
+    align-items: center;
+}
+
+.ant-popover-message>.anticon {
+    font-size: 16px;
+    position: unset;
+    top: unset;
+}
+
+.ant-popover-message-title {
+    padding-left: 12px;
+}
+
+@media(max-width:768px) {
+    #console {
+        padding: 10px;
+    }
+    .ant-table {
+        font-size: 16px !important;
+    }
+    .ant-table-title {
+        padding-top: 0;
+    }
+    .ant-table .ant-table-thead th, #console .ant-table .ant-table-tbody td {
+        padding: 8px !important;
+    }
 }

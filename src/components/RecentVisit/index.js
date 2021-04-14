@@ -26,19 +26,18 @@ export default class RecentVisit extends React.Component {
         visible: false
     };
     componentDidMount() {
-        const _this = this;
         apiPromise.then(res => {
             api = res.data.api;
             if (this.state.userName) {
                 axios.get(api + "recentvisit", {
                     params: {
-                        userName: _this.state.userName,
+                        userName: this.state.userName,
                     }
-                }).then(function (response) {
-                    _this.setState({
+                }).then(response => {
+                    this.setState({
                         recentVisit: response.data.message
                     })
-                }).catch(function (error) {
+                }).catch(error => {
                     message.error("服务器无响应", 2)
                 });
             };
@@ -50,7 +49,6 @@ export default class RecentVisit extends React.Component {
     };
     // 搜索应用
     searchApp(appName) {
-        const _this = this;
         if (appName) {
             axios({
                 method: 'post',
@@ -60,16 +58,14 @@ export default class RecentVisit extends React.Component {
                     projectName: appName
                 },
                 headers: { 'Content-Type': 'application/json' },
-            })
-                .then(function (response) {
-                    _this.setState({
-                        searchResult: response.data.message,
-                        visible: true
-                    });
-                })
-                .catch(function (error) {
-                    message.error("服务器无响应", 2);
+            }).then(response => {
+                this.setState({
+                    searchResult: response.data.message,
+                    visible: true
                 });
+            }).catch(error => {
+                message.error("服务器无响应", 2);
+            });
         } else {
             message.warning("请输入要搜索的内容");
         };
@@ -128,7 +124,8 @@ export default class RecentVisit extends React.Component {
                                     {searchResult.map((app, appIndex) => {
                                         return (
                                             <Col span={8} key={appIndex}>
-                                                <Link to="/details" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link>
+                                                {/* <Link to="/calculate" onClick={this.setApp.bind(this, app)}><p className="app-name">{app}</p></Link> */}
+                                                <span><p className="app-name">{app}</p></span>
                                             </Col>
                                         )
                                     })}
@@ -144,8 +141,9 @@ export default class RecentVisit extends React.Component {
                                     {recentVisit.map((app, appIndex) => {
                                         return (
                                             <div className="recent-visit-item" key={appIndex}>
-                                                <IconFont className="icon-link" type="earthlianjie" />
-                                                <Link to="/details" onClick={this.setApp.bind(this, app)} title={app}>{app}</Link>
+                                                {/* <IconFont className="icon-link" type="earthlianjie" />
+                                                <Link to="/calculate" onClick={this.setApp.bind(this, app)} title={app}>{app}</Link> */}
+                                                <span title={app}>{app}</span>
                                             </div>
                                         )
                                     })}

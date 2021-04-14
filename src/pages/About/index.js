@@ -64,9 +64,8 @@ class About extends React.Component {
                 content =
                     <>
                         <Document
-                            file="document.pdf"
+                            file="./document.pdf"
                             onLoadSuccess={this.onDocumentLoadSuccess}
-                            renderMode="svg"
                             loading="正在努力加载中"
                             externalLinkTarget="_blank"
                         >
@@ -103,7 +102,7 @@ class About extends React.Component {
                         <p>姓名：王彦飞</p>
                         <p>职称：研究员</p>
                         <p>学位：博士</p>
-                        <p>电话：010-82998132</p>   
+                        <p>电话：010-82998132</p>
                         <p>邮箱：yfwang@mail.iggcas.ac.cn</p>
                         <p>传真：010-62010846</p>
                         <p>邮编：100029</p>
@@ -117,11 +116,13 @@ class About extends React.Component {
         return (
             <Layout className="about">
                 <Header className="about-header">
-                    <Link to="/home" className="about-logo" title="综合地球物理联合反演与解释一体化平台">
-                        <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
-                        <span>综合地球物理联合反演与解释一体化平台</span>
-                    </Link>
-                    <IconFont className="about-quit" onClick={this.props.history.goBack} type="earthfanhui" title="返回上一页" />
+                    <div className="header-content">
+                        <Link to="/home" className="about-logo" title="综合地球物理联合反演与解释一体化平台">
+                            <img src={require("../../assets/images/logo.png")} alt="IPIG" flowgable="false" />
+                            <span>综合地球物理联合反演与解释一体化平台</span>
+                        </Link>
+                        <IconFont className="about-quit" onClick={this.props.history.goBack} type="earthfanhui" title="返回上一页" />
+                    </div>
                 </Header>
                 <Layout className="about-contentarea">
                     <Sider className="about-sider">

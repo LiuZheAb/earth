@@ -14,7 +14,6 @@ import apiPromise from '../../assets/url.js';
 import loadable from '../../utils/lazyLoad';
 import './index.css';
 
-let api = "";
 const RecentVisit = loadable(() => import('../RecentVisit'));
 const Example = loadable(() => import('../Example'));
 const ModuleList = loadable(() => import('../ModuleList'));
@@ -22,42 +21,52 @@ const LoginModal = loadable(() => import('../LoginModal'));
 
 export default class Home extends React.Component {
   state = {
-    userName: getCookie("userName") ? getCookie("userName") : "",
-    email: "请先设置邮箱",
-    mobile: "请先设置手机号",
+    userName: getCookie("userName") || "",
+    email: "",
+    mobile: "",
     avatar: "",
+    data: undefined,
+    loading: "loading",
+    api: ""
   };
   componentDidMount() {
-    const _this = this;
+    document.getElementsByTagName("body")[0].style.overflow = "auto";
     apiPromise.then(res => {
-      api = res.data.api;
+      this.setState({ api: res.data.api })
       if (this.state.userName) {
         axios({
           method: 'post',
-          url: api + 'user',
+          url: res.data.api + 'user',
           responseType: 'json',
           data: {
             userName: this.state.userName
           },
           headers: { 'Content-Type': 'application/json' },
-        }).then(function (response) {
+        }).then(response => {
           let { email, mobile, avatar, nickname, description } = response.data;
-          _this.setState({
-            email: email,
-            mobile: mobile,
-            avatar: avatar,
-            nickname: nickname,
-            description: description
+          this.setState({
+            email,
+            mobile,
+            avatar,
+            nickname,
+            description
           });
-        }).catch(function (error) {
+        }).catch(error => {
           message.error("服务器无响应", 2);
         });
       }
+      axios.get(res.data.api + 'home')
+        .then(response => {
+          this.setState({
+            data: response.data,
+            loading: "done"
+          });
+        }).catch(error => {
+          this.setState({
+            loading: "error"
+          });
+        });
     });
-  };
-  // 点击按钮时将点击的按钮保存到sessionStorage中
-  setSiderkey(index) {
-    sessionStorage.setItem('personalSiderKey', index);
   };
   // 显示模态框
   showModal = () => {
@@ -70,7 +79,7 @@ export default class Home extends React.Component {
     });
   };
   render() {
-    let { userName, mobile, email, avatar, nickname } = this.state;
+    let { userName, mobile, email, avatar, nickname, data, loading, api } = this.state;
     return (
       <div className="homepage">
         <Row gutter={10}>
@@ -91,16 +100,10 @@ export default class Home extends React.Component {
                     </ul>
                     <ul className="prop">
                       <li>{userName}</li>
-                      <li>{nickname ? nickname : "未设置昵称"}</li>
-                      <li>{email ? email : "未设置邮箱"}</li>
-                      <li>{mobile ? mobile : "未设置电话"}</li>
+                      <li>{nickname || "未设置昵称"}</li>
+                      <li>{email || "未设置邮箱"}</li>
+                      <li>{mobile || "未设置电话"}</li>
                     </ul>
-                    {/* <ul className="prop-btn">
-                      <li></li>
-                      <li><Link to="personal" onClick={this.setSiderkey.bind(this, "1")}>编辑</Link></li>
-                      <li><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
-                      <li><Link to="personal" onClick={this.setSiderkey.bind(this, "2")}>点击更换</Link></li>
-                    </ul> */}
                   </>
                   :
                   <div className="login-btn">
@@ -135,9 +138,9 @@ export default class Home extends React.Component {
         </Row>
         <Row gutter={10} style={{ display: "flex", alignItems: "stretch", flexWrap: "wrap" }}>
           <RecentVisit />
-          <Example />
+          <Example data={data} api={api} />
         </Row>
-        <ModuleList />
+        <ModuleList data={data} loading={loading} api={api} />
       </div >
     );
   };

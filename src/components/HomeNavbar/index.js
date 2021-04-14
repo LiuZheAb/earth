@@ -40,11 +40,10 @@ class HomeNavbar extends React.Component {
     };
     // 注销时确认对话框
     showConfirm = () => {
-        let _this = this;
         Modal.confirm({
             title: '确定注销吗?',
-            onOk() {
-                _this.handleClick();
+            onOk: () => {
+                this.handleClick();
             },
             onCancel() {
             },
@@ -52,36 +51,50 @@ class HomeNavbar extends React.Component {
             cancelText: "取消"
         });
     }
+    handleGoHome = () => {
+        let { pathname } = this.props.location;
+        if (pathname !== "/" && pathname !== "/home") {
+            this.props.history.push("/home")
+        }
+    }
     render() {
         let { userName, visible } = this.state;
         return (
-            <Header className="home-header" role="navigation" style={this.props.style}>
-                <Link to="/home" className="logo" title="综合地球物理联合反演与解释一体化平台">
-                    <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" />
-                    <span>综合地球物理联合反演与解释一体化平台</span>
-                </Link>
-                {userName ?
-                    <div className="icon-area">
-                        <Link to="/console">
-                            <IconFont type="earthconsole" title="控制台" />
-                        </Link>
-                        <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
-                            <IconFont type="earthtouxiang" title="个人中心" />
-                        </Link>
-                        <IconFont className="quit-icon" type="earthzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
+            <Header id="home-header" role="navigation" style={this.props.style}>
+                <div className="header-content">
+                    <div className="logo" title="综合地球物理联合反演与解释一体化平台" onClick={this.handleGoHome}>
+                        <img src={require('../../assets/images/logo.png')} alt="IPIG" draggable="false" />
+                        <span>综合地球物理联合反演与解释一体化平台</span>
                     </div>
-                    :
-                    <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={() => { this.props.history.push("login"); }}>登录</span>
-                }
-                <Modal
-                    visible={visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleOk}
-                    footer={null}
-                    bodyStyle={{ padding: "40px 40px 20px" }}
-                    style={{ width: "300px", maxWidth: "500px" }}>
-                    <LoginModal parent={this} />
-                </Modal>
+                    {userName ?
+                        <div className="icon-area">
+                            {this.props.location.pathname === "/console" ?
+                                <Link to="/home">
+                                    <IconFont type="earthhome" title="首页" />
+                                </Link>
+                                :
+                                <Link to="/console">
+                                    <IconFont type="earthconsole" title="控制台" />
+                                </Link>
+                            }
+                            <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
+                                <IconFont type="earthtouxiang" title="个人中心" />
+                            </Link>
+                            <IconFont className="quit-icon" type="earthzhuxiaodenglu" title="注销" onClick={this.showConfirm} />
+                        </div>
+                        :
+                        <span style={{ color: "#1890ff", cursor: "pointer" }} onClick={() => { this.props.history.push("login"); }}>登录</span>
+                    }
+                    <Modal
+                        visible={visible}
+                        onOk={this.handleOk}
+                        onCancel={this.handleOk}
+                        footer={null}
+                        bodyStyle={{ padding: "40px 40px 20px" }}
+                        style={{ width: "300px", maxWidth: "500px" }}>
+                        <LoginModal parent={this} />
+                    </Modal>
+                </div>
             </Header>
         );
     };

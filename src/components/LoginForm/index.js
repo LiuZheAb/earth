@@ -31,22 +31,21 @@ class LoginForm extends Component {
         };
     };
     componentDidMount() {
-        const _this = this;
         apiPromise.then(res => {
             api = res.data.api;
             //获取验证码
             axios.get(api + 'firstgetcaptcha')
-                .then(function (response) {
-                    _this.setState({
+                .then(response => {
+                    this.setState({
                         captchaId: response.data["getCaptchaID"],
                         captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                         invisible: true
                     });
                 })
-                .catch(function (error) {
+                .catch(error => {
                     message.error("服务器无响应", 2);
-                    _this.setState({
+                    this.setState({
                         isLoaded: false,
                         invisible: false,
                         error: error
@@ -59,18 +58,17 @@ class LoginForm extends Component {
         if (this.state.captchaId) {
             this.setState({ captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime() });
         } else {
-            const _this = this;
             axios.get(api + 'firstgetcaptcha')
-                .then(function (response) {
-                    _this.setState({
+                .then(response => {
+                    this.setState({
                         captchaId: response.data["getCaptchaID"],
                         captchaUrl: api + "captcha/" + response.data["getCaptchaID"] + '.png',
                         isLoaded: true,
                     });
                 })
-                .catch(function (error) {
+                .catch(error => {
                     message.error("服务器无响应", 2);
-                    _this.setState({
+                    this.setState({
                         isLoaded: false,
                         error: error
                     });
@@ -118,11 +116,10 @@ class LoginForm extends Component {
         };
     };
     //登录提交表单时调用
-    handleSubmit = (e) => {
+    handleSubmit = e => {
         e.preventDefault();
-        const _this = this;
         let { username, password, captcha, captchaId } = this.state;
-        _this.props.form.validateFields({ force: true }, (err, values) => {
+        this.props.form.validateFields({ force: true }, (err, values) => {
             if (!err) {
                 axios({
                     headers: {
@@ -137,48 +134,46 @@ class LoginForm extends Component {
                         captcha: captcha,
                         captcha_id: captchaId,
                     }
-                })
-                    .then(function (response) {
-                        _this.setState({
-                            loginState: response.data["status"],
-                            message: response.data["message"]
-                        });
-                        _this.props.form.validateFields({ force: true }, (err, values) => {
-                            // eslint-disable-next-line 
-                            switch (response.data["status"]) {
-                                case 0: {
-                                    //若登陆失败，将登录状态重置为4，为了将错误信息重置
-                                    setTimeout(_this.setState({
-                                        loginState: 4,
-                                        captchaUrl: api + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
-                                    }), 3000);
-                                    break;
-                                }
-                                case 1: {
-                                    setTimeout(_this.setState({
-                                        loginState: 4,
-                                        captchaUrl: api + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
-                                    }), 3000);
-                                    break;
-                                }
-                                case 2: {
-                                    setTimeout(_this.setState({
-                                        loginState: 4,
-                                        captchaUrl: api + "captcha/" + _this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
-                                    }), 3000);
-                                    break;
-                                }
-                                case 3: {
-                                    setCookie("userName", username);
-                                    _this.props.history.push('/home');
-                                    break;
-                                }
-                            };
-                        });
-                    })
-                    .catch(function (error) {
-                        message.error("登录失败", 2);
+                }).then(response => {
+                    this.setState({
+                        loginState: response.data["status"],
+                        message: response.data["message"]
                     });
+                    this.props.form.validateFields({ force: true }, (err, values) => {
+                        // eslint-disable-next-line 
+                        switch (response.data["status"]) {
+                            case 0: {
+                                //若登陆失败，将登录状态重置为4，为了将错误信息重置
+                                setTimeout(this.setState({
+                                    loginState: 4,
+                                    captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
+                                }), 3000);
+                                break;
+                            }
+                            case 1: {
+                                setTimeout(this.setState({
+                                    loginState: 4,
+                                    captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
+                                }), 3000);
+                                break;
+                            }
+                            case 2: {
+                                setTimeout(this.setState({
+                                    loginState: 4,
+                                    captchaUrl: api + "captcha/" + this.state.captchaId + '.png?reload=' + (new Date()).getTime(),
+                                }), 3000);
+                                break;
+                            }
+                            case 3: {
+                                setCookie("userName", username);
+                                this.props.history.push('/home');
+                                break;
+                            }
+                        };
+                    });
+                }).catch(error => {
+                    message.error("登录失败", 2);
+                });
             };
         });
     };
