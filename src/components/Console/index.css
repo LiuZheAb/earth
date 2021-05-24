@@ -1,5 +1,6 @@
 #console {
     width: 100%;
+    min-height: calc(100vh - 90px);
     margin: 0 auto;
     border: 1px solid #eee;
     background: #fff;
@@ -11,6 +12,10 @@
     font-size: 18px;
 }
 
+#console .ant-table-title, .filelist-table .ant-table-title {
+    padding-top: 0;
+}
+
 .ant-table .ellipsis-column {
     max-width: 200px;
     display: -webkit-box;
@@ -18,7 +23,6 @@
     -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-break: break-all;
     margin: 0;
 }
 
@@ -52,7 +56,7 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 999999;
 }
 
 .log-modal, .file-modal {
@@ -90,7 +94,7 @@
     padding-bottom: 0;
 }
 
-.ant-modal-content, .ant-modal-body {
+.vis-modal .ant-modal-content, .vis-modal .ant-modal-body {
     height: 100%;
 }
 
@@ -180,6 +184,7 @@
 @media(max-width:768px) {
     #console {
         padding: 10px;
+        min-height: calc(100vh - 50px)
     }
     .ant-table {
         font-size: 16px !important;
@@ -189,5 +194,11 @@
     }
     .ant-table .ant-table-thead th, #console .ant-table .ant-table-tbody td {
         padding: 8px !important;
+    }
+}
+
+@media(max-width:576px) {
+    .ant-table-scroll colgroup col:nth-child(2), .ant-table-fixed-left colgroup col:nth-child(2) {
+        width: 120px !important;
     }
 }

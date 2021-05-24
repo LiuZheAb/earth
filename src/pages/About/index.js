@@ -14,7 +14,7 @@ import { pdfjs } from 'react-pdf';
 import "./index.css";
 
 const { Header, Sider, Content } = Layout;
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `./js/pdf.worker.js`;
 
 class About extends React.Component {
     constructor(props) {
@@ -49,7 +49,7 @@ class About extends React.Component {
                     <>
                         <p>向地球深部进军，实现“1500 米采矿新空间、进军2000-3000 米勘查新深度、开辟覆盖区找矿‘新大陆’、加快实现找矿突破”的国家战略，是我国的一项重要战略任务。由于缺少具有国际领先水平自主知识产权的多种、多类型数据联合反演、评价和综合解释一体化平台，极大地制约着我国深部金属矿产资源的勘查能力。本项目从不同尺度对地下资源的多个参数进行联合反演与解释，研发综合地球物理一体化平台并进行找矿示范。</p>
                         <p>研究3000 米以浅多种、多类型数据联合反演解释技术，多元信息评价与预测技术，研发重磁、电磁、地震处理、解释可视化及一体化平台。发展大数据人工智能理论方法，提高大规模数据处理、解释的高性能计算能力，开展岩浆热液型和中低温热液型典型矿集区应用示范，实现中深部金属矿产资源评价与预测。</p>
-                        <img src={require('../../assets/images/IPIG_3000m.jpg')} alt="湘南3000米科学钻探工程" style={{ maxWidth: 600, margin: "0 auto 1em", display: "block" }} />
+                        <img src={require('../../assets/images/IPIG_3000m.jpg')} alt="湘南3000米科学钻探工程" style={{ maxWidth: 600, width: "100%", margin: "0 auto 1em", display: "block" }} />
                         <p>针对上述研究内容，本项目建立一套多种、多类型数据协同作业的可视化综合地球物理反演解释一体化平台，具体开发内容如下：</p>
                         <p>(1) 主动源和被动源联合地震高/超分辨率成像新技术，表征深部矿体的精细结构、空间展布及物性特征。</p>
                         <p>(2) 高精度三维地质建模方法和基于结构耦合思想的重磁联合三维体素反演新算法，有效降低反演结果的不确定性。</p>
@@ -57,14 +57,14 @@ class About extends React.Component {
                         <p>(4) 分布式异构数据的智能化存储、快速访问、高效处理与分析，进行正、反演算法的并行化，建立专业化的高性能计算工具包和算法库。</p>
                         <p>(5) 重、磁、电、震综合地球物理联合反演新技术，搭建基于分布式网格技术的数据库系统；实现基于大数据分析的矿集区多元信息智能评价与预测；建立综合地球物理处理解释一体化平台；构建高分辨率显示集群，实现三维可视化。</p>
                         <p>(6) 开展湘南(W-Sn)、湘中(Sb-Au)典型矿集区综合示范研究，验证综合地球物理联合反演解释技术、多元信息评价与预测技术的有效性、实用性，检验软件平台的中深部探测功能，总结深部资源找矿模式和多元信息预测新方法，形成专家智库</p>
-                        <img src={require('../../assets/images/IPIG_ore.jpg')} alt="湘南3000米科学钻探工程" style={{ maxWidth: 600, margin: "0 auto 1em", display: "block" }} />
+                        <img src={require('../../assets/images/IPIG_ore.jpg')} alt="湘南3000米科学钻探工程" style={{ maxWidth: 600, width: "100%", margin: "0 auto 1em", display: "block" }} />
                     </>;
                 break;
             case "2":
                 content =
                     <>
                         <Document
-                            file="./document.pdf"
+                            file="./static/pdf/document.pdf"
                             onLoadSuccess={this.onDocumentLoadSuccess}
                             loading="正在努力加载中"
                             externalLinkTarget="_blank"

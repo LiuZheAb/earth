@@ -183,7 +183,7 @@ class LoginForm extends Component {
         return (
             <div className="login">
                 <label className="login-fun">登录</label>
-                <Link to="/register" className="changeform">免费注册</Link>
+                <Link to="/register" className="changeform">没有账号，前往注册</Link>
                 <Form onSubmit={this.handleSubmit.bind(this)} className="login-form">
                     {/* hasFeedback为输入框尾部的小图标 */}
                     <Form.Item hasFeedback>
@@ -220,10 +220,10 @@ class LoginForm extends Component {
                         </Button>
                     </Form.Item>
                 </Form>
-                <div className="forgot">
-                    {/* eslint-disable-next-line */}
+                {/* <div className="forgot">
+                    eslint-disable-next-line 
                     <Link to="/">忘记密码</Link>
-                </div>
+                </div> */}
             </div>
         )
     }

@@ -1,6 +1,5 @@
-.calculate {
+#calculate {
     height: 100vh;
-    width: 100vw;
     overflow: hidden;
 }
 
@@ -76,6 +75,10 @@
     overflow-x: hidden;
 }
 
+.calculate-col p {
+    margin: 0;
+}
+
 .calculate-col .ant-card-body .ant-empty-image {
     height: 100%;
 }
@@ -93,6 +96,47 @@
 }
 
 .calculate-form .ant-checkbox-group {
+    line-height: unset;
+}
+
+.calculate-form .ant-form-item-control, .calculate-form .ant-form-item-children {
+    width: 100%;
+}
+
+.calculate-form .upload-btn .ant-btn {
+    height: 32px !important;
+    font-size: 14px !important;
+}
+
+.calculate-form .devide-line {
+    border-top: 2px solid #999;
+    position: relative;
+    margin: 14px 0;
+}
+
+.calculate-form .devide-line .devide-line-title {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background-color: #fff;
+    padding: 0 5px;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.calculate-form .ant-input-disabled {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.material-modal .title {
+    font-weight: bold;
+}
+
+.material-modal .ant-form-item {
+    margin-bottom: 0;
+}
+
+.material-modal .ant-form-item-control {
     line-height: unset;
 }
 
@@ -163,7 +207,15 @@
     cursor: pointer;
 }
 
-.calculate .ant-btn:not(.input-file) {
+.input-file-wrapper .file-name {
+    max-width: calc(100% - 98px);
+    margin-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#calculate .ant-btn:not(.input-file) {
     height: 44px;
     font-size: 16px;
 }
@@ -188,13 +240,17 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 999999;
 }
 
 .vis-modal {
     width: 100vw !important;
     height: 100vh;
     top: 0;
+}
+
+.vis-modal .ant-modal-content, .vis-modal .ant-modal-body {
+    height: 100%;
 }
 
 .vis-modal .ant-modal-close {
@@ -210,16 +266,10 @@
     padding: 0;
 }
 
-.listener {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: calc(100% - 9px);
-    padding: 0 8px;
-    height: 30px;
+.tiny-listener {
     line-height: 30px;
-    border-top: 1px solid #e6e9ed;
     background: #fff;
+    display: none;
 }
 
 .listener-btn {
@@ -237,13 +287,90 @@
     padding: 0;
 }
 
+.mod-help {
+    font-size: 16px;
+    padding-top: 16px;
+}
 
-@media (max-width: 576px) {
-    .calculate {
+.mod-help p {
+    margin: 4px;
+}
+
+.mod-help p span {
+    font-weight: bold;
+}
+
+#calculate .btn-area {
+    width: 100%;
+    max-width: 380;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#calculate .ant-table {
+    font-size: 16px;
+}
+
+#calculate .filelist-table .ant-btn {
+    height: 32px;
+    font-size: 14px;
+}
+
+.file-icon {
+    width: 76px;
+    position: absolute;
+    top: 15px;
+    left: calc(33% + 130px);
+    cursor: pointer;
+    transition: all .3s;
+    line-height: 0;
+}
+
+.file-icon-2 {
+    position: relative;
+    left: 33%;
+    top: 0;
+    line-height: 22px;
+}
+
+.file-icon:hover {
+    color: #1890ff;
+}
+
+.file-icon .anticon {
+    margin-right: 4px;
+}
+
+.file-icon .file-name {
+    white-space: nowrap;
+}
+
+@media(max-width:970px) and (min-width:768px) {
+    .file-icon:not(.file-icon-2) .file-name {
+        display: none;
+    }
+}
+
+@media(max-width:870px) {
+    #calculate .btn-area {
+        justify-content: center;
+    }
+}
+
+@media(max-width:768px) {
+    #calculate .ant-table {
+        font-size: 14px;
+    }
+    .mod-help {
+        font-size: 14px;
+    }
+    #calculate {
         min-height: 100vh;
         height: auto;
     }
-    .calculate .calculate-col {
+    #calculate .calculate-col {
         height: auto !important;
     }
     .calculate-header {
@@ -259,5 +386,24 @@
         line-height: 1.5;
         white-space: initial;
         text-align: left;
+    }
+    .normal-listener {
+        display: none;
+    }
+    .tiny-listener {
+        display: block;
+    }
+    .file-icon:not(.file-icon-2) {
+        left: calc(33% + 120px);
+    }
+}
+
+@media(max-width:576px) {
+    .file-icon:not(.file-icon-2) {
+        top: 44px;
+        left: 120px;
+    }
+    .file-icon.file-icon-2 {
+        left: 0;
     }
 }

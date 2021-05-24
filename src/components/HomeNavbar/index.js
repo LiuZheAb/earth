@@ -19,7 +19,9 @@ class HomeNavbar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: getCookie("userName") ? getCookie("userName") : ""
+            userName: getCookie("userName") ? getCookie("userName") : "",
+            visible: false,
+            logoutVisible: false
         };
         this.handleClick = this.handleClick.bind(this);
     };
@@ -42,10 +44,13 @@ class HomeNavbar extends React.Component {
     showConfirm = () => {
         Modal.confirm({
             title: '确定注销吗?',
+            className: "logout-modal",
+            visible: this.state.logoutVisible,
             onOk: () => {
                 this.handleClick();
             },
-            onCancel() {
+            onCancel: () => {
+                this.setState({ logoutVisible: false });
             },
             okText: "确定",
             cancelText: "取消"
@@ -68,15 +73,8 @@ class HomeNavbar extends React.Component {
                     </div>
                     {userName ?
                         <div className="icon-area">
-                            {this.props.location.pathname === "/console" ?
-                                <Link to="/home">
-                                    <IconFont type="earthhome" title="首页" />
-                                </Link>
-                                :
-                                <Link to="/console">
-                                    <IconFont type="earthconsole" title="控制台" />
-                                </Link>
-                            }
+                            <IconFont type="earthconsole" title="控制台" onClick={() => this.props.match.path !== "/console" && this.props.history.push("/console")} />
+                            <IconFont type="earthdashuju1" title="大数据" style={{ transform: "scale(1.1)" }} onClick={() => this.props.location.pathname !== "/bdcenter" && this.props.history.push("/bdcenter")} />
                             <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
                                 <IconFont type="earthtouxiang" title="个人中心" />
                             </Link>

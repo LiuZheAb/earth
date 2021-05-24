@@ -18,15 +18,20 @@ import vtkOutlineFilter from 'vtk.js/Sources/Filters/General/OutlineFilter';
 // import vtkLookupTable from 'vtk.js/Sources/Common/Core/LookupTable';
 // import vtkCalculator from 'vtk.js/Sources/Filters/General/Calculator';
 import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
-// import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
+import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
 // import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
 // import vtkPlaneSource from 'vtk.js/Sources/Filters/Sources/PlaneSource';
 // import vtkCubeSource from 'vtk.js/Sources/Filters/Sources/CubeSource';
 // import { FieldDataTypes } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 // import { AttributeTypes } from 'vtk.js/Sources/Common/DataModel/DataSetAttributes/Constants';
 // import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
-// import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
-import { Rendering, Screen, reassignManipulators, changeManipulators, showBoundRuler, gl, Axis } from "../common/index"
+import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
+import {
+    Rendering, Screen, reassignManipulators,
+    changeManipulators,
+    // showBoundRuler, 
+    gl, Axis
+} from "../common/index"
 const InputGroup = Input.Group;
 const { Option } = Select;
 // let dimensional = undefined;
@@ -88,33 +93,89 @@ export default class mshView extends Component {
         if (data) {
             Rendering(model, this.container);
             let points = JSON.parse(JSON.stringify(data[0]));
+            let pointCopy = JSON.parse(JSON.stringify(points));
             let cells = JSON.parse(JSON.stringify(data[1]));
-            //创建polydata数据
-            let polydata = vtk({
-                vtkClass: 'vtkPolyData',
-                points: {
-                    vtkClass: 'vtkPoints',
-                    dataType: 'Float32Array',
-                    numberOfComponents: 3,
-                    values: points,
-                },
-                polys: {
-                    vtkClass: 'vtkCellArray',
-                    values: cells,
-                },
-                // "cellData": {
-                //     vtkClass: 'vtkDataSetAttributes',
-                //     activeScalars: 0,
-                //     arrays: [{
-                //         data: {
-                //             vtkClass: 'vtkDataArray',
-                //             name: 'pointScalars',
-                //             dataType: 'Float32Array',
-                //             values: data.data[2],
-                //         },
-                //     }],
+            //判断单元颜色
+            let scalarValues = [];
+            let valueCopy, scalarValuesCopy, unique, min, max;
+            if (data[2]) {
+                valueCopy = JSON.parse(JSON.stringify(data[2]));
+                for (let i = 0; i < valueCopy.length; i++) {
+                    scalarValues.push(Math.log(valueCopy[i]))
+                };
+                // for(let i=0;i<970712;i++){
+                //   scalarValues.push("")
                 // }
+                scalarValuesCopy = JSON.parse(JSON.stringify(scalarValues));
+                //scalarValues排序去重
+                scalarValues.sort(function (a, b) {
+                    return a - b;
+                });
+                unique = [...new Set(scalarValues)];
+                min = Number(unique[0]);
+                max = Number(unique[unique.length - 1]);
+                console.log(min, max, "min,max");
+                this.setState({
+                    min,
+                    max
+                });
+            };
+            const lut1 = vtkColorTransferFunction.newInstance();
+            const preset = vtkColorMaps.getPresetByName("rainbow");
+            lut1.applyColorMap(preset);
+            lut1.updateRange();
+
+            //创建polydata数据
+            let polydata = null;
+            if (data[2]) {
+                polydata = vtk({
+                    vtkClass: 'vtkPolyData',
+                    points: {
+                        vtkClass: 'vtkPoints',
+                        dataType: 'Float32Array',
+                        numberOfComponents: 3,
+                        values: points,
+                    },
+                    polys: {
+                        vtkClass: 'vtkCellArray',
+                        values: cells,
+                    },
+                    cellData: {
+                        vtkClass: 'vtkDataSetAttributes',
+                        activeScalars: 0,
+                        arrays: [{
+                            data: {
+                                vtkClass: 'vtkDataArray',
+                                name: 'pointScalars',
+                                dataType: 'Float32Array',
+                                values: scalarValuesCopy,
+                            },
+                        }],
+                    }
+                });
+            } else {
+                polydata = vtk({
+                    vtkClass: 'vtkPolyData',
+                    points: {
+                        vtkClass: 'vtkPoints',
+                        dataType: 'Float32Array',
+                        numberOfComponents: 3,
+                        values: points,
+                    },
+                    polys: {
+                        vtkClass: 'vtkCellArray',
+                        values: cells,
+                    }
+                });
+            };
+
+            this.setState({
+                points,
+                pointCopy,
+                cells,
+                scalarValuesCopy
             });
+
             const outline = vtkOutlineFilter.newInstance();
             outline.setInputData(polydata);
             const mapper = vtkMapper.newInstance({
@@ -124,8 +185,12 @@ export default class mshView extends Component {
                 points: points,
                 cells: cells,
                 modeBounds: outline.getOutputData().getBounds()
-            })
+            });
+            mapper.setLookupTable(lut1);
             mapper.setInputData(polydata);
+            if (data[2]) {
+                mapper.setScalarRange(min, max);
+            };
             const actor = vtkActor.newInstance();
             model.actor = actor;
             actor.setMapper(mapper);
@@ -135,15 +200,7 @@ export default class mshView extends Component {
             reassignManipulators(model);
         };
         model.renderer.resetCamera();
-        if (model.renderer) {
-            let ac = model.renderer.getActors();
-            console.log(ac, "ac");
-            ac.forEach((anActor) => {
-                anActor.getProperty().setRepresentationToWireframe();
-            });
-        }
         model.renderWindow.render();
-
     };
 
     componentDidMount() {
@@ -248,9 +305,13 @@ export default class mshView extends Component {
     };
 
     render() {
-        let { boxBgColor, model, mode, modeBounds, bounds, light, axis } = this.state;
+        let { boxBgColor, model, mode, modeBounds, points, cells, scalarValuesCopy, min, max,
+            light, axis
+        } = this.state;
         let { show, state } = this.props;
-        let { moveStyle, screen, ruler, attribute, ranging, theme, modelStyle, inputValue } = state;
+        let { moveStyle, screen, 
+            // ruler,
+            theme, attribute, ranging, modelStyle, inputValue } = state;
         // let scaleOpc = 0;
         // let scales = [];
 
@@ -267,8 +328,6 @@ export default class mshView extends Component {
             fontColor = "#000";
             bgColor = [1, 1, 1]
         }
-
-
 
         // let num = Math.round(unique.length / 3);
         const picker = vtkPointPicker.newInstance();
@@ -305,38 +364,83 @@ export default class mshView extends Component {
         if (model.renderer) {
             let OpenGlRW = this.state.model.fullScreenRenderer.getOpenGLRenderWindow();
             gl(OpenGlRW);
-            // let polydata1 = vtk({
-            //     vtkClass: 'vtkPolyData',
-            //     points: {
-            //         vtkClass: 'vtkPoints',
-            //         dataType: 'Float32Array',
-            //         numberOfComponents: 3,
-            //         values: points,
-            //     },
-            //     polys: {
-            //         vtkClass: 'vtkCellArray',
-            //         dataType: 'Float32Array',
-            //         values: cells,
-            //     },
-            //     // cellData: {
-            //     //     vtkClass: 'vtkDataSetAttributes',
-            //     //     activeScalars: 0,
-            //     //     arrays: [{
-            //     //         data: {
-            //     //             vtkClass: 'vtkDataArray',
-            //     //             name: 'pointScalars',
-            //     //             dataType: 'Float32Array',
-            //     //             values: data.data[2],
-            //     //         },
-            //     //     }],
-            //     // }
+            let polydata1 = null;
+            if (scalarValuesCopy) {
+                polydata1 = vtk({
+                    vtkClass: 'vtkPolyData',
+                    points: {
+                        vtkClass: 'vtkPoints',
+                        dataType: 'Float32Array',
+                        numberOfComponents: 3,
+                        values: points,
+                    },
+                    polys: {
+                        vtkClass: 'vtkCellArray',
+                        dataType: 'Float32Array',
+                        values: cells,
+                    },
+                    cellData: {
+                        vtkClass: 'vtkDataSetAttributes',
+                        activeScalars: 0,
+                        arrays: [{
+                            data: {
+                                vtkClass: 'vtkDataArray',
+                                name: 'pointScalars',
+                                dataType: 'Float32Array',
+                                values: scalarValuesCopy,
+                            },
+                        }],
+                    }
+                });
+            } else {
+                polydata1 = vtk({
+                    vtkClass: 'vtkPolyData',
+                    points: {
+                        vtkClass: 'vtkPoints',
+                        dataType: 'Float32Array',
+                        numberOfComponents: 3,
+                        values: points,
+                    },
+                    polys: {
+                        vtkClass: 'vtkCellArray',
+                        dataType: 'Float32Array',
+                        values: cells,
+                    }
+                });
+            };
+            //绘制轮廓线
+            const outline1 = vtkOutlineFilter.newInstance();
+            outline1.setInputData(polydata1);
+            const mapper1 = vtkMapper.newInstance({
+                //设置颜色差值开关
+                interpolateScalarBeforeMapping: true
+            });
 
-            // });
+            const lut1 = vtkColorTransferFunction.newInstance();
+            const preset = vtkColorMaps.getPresetByName("rainbow");
+            lut1.applyColorMap(preset);
+            lut1.updateRange();
+
+            mapper1.setLookupTable(lut1);
+            mapper1.setInputData(polydata1);
+
+            if (scalarValuesCopy) {
+                mapper1.setScalarRange(min, max);
+            }
+
+            const actor1 = vtkActor.newInstance();
+            model.renderer.removeActor(model.actor);
+            model.actor = actor1;
+            actor1.setMapper(mapper1);
+            model.renderer.addActor(actor1);
+
+            model.renderer.resetCamera();
+            model.renderWindow.render();
             //清除textCanvas
             model.fullScreenRenderer.setBackground(bgColor);
-            let dimensional = 3;
-            if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
-            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, show); //刻度标尺
+            // let dimensional = 3;
+            // if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
+            // showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, show); //刻度标尺
             // model.renderer.removeActor(model.bounds);
             // const outline = vtkOutlineFilter.newInstance();
             // outline.setInputData(polydata1);
@@ -363,7 +467,6 @@ export default class mshView extends Component {
 
         //改变显示样式
         changeManipulators(model, moveStyle, modelStyle, light, axis);
-
         //截屏
         let useScreen = screen;
         if (useScreen !== screen) {
@@ -380,10 +483,7 @@ export default class mshView extends Component {
         //     }, 1000);
         // }
         //改变鼠标事件
-        changeManipulators(model, moveStyle, modelStyle);
-
-
-        console.log(model);
+        reassignManipulators(model);
         return (
             <div>
                 <Draggable handle=".handle"
@@ -449,7 +549,7 @@ export default class mshView extends Component {
                                             <Slider
                                                 range={true}
                                                 step={0.1}
-                                                disabled={!bounds}
+                                                // disabled={!bounds}
                                                 defaultValue={[modeBounds[0], modeBounds[1]]}
                                                 min={modeBounds[0]}
                                                 max={modeBounds[1]}
@@ -463,7 +563,7 @@ export default class mshView extends Component {
                                                 step={0.1}
                                                 min={modeBounds[2]}
                                                 max={modeBounds[3]}
-                                                disabled={!bounds}
+                                                // disabled={!bounds}
                                                 defaultValue={[Number(modeBounds[2]), Number(modeBounds[3])]}
                                                 onChange={this.onChangeBoundsY}
                                             />
@@ -475,7 +575,7 @@ export default class mshView extends Component {
                                                 step={0.1}
                                                 min={modeBounds[4]}
                                                 max={modeBounds[5]}
-                                                disabled={!bounds}
+                                                // disabled={!bounds}
                                                 defaultValue={[Number(modeBounds[4]), Number(modeBounds[5])]}
                                                 onChange={this.onChangeBoundsZ}
                                             />

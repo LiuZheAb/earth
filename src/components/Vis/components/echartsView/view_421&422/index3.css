@@ -1,0 +1,99 @@
+#chart-container {
+    padding: 80px 90px 80px 80px;
+    position: relative;
+    width: 860px;
+    font-size: 14px;
+}
+
+#matrix_chart {
+    box-sizing: unset;
+    border: 1px solid #000;
+    width: 690px;
+    height: 460px;
+}
+
+#chart-container #legend {
+    position: absolute;
+    right: 0;
+    top: 80px;
+    width: 75px;
+    display: flex;
+    height: 460px;
+}
+
+#chart-container #legend .color-bar {
+    box-sizing: unset;
+    height: 100%;
+    width: 30px;
+    border: 1px solid #000;
+    background: linear-gradient(#f5ff13, #ffc23a, #c2bc5f, #64bf85, #0dafbc, #118ad1, #0662e1, #362f86);
+}
+
+#chart-container #legend .color-num {
+    box-sizing: unset;
+    height: 100%;
+    width: 40px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    line-height: 1em;
+    margin-left: 5px;
+}
+
+#chart-container #legend .color-num span {
+    height: 0;
+    display: flex;
+    align-items: center;
+}
+
+#chart-container #x-axis {
+    position: absolute;
+    left: 80px;
+    bottom: 55px;
+    height: 20px;
+    width: 690px;
+}
+
+#chart-container #x-axis span {
+    width: 0;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+}
+
+#chart-container #x-axis::before {
+    content: "X";
+    position: absolute;
+    top: 1em;
+    width: 690px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#chart-container #y-axis {
+    position: absolute;
+    left: 35px;
+    top: 80px;
+    height: 460px;
+    width: 40px;
+    line-height: 1em;
+}
+
+#chart-container #y-axis span {
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+}
+
+#chart-container #y-axis::before {
+    content: "Y";
+    position: absolute;
+    height: 460px;
+    writing-mode: vertical-lr;
+    text-align: center;
+    transform: rotate(180deg);
+    font-weight: bold;
+}

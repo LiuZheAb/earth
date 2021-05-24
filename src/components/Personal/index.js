@@ -401,7 +401,7 @@ class Personal extends React.Component {
                     <div className="item-block">
                         <div className="item">
                             <p className="title">手机号码</p>
-                            <p>{mobile}</p>
+                            <p>{mobile || "未设置"}</p>
                         </div>
                         <div className="item">
                             <span className="change-btn" onClick={this.showModal.bind(this, 0)}>更改</span>
@@ -413,7 +413,7 @@ class Personal extends React.Component {
                     <div className="item-block">
                         <div className="item">
                             <p className="title">邮箱</p>
-                            <p>{email}</p>
+                            <p>{email || "未设置"}</p>
                         </div>
                         <div className="item">
                             <span className="change-btn" onClick={this.showModal.bind(this, 1)}>更改</span>
@@ -473,8 +473,8 @@ class Personal extends React.Component {
                     >
                         <Menu.Item key="1" onClick={this.changeSider}>个人信息</Menu.Item>
                         <Menu.Item key="2" onClick={this.changeSider}>账户管理</Menu.Item>
-                        <Menu.Item key="3" onClick={this.changeSider}>账号申诉</Menu.Item>
-                        <Menu.Item key="4" onClick={this.changeSider}>编辑应用</Menu.Item>
+                        {/* <Menu.Item key="3" onClick={this.changeSider}>账号申诉</Menu.Item> */}
+                        {/* <Menu.Item key="4" onClick={this.changeSider}>编辑应用</Menu.Item> */}
                     </Menu>
                     <Menu
                         theme="light"
@@ -484,8 +484,8 @@ class Personal extends React.Component {
                     >
                         <Menu.Item key="1" onClick={this.changeSider}>个人信息</Menu.Item>
                         <Menu.Item key="2" onClick={this.changeSider}>账户管理</Menu.Item>
-                        <Menu.Item key="3" onClick={this.changeSider}>账号申诉</Menu.Item>
-                        <Menu.Item key="4" onClick={this.changeSider}>编辑应用</Menu.Item>
+                        {/* <Menu.Item key="3" onClick={this.changeSider}>账号申诉</Menu.Item> */}
+                        {/* <Menu.Item key="4" onClick={this.changeSider}>编辑应用</Menu.Item> */}
                     </Menu>
                 </Sider>
                 <Content className="personal-content">

@@ -1,0 +1,527 @@
+{
+    "texts": [
+        {
+            "paramName": "Model_flag",
+            "paramNameCN": "是否需要建模",
+            "tip": "true或false",
+            "defaultValue": null,
+            "currentValue": "false",
+            "type": "boolean",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Forward_flag",
+            "paramNameCN": "是否需要正演计算所建模型的视电阻率",
+            "tip": "ture或false",
+            "defaultValue": null,
+            "currentValue": "false",
+            "type": "boolean",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "geo_col",
+            "paramNameCN": "地下介质网格水平网格数",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "256",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "geo_row",
+            "paramNameCN": "地下介质网格深度网格数",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "192",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "air_row",
+            "paramNameCN": "空气网格高度网格数",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "4",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "y_max",
+            "paramNameCN": "计算区域的最高海拔",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "500",
+            "type": "double",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "y_min",
+            "paramNameCN": "计算区域的最小海拔",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "-3000",
+            "type": "double",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "MeshClass_flag",
+            "paramNameCN": "网格类型",
+            "tip": "true为规则网格，false为非规则网格",
+            "defaultValue": null,
+            "currentValue": "false",
+            "type": "boolean",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "MeshChR",
+            "paramNameCN": "非规则网格变化率",
+            "tip": "0.01~0.1",
+            "defaultValue": null,
+            "currentValue": "0.04",
+            "type": "double",
+            "enumList": null,
+            "max": "0.1",
+            "min": "0.01"
+        },
+        {
+            "paramName": "Tot_mod",
+            "paramNameCN": "建模数量",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "600",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "TerrainInfo",
+            "paramNameCN": "地形线数据的文件名",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "pb128",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "MeasuredData",
+            "paramNameCN": "外部实测数据",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "L128",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "InitialModel",
+            "paramNameCN": "外部输入初始模型",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "InitModel_128_scs",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Nth",
+            "paramNameCN": "谱元法阶数",
+            "tip": "[2,11]",
+            "defaultValue": null,
+            "currentValue": "2",
+            "type": "int",
+            "enumList": null,
+            "max": "11",
+            "min": "2"
+        },
+        {
+            "paramName": "Nkz",
+            "paramNameCN": "设置2.5D模型中Kz数量",
+            "tip": "[21,61,101]",
+            "defaultValue": null,
+            "currentValue": "21",
+            "type": "enum",
+            "enumList": [
+                "21",
+                "16",
+                "101"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Ncores",
+            "paramNameCN": "pardiso调用的CPU核数",
+            "tip": "[1-N]",
+            "defaultValue": null,
+            "currentValue": "2",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "Frequency",
+            "paramNameCN": "工作频率,多个频率用空格分开",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "1 4 16 64 256 512 1024 2048",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Mixed_type",
+            "paramNameCN": "计算方法",
+            "tip": "2表示tree/cotree与谱元法混合方法，0表示传统谱元法，1表示混合谱元法",
+            "defaultValue": null,
+            "currentValue": "1",
+            "type": "enum",
+            "enumList": [
+                "0",
+                "1",
+                "2"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Unit",
+            "paramNameCN": "模型单位，um, mm, m, km",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "m",
+            "type": "enum",
+            "enumList": [
+                "um",
+                "mm",
+                "m",
+                "km"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Line_srcs",
+            "paramNameCN": "线源数量",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "1",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "Line_dir",
+            "paramNameCN": "线源方向",
+            "tip": "1或2或3，1：x，2：y，3：z",
+            "defaultValue": null,
+            "currentValue": "1",
+            "type": "enum",
+            "enumList": [
+                "1",
+                "2",
+                "3"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Line_blks",
+            "paramNameCN": "线源在哪层介质区域中",
+            "tip": "小于介质总数的整数",
+            "defaultValue": null,
+            "currentValue": "1",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Line_I_dir",
+            "paramNameCN": "线源的电流方向",
+            "tip": "0或1，1：从左到右，0：从右到左",
+            "defaultValue": null,
+            "currentValue": "0",
+            "type": "enum",
+            "enumList": [
+                "0",
+                "1"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Line_amp",
+            "paramNameCN": "线源电流幅值",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "1",
+            "type": "double",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Line_start",
+            "paramNameCN": "线源起始坐标",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "1912.1",
+            "type": "double",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Line_end",
+            "paramNameCN": "线源终点坐标",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "3146.1",
+            "type": "double",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Nbds",
+            "paramNameCN": "模型边界数量",
+            "tip": "4或6，4：2D/2.5D;6：3D",
+            "defaultValue": null,
+            "currentValue": "4",
+            "type": "enum",
+            "enumList": [
+                "4",
+                "6"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "BC_type",
+            "paramNameCN": "每个边界线的边界条件",
+            "tip": "0或2或3，0：PML，2：PEC，3：PMC",
+            "defaultValue": null,
+            "currentValue": "0 0 0 0",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "NPML",
+            "paramNameCN": "PML单元数量",
+            "tip": "大于0，默认数量5",
+            "defaultValue": null,
+            "currentValue": "5",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "PML_d",
+            "paramNameCN": "PML厚度,大于0，默认厚度100，对应频率顺序以空格分开",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "100 100 100 100 100 100 100 100",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "PML_order",
+            "paramNameCN": "PML阶数[0,1,2,3]，对应频率顺序以空格分开",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "2 2 2 2 2 2 2 2",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "PML_real",
+            "paramNameCN": "PML实部衰减，大于等于1，对应频率顺序以空格分开",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "600 560 540 460 350 300 300 240",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "PML_imag",
+            "paramNameCN": "PML虚部衰减，大于等于1，对应频率顺序以空格分开",
+            "tip": "",
+            "defaultValue": null,
+            "currentValue": "2600 1950 1950 1900 1100 900 800 600",
+            "type": "string",
+            "enumList": null,
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "TrainNum",
+            "paramNameCN": "训练的模型数目",
+            "tip": "大于等于0的整数且小于等于建模数量Tmod的个数",
+            "defaultValue": null,
+            "currentValue": "600",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "0"
+        },
+        {
+            "paramName": "ReceiverNum",
+            "paramNameCN": "接收点的数目",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "106",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "INV_NO",
+            "paramNameCN": "反演次数",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "10",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "INV_ACC",
+            "paramNameCN": "反演目标精度",
+            "tip": "0.0~0.2",
+            "defaultValue": null,
+            "currentValue": "0.05",
+            "type": "double",
+            "enumList": null,
+            "max": "0.2",
+            "min": "0.0"
+        },
+        {
+            "paramName": "Hiddenlayer",
+            "paramNameCN": "隐藏层的数目",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "100",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        },
+        {
+            "paramName": "Nmeasured",
+            "paramNameCN": "实测数据的数目",
+            "tip": "大于0的整数",
+            "defaultValue": null,
+            "currentValue": "1",
+            "type": "int",
+            "enumList": null,
+            "max": null,
+            "min": "1"
+        }
+    ],
+    "selects": null,
+    "radios": null,
+    "checkBoxs": null,
+    "textAreas": null,
+    "uploadBoxs": [
+        {
+            "paramName": "TerrainInfo_up",
+            "paramNameCN": "地形线数据的文件名",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "pb128",
+            "type": null,
+            "enumList": [
+                "txt"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "MeasuredData_up",
+            "paramNameCN": "外部实测数据",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "L128",
+            "type": null,
+            "enumList": [
+                "txt"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "InitialModel_up",
+            "paramNameCN": "外部实测数据",
+            "tip": null,
+            "defaultValue": null,
+            "currentValue": "InitModel_128_scs",
+            "type": null,
+            "enumList": [
+                "dat"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "Node_name",
+            "paramNameCN": "节点坐标存储文件名",
+            "tip": "请上传.nod 文件,节点坐标存储的文件名，需要后缀名自行定义",
+            "defaultValue": null,
+            "currentValue": "128.nod",
+            "type": null,
+            "enumList": [
+                "nod"
+            ],
+            "max": null,
+            "min": null
+        },
+        {
+            "paramName": "OUTPUT_Sigma",
+            "paramNameCN": "反演得到的电导率存储文件文件名",
+            "tip": "需要后缀名.dat",
+            "defaultValue": null,
+            "currentValue": "Sigma_INV.dat",
+            "type": null,
+            "enumList": [
+                "dat"
+            ],
+            "max": null,
+            "min": null
+        }
+    ]
+}

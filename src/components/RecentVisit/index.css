@@ -1,6 +1,7 @@
 .search-area {
     background: white;
     padding: 15px 20px 20px 20px;
+    overflow-x: hidden;
 }
 
 .search-area .searcher {

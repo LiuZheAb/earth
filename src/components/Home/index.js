@@ -83,25 +83,25 @@ export default class Home extends React.Component {
     return (
       <div className="homepage">
         <Row gutter={10}>
-          <Col lg={12} xs={24}>
+          <Col lg={12} xs={24} className="person">
             <div className="title">个人中心</div>
-            <div className="top-block person box-shadow">
+            <div className="box-shadow">
               <div className="avatar" style={{ backgroundColor: avatar ? null : "#d7e9f0" }}>
                 <img src={avatar ? api + avatar : require("../../assets/images/avatar.png")} alt="头像" />
               </div>
               <div className="personality">
                 {userName ?
                   <>
-                    <ul className="prop-name">
+                    <ul className="key">
                       <li>用户名 :</li>
                       <li>昵称 :</li>
                       <li>邮箱 :</li>
                       <li>电话 :</li>
                     </ul>
-                    <ul className="prop">
+                    <ul className="value">
                       <li>{userName}</li>
                       <li>{nickname || "未设置昵称"}</li>
-                      <li>{email || "未设置邮箱"}</li>
+                      <li title={email}>{email || "未设置邮箱"}</li>
                       <li>{mobile || "未设置电话"}</li>
                     </ul>
                   </>
@@ -122,9 +122,9 @@ export default class Home extends React.Component {
               </Modal>
             </div>
           </Col>
-          <Col lg={12} xs={24}>
+          <Col lg={12} xs={24} className="plat">
             <div className="title">平台简介</div>
-            <div className="top-block plat-desc box-shadow">
+            <div className="box-shadow">
               <div className="plat-img">
                 <img src={require("../../assets/images/introduce.jpg")} alt="平台简介" />
               </div>

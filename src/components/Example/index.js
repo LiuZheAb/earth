@@ -8,7 +8,7 @@ import { getCookie } from "../../utils/cookies";
 import "./index.css";
 
 const { Option } = Select;
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `./js/pdf.worker.js`;
 
 class index extends Component {
     constructor(props) {
@@ -103,6 +103,27 @@ class index extends Component {
             currentModule: module
         })
     }
+    // 显示三级菜单
+    showSecondModal = menuName => {
+        this.setState({
+            thirdModules: []
+        });
+        axios.get(this.state.api + 'twoSubHome', {
+            params: {
+                twoSubModule: menuName
+            }
+        }).then(response => {
+            this.setState({
+                thirdModules: response.data
+            });
+        }).catch(error => {
+            message.error("服务器错误", 2)
+        });
+        this.setState({
+            modalVisible2: true,
+            currentMenu2: menuName,
+        });
+    }
     runApp(appName, moduleName) {
         axios({
             method: 'post',
@@ -177,21 +198,22 @@ class index extends Component {
             headers: { 'Content-Type': 'application/json' }
         })
     }
-    componentWillReceiveProps(prevProps) {
-        let { data, api } = prevProps;
-        if (data && api) {
+    static getDerivedStateFromProps(nextProps, prevState) {
+        let { data, api } = nextProps;
+        if (data && data !== prevState.data) {
             let geoModalData1 = {
                 "高分辨率地震成像方法与技术": data["高分辨率地震成像方法与技术"],
                 "位场正反演方法与技术": data["位场正反演方法与技术"],
                 "电磁场正反演方法与技术": data["电磁场正反演方法与技术"],
                 "人工智能综合地球物理技术": data["人工智能综合地球物理技术"],
             };
-            this.setState({
+            return {
                 data: data["典型示范 (Demonstration)"],
                 api,
                 geoModalData1,
-            });
+            };
         }
+        return null;
     }
     showGeoModal = menuName => {
         this.setState({
@@ -303,7 +325,7 @@ class index extends Component {
                         </span>
                         <div className="app-list">
                             <ul>
-                                {data.map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
+                                {Array.isArray(data) && data.map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
                                     <li key={index} title={menuName}>
                                         {url ?
                                             <>
@@ -345,12 +367,12 @@ class index extends Component {
                 >
                     {currentMenu ?
                         <ul>
-                            {secondModules.map(({ menuName, url, hasSub, hasParam, idenMod }, index) =>
+                            {secondModules.map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
                                 <li key={index} title={menuName}>
                                     {url ?
                                         <>
                                             <IconFont type="earthlianjie" />
-                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</a>
+                                            <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</a>
                                         </>
                                         : hasSub ?
                                             <>
@@ -361,12 +383,12 @@ class index extends Component {
                                             hasParam ?
                                                 <>
                                                     <IconFont type="earthjinru1" />
-                                                    <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
+                                                    <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                                 </>
                                                 :
                                                 <>
                                                     <IconFont type="earthyunhang" />
-                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName, undefined, idenMod) }}>{menuName}</span>
+                                                    <span onClick={() => { this.runApp(menuName, currentMenu); this.setApp(menuName, undefined, idenMod, stepNum) }}>{menuName}</span>
                                                 </>
                                     }
                                 </li>
@@ -384,23 +406,23 @@ class index extends Component {
                     style={{ top: 150 }}
                 >
                     {currentMenu2 ?
-                        thirdModules.map(({ menuName, url, hasParam, idenMod }, index) =>
+                        thirdModules.map(({ menuName, url, hasParam, idenMod, stepNum }, index) =>
                             <li key={index} title={menuName}>
                                 {url ?
                                     <>
                                         <IconFont type="earthlianjie" />
-                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</a>
+                                        <a href={url} target="_blank" rel="noopener noreferrer" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</a>
                                     </>
                                     :
                                     hasParam ?
                                         <>
                                             <IconFont type="earthjinru1" />
-                                            <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod)}>{menuName}</Link>
+                                            <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                         </>
                                         :
                                         <>
                                             <IconFont type="earthyunhang" />
-                                            <span onClick={() => { this.runApp(menuName, currentMenu2); this.setApp(menuName, undefined, idenMod) }}>{menuName}</span>
+                                            <span onClick={() => { this.runApp(menuName, currentMenu2); this.setApp(menuName, undefined, idenMod, stepNum) }}>{menuName}</span>
                                         </>
                                 }
                             </li>
@@ -418,7 +440,7 @@ class index extends Component {
                     {currentMenu ?
                         <>
                             <Document
-                                file={currentMenu.indexOf("地质参数库") === -1 ? "./Geophysics.pdf" : "./Geology.pdf"}
+                                file={currentMenu.indexOf("地质参数库") === -1 ? "./static/pdf/Geophysics.pdf" : "./static/pdf/Geology.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
                                 loading="正在努力加载中"
                                 externalLinkTarget="_blank"

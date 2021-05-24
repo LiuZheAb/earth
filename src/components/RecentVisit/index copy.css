@@ -1,0 +1,130 @@
+.search-area {
+    background: #fff;
+    /* padding: 15px 20px 20px 20px; */
+}
+
+.search-area .searcher {
+    padding: 0;
+}
+
+.search-area .searcher input {
+    height: 30px;
+    border: none;
+    border-bottom: 1px solid #3294dd;
+    border-radius: 0;
+    padding: 0;
+}
+
+.search-area .searcher .anticon-search {
+    color: rgba(50, 148, 221);
+}
+
+.search-area .ant-result {
+    padding: 0;
+    margin-top: -5px;
+}
+
+.search-area .ant-result-icon {
+    margin-bottom: 10px;
+}
+
+.search-area .anticon-warning {
+    font-size: 48px;
+}
+
+.search-area .searcher input:focus {
+    box-shadow: none;
+}
+
+.search-area .searcher .ant-input-suffix {
+    right: 0;
+    cursor: pointer;
+}
+
+.search-area .searcher .search-box {
+    width: 100%;
+}
+
+.recent-visit {
+    display: flex;
+    margin-top: 0 !important;
+}
+
+.recent-visit .app-des {
+    width: calc(100% - 180px);
+    height: auto;
+    background: white;
+    padding: 15px 40px;
+}
+
+.recent-visit .app-icon {
+    height: auto;
+    width: 180px;
+    font-size: 64px;
+    color: #3294dd;
+    background: #fff;
+    border-right: 1px solid #d9d9d9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recent-visit .title {
+    color: #004392;
+    font-weight: bold;
+    margin: 0;
+}
+
+.recent-visit .recent-visit-list {
+    margin: 10px 0 0 20px;
+}
+
+.recent-visit .recent-visit-list ul {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.recent-visit .recent-visit-list li {
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.recent-visit .recent-visit-list li i{
+    margin-right: 10px;
+    color: #1890ff;
+    position: relative;
+    top: 1px;
+}
+
+.recent-visit .recent-visit-item {
+    line-height: 1.5;
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.recent-visit .recent-visit-item a {
+    color: #666;
+    text-decoration: none;
+}
+
+.recent-visit .recent-visit-item a:hover {
+    color: #40a9ff;
+}
+
+@media (max-width: 1440px) {
+    .recent-visit .app-icon {
+        width: 140px;
+        font-size: 56px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .recent-visit .app-icon {
+        width: 120px;
+        font-size: 48px;
+    }
+}

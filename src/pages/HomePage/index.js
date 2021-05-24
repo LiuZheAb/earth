@@ -28,17 +28,17 @@ export default class Homepage extends React.Component {
     componentDidMount() {
         apiPromise.then(res => {
             api = res.data.api;
-            axios.get(api)
-                .then(response => {
-                    this.setState({
-                        invisible: true
-                    });
-                }).catch(error => {
-                    this.setState({
-                        invisible: false
-                    });
-                    message.error("服务器无响应", 2);
+            axios.get(api).then(res => {
+                this.setState({
+                    invisible: true
                 });
+            }).catch(error => {
+                console.log(error);
+                this.setState({
+                    invisible: false
+                });
+                message.error("服务器无响应", 2);
+            });
         });
     };
     render() {

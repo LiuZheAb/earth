@@ -160,8 +160,7 @@ class NewApp extends React.Component {
             //如果没有“,”，则输入的内容就是defaultValue
             if (value.indexOf(",") === -1) {
                 defaultValue.push(value);
-            } //如果有“,”，则将输入的内容按“,”分隔开
-            else if (value.indexOf(",") > -1) {
+            } else if (value.indexOf(",") !== -1) {//如果有“,”，则将输入的内容按“,”分隔开
                 defaultValue = value.split(",");
             };
             //删除空值或逗号

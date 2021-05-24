@@ -227,7 +227,7 @@ class RegisterForm extends Component {
         ));
         return (
             <div className="register">
-                <Link to="/login" className="changeform">已有账号，直接登陆</Link>
+                <Link to="/login" className="changeform">已有账号，直接登录</Link>
                 <label className="register-fun">账号注册</label>
                 <Form onSubmit={this.handleSubmitregister} className="register-form">
                     <Form.Item hasFeedback>
@@ -290,7 +290,7 @@ class RegisterForm extends Component {
                         })(
                             <Checkbox checked={checked}
                                 onChange={this.checkboxChange.bind(this)}>
-                                我已阅读<Link to="/about" onClick={this.setSiderkey.bind(this, "4")}>《法律声明和隐私权政策》</Link>
+                                我已阅读<Link to="/about" onClick={this.setSiderkey.bind(this, "3")}>《法律声明和隐私权政策》</Link>
                             </Checkbox>,
                         )}
                     </Form.Item>

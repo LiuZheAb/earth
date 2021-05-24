@@ -114,7 +114,7 @@ export default class RecentVisit extends React.Component {
                         {typeof (searchResult) === "string" ?
                             <Result
                                 status="warning"
-                                title="查询不到相关应用"
+                                title="查询不到相关信息"
                             />
                             :
                             <>

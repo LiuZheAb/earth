@@ -2,19 +2,18 @@
     min-width: 220px;
 }
 
-.homepage .top-block {
+.homepage .person .box-shadow, .homepage .plat .box-shadow {
     height: 260px;
     background-color: #fff;
     margin-top: 10px;
     display: flex;
-    display: -webkit-flex;
 }
 
-.homepage .person {
+.homepage .person .box-shadow {
     padding: 20px;
 }
 
-.homepage .avatar {
+.homepage .person .avatar {
     width: 180px;
     height: 220px;
     border-radius: 5px;
@@ -22,28 +21,28 @@
     line-height: 200px;
 }
 
-.homepage .avatar img {
+.homepage .person .avatar img {
     width: 160px;
     height: 160px;
     border-radius: 50%;
 }
 
-.homepage .personality {
+.homepage .person .personality {
     width: 100%;
     padding: 18px 0 18px 20px;
 }
 
-.personality .login-btn {
+.homepage .personality .login-btn {
     text-align: center;
 }
 
-.personality .login-btn a {
+.homepage .personality .login-btn a {
     color: #1890ff;
     cursor: pointer;
     line-height: 144px;
 }
 
-.personality .login-btn span:hover {
+.homepage .personality .login-btn span:hover {
     color: #40a9ff;
 }
 
@@ -64,38 +63,34 @@
     text-overflow: ellipsis;
 }
 
-.homepage .personality .prop-name {
+.homepage .personality .key {
     width: 70px;
     text-align: right;
     white-space: nowrap;
 }
 
-.homepage .personality .prop {
+.homepage .personality .value {
     width: calc(100% - 70px);
     padding-left: 20px;
 }
 
-.homepage .personality .prop-btn {
-    width: 80px;
-    white-space: nowrap;
-}
-
-.homepage .plat-img {
+.homepage .plat .plat-img {
     width: 220px;
     height: 220px;
+    margin: 20px 0;
 }
 
-.homepage .plat-img img {
+.homepage .plat .plat-img img {
     width: 100%;
     height: 100%;
 }
 
-.homepage .plat-desc .textarea {
+.homepage .plat .textarea {
     padding: 20px;
     width: calc(100% - 220px);
 }
 
-.homepage .textarea h3 {
+.homepage .plat .textarea h3 {
     margin: 0 0 5px 0;
     overflow: hidden;
     white-space: nowrap;
@@ -103,7 +98,7 @@
     font-size: 1.1em;
 }
 
-.homepage .textarea p {
+.homepage .plat .textarea p {
     max-height: 170px;
     text-indent: 2em;
     margin-bottom: 5px;
@@ -115,40 +110,55 @@
     -webkit-box-orient: vertical;
 }
 
-.homepage .textarea .more {
+.homepage .plat .textarea .more {
     position: absolute;
     bottom: 8px;
     right: 25px;
 }
 
 @media (max-width:576px) {
-    .homepage .top-block {
+    .homepage .person .box-shadow, .homepage .plat .box-shadow {
         height: auto;
     }
-    .homepage .personality {
-        padding: 20px 0 0 0;
+    .homepage .person .personality {
+        padding: 0;
     }
-    .personality .login-btn span {
+    .homepage .person .login-btn span {
         line-height: 14px;
     }
-    .homepage .person, .homepage .plat-desc {
+    .homepage .person .box-shadow, .homepage .plat .box-shadow {
         display: block;
     }
-    .homepage .plat-desc .plat-img, .homepage .person .avatar {
+    .homepage .person .avatar, .homepage .plat .plat-img {
         display: block;
         margin: 0 auto;
     }
-    .homepage .plat-desc .textarea, .homepage .person .personality {
+    .homepage .person .avatar {
+        height: 180px;
+        line-height: unset;
+        padding: 0 10px 20px 10px;
+    }
+    .homepage .person .personality, .homepage .plat .textarea {
         width: 100%;
     }
-    .homepage .textarea p {
+    .homepage .plat .textarea p {
         max-height: none;
         -webkit-line-clamp: unset;
     }
 }
 
-@media (max-width:991px) {
+@media (max-width:768px) {
+    .homepage {
+        overflow-x: hidden;
+    }
     .homepage .title {
+        margin-top: 10px;
+        padding-left: 20px;
+    }
+}
+
+@media (max-width:991px) {
+    .homepage .plat .title {
         margin-top: 10px;
     }
 }

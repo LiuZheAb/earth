@@ -141,7 +141,7 @@ export default class Listener extends React.Component {
             }
         };
         return toggle ?
-            <div style={{ display: "inline-flex", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                 <div style={{ width: 140, display: "flex", justifyContent: "space-between" }}>
                     <span>内存使用率</span>
                     <span style={{ color: memoryUsed >= 85 ? "#f5222d" : memoryUsed < 50 ? "#52c41a" : memoryUsed !== undefined && "#fa8c16" }}>&nbsp;{memoryUsed}&nbsp;%</span>
@@ -155,7 +155,7 @@ export default class Listener extends React.Component {
             :
             <div>
                 <p style={{ textAlign: "center" }}>内存使用率</p>
-                <Chart height={350} data={dv} scale={cols} padding="auto" forceFit>
+                <Chart height={300} data={dv} scale={cols} padding="auto" forceFit>
                     <Coord type="theta" radius={0.5} />
                     <Tooltip showTitle={false} itemTpl="<li><span style=&quot;background-color:{color};&quot; class=&quot;g2-tooltip-marker&quot;></span>{name}: {value}</li>" />
                     <Geom type="intervalStack" position="percent" color="type" tooltip={['type*percent', (item, percent) => {

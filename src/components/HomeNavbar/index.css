@@ -31,18 +31,22 @@
     margin-right: 10px;
     height: 24px;
 }
-#home-header .logo span{
+
+#home-header .logo span {
     white-space: nowrap;
 }
+
 #home-header .icon-area {
-    width: 120px;
+    width: 160px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     color: #1890ff;
     font-size: 24px;
 }
-
+#home-header .icon-area .ant-icon{
+    color: #1890ff;
+}
 #home-header .icon-area .quit-icon {
     transition: color .3s;
 }

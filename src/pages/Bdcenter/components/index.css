@@ -1,0 +1,74 @@
+#bdcenter .ant-upload-drag-icon span {
+  visibility: hidden;
+}
+
+#bdcenter .ant-upload-drag-icon span svg {
+  visibility: visible;
+}
+
+#bdcenter .ant-upload-list-item-info {
+  display: flex
+}
+
+#bdcenter .ant-upload-text-icon {
+  position: relative;
+}
+
+#bdcenter .ant-upload-text-icon span {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  margin-top: -5px;
+  visibility: hidden;
+}
+
+#bdcenter .ant-upload-text-icon span svg {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  visibility: visible;
+}
+
+#bdcenter .ant-upload-list-item-card-actions button span {
+  visibility: hidden;
+}
+
+#bdcenter .ant-upload-list-item-card-actions button span svg {
+  visibility: visible;
+  margin-left: -5px
+}
+
+#bdcenter .upload {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+#bdcenter .ant-table {
+  max-height: 500px !important;
+  overflow-y: scroll;
+}
+
+#bdcenter .ant-empty-normal {
+  margin: 800px 0 !important;
+}
+
+#bdcenter .ant-table-content {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+#bdcenter .ant-table-content table {
+  display: inline-block;
+}
+
+#bdcenter p img {
+  max-width: 950px;
+  height: auto;
+}
+
+#bdcenter .ant-input {
+  min-width: 100px;
+  min-height: 20px
+}

@@ -1,0 +1,36 @@
+earth_inducing_direction£¨nT,degree,degree£©
+50000.0 90.0  0.0
+source_inducing_direction£¨degree,degree£©
+90.0  0.0
+
+Depth of division(m)
+4000
+The number of subdivided layers
+40
+The number of divisions in the X and Y directions.
+60,5
+
+The number of points of the observation line in the X and Y directions.
+61,6
+The length of the observation line in the X direction.(xmin,xmax)
+0 6000
+The length of the observation line in the Y direction.(ymin,ymax)
+0 500
+The height of the observation line in the Z direction.(zmin,zmax)
+0.0  0.0  
+
+The maximum number of iterations.
+100
+
+The weighting parameter of the correlation analysis constraint item. (lam_g,lam_g)0.0000002,0.000005
+0.000004,0.000001
+
+b_low_g,b_up_g
+0.0  4.0
+b_low_m,b_up_m
+0.0  4.0
+
+beta(0.0-1.0)
+0.1
+alpha(0.0-0.4)
+0.01

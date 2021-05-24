@@ -21,10 +21,10 @@ export default class Container extends React.Component {
     render() {
         return (
             <Content className="home-content" style={this.props.style}>
-                <Route path="/home"><Home /></Route>
-                <Route path="/console"><Console /></Route>
-                <Route path="/newapp"><NewApp /></Route>
-                <Route path="/personal"><Personal /></Route>
+                <Route exact path="/home"><Home /></Route>
+                <Route exact path={["/console", "/console/:p"]}><Console /></Route>
+                <Route exact path="/newapp"><NewApp /></Route>
+                <Route exact path="/personal"><Personal /></Route>
             </Content>
         );
     };

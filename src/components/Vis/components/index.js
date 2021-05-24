@@ -67,9 +67,9 @@ export default class Vtk extends React.Component {
         }
         // {
         //     let xhr = new XMLHttpRequest()
-        //     // xhr.open('GET', '/data/dicom/response_重力数据网格化.json', true);
+        //     // xhr.open('GET', '/data/dicom/response_数据网格化.json', true);
         //     // xhr.open('GET', '/data/dicom/response_数据去趋势.json', true);
-        //     // xhr.open('GET', '/data/dicom/response_重力数据投影.json', true); //---------------------------------------------
+        //     // xhr.open('GET', '/data/dicom/response_坐标投影.json', true); //---------------------------------------------
         //     // xhr.open('GET', '/data/dicom/response_​六面体模型重力异常正演.json', true);
         //     // xhr.open('GET', '/data/dicom/response_重力数据求偏导.json', true);
         //     // xhr.open('GET', '/data/dicom/response_球型棱柱体模型重力异常正演.json', true);
@@ -98,9 +98,9 @@ export default class Vtk extends React.Component {
         //         if (xhr.readyState === 4) {
         //             let data = xhr.response;
         //             _this.props.dispatch(actions.getData(data));
-        //             // _this.props.dispatch(actions.getDataType('重力数据网格化'));
+        //             // _this.props.dispatch(actions.getDataType('数据网格化'));
         //             // _this.props.dispatch(actions.getDataType('数据去趋势'));
-        //             // _this.props.dispatch(actions.getDataType('重力数据投影'));   //--------------------------------------------------
+        //             // _this.props.dispatch(actions.getDataType('坐标投影'));   //--------------------------------------------------
         //             // _this.props.dispatch(actions.getDataType('​六面体模型重力异常正演'));
         //             // _this.props.dispatch(actions.getDataType('重力数据求偏导'));
         //             // _this.props.dispatch(actions.getDataType('球型棱柱体模型重力异常正演'));
@@ -166,12 +166,14 @@ export default class Vtk extends React.Component {
                         <Col className="visual-view views">
                             {(() => {
                                 switch (datatype) {
-                                    case "重力数据网格化":
+                                    case "数据网格化":
                                     case "数据去趋势":
-                                    case "重力数据投影":
+                                    case "坐标投影":
                                     case "六面体模型重力异常正演":
+                                    case "六面体复杂模型构建及重力异常正演":
                                     case "重力数据求偏导":
                                     case "球型棱柱体模型重力异常正演":
+                                    case "球型棱柱体模型构建及重力异常正演":
                                     case "典型矿区仿真数据反演一（最小模型约束反演）":
                                     case "典型矿区仿真数据反演二（深度加权约束反演）":
                                     case "典型矿区仿真数据反演三（光滑约束反演）":
@@ -180,10 +182,28 @@ export default class Vtk extends React.Component {
                                     case "重力数据延拓":
                                     case "重力异常计算":
                                     case "重力观测数据反演（多约束反演）":
+                                    case "三维断层模型正演":
+                                    case "四面体模型单元正演":
                                     case "磁场方向导数求取":
                                     case "磁场模型正演":
                                     case "磁场空间延拓":
                                     case "磁化极":
+                                    case "欧拉反演(扩展窗)":
+                                    case "欧拉反演(移动窗)":
+                                    case "边缘识别":
+                                    case "曲化平":
+                                    case "数据扩边":
+                                    case "最小曲率补空白":
+                                    case "重磁2D数据模糊聚类联合反演":
+                                    case "重磁3D数据模糊聚类联合反演":
+                                    case "重磁2D数据模糊c回归聚类联合反演":
+                                    case "重磁3D数据模糊c回归聚类联合反演":
+                                    case "重磁2D数据相关分析联合反演":
+                                    case "重磁3D数据相关分析联合反演":
+                                    case "重磁2D数据基于数据空间的相关分析联合反演":
+                                    case "重磁3D数据基于数据空间的相关分析联合反演":
+                                    case "重磁2D数据交叉梯度联合反演":
+                                    case "重磁3D数据交叉梯度联合反演":
                                     case "2d":
                                         return <CsvViewXyContainer data={data} datatype={datatype} show={show} appName={appName} />;
                                     case "3d":

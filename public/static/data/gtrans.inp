@@ -1,0 +1,9 @@
+Input Datum File Name=data/vz8.grd
+Output Datum File Name=data/v8lin5.grd
+frequency spectrum file=data/freq.bln
+Upward Distance=0
+Derivative(0-g,1-gz,2-gzz,3-x,4-grad,5-linear)=5
+Direction cosine=0,90
+Expand Method(0-Cos,1-Min)=1
+COSINE LOW-PASS Filter(wh,wl)=0.1,0.15 
+Analysis Number=0

@@ -171,7 +171,11 @@ export default class MenuBar extends React.Component {
 	}
 	render() {
 		let { state } = this.props;
-		let { fuweiButton, dxuanzhuanButton, raogoujianxuanzhuanButton, moveButton, shitidanyuanButton, wanggeButton, pointButton, keduButton, cejuButton, sebiaoButton, axisButton, boundButton, lightButton, resultButton, scaleButton } = state;
+		let { fuweiButton, dxuanzhuanButton, raogoujianxuanzhuanButton, moveButton, shitidanyuanButton, wanggeButton, pointButton, keduButton, 
+			// cejuButton, 
+			sebiaoButton, axisButton, boundButton, lightButton, 
+			// resultButton, scaleButton
+		 } = state;
 		return (
 			<Header className="header" role="navigation" style={this.props.style}>
 				<div className={fuweiButton}>
@@ -229,16 +233,16 @@ export default class MenuBar extends React.Component {
 						<i className="iconfont iconkeduchi" type="iconkeduchi" />
 					</Tooltip>
 				</div>
-				<div className={scaleButton} >
+				{/* <div className={scaleButton} >
 					<Tooltip title='比例尺' placement="bottom" onClick={scaleButton === "command" ? this.changeScale : () => { return; }}>
 						<i className="iconfont iconbilichi" type="iconbilichi" />
 					</Tooltip>
-				</div>
-				<div className={cejuButton}>
+				</div> */}
+				{/* <div className={cejuButton}>
 					<Tooltip title='测距' placement="bottom" onClick={cejuButton === "command" ? this.changeDistance : () => { return; }}>
 						<i className="iconfont iconceju" type="iconceju" />
 					</Tooltip>
-				</div>
+				</div> */}
 				<div className={boundButton} >
 					<Tooltip title='显示边框' placement="bottom" onClick={boundButton === "command" ? this.setBounds : () => { return; }}>
 						<i className="iconfont iconicon-lifangti" type="iconicon-lifangti" />
@@ -261,11 +265,11 @@ export default class MenuBar extends React.Component {
 						<i className="iconfont iconyanse" type="iconyanse" />
 					</Tooltip>
 				</div>
-				<div className={resultButton} >
+				{/* <div className={resultButton} >
 					<Tooltip title='数据结果显示' placement="bottom" onClick={resultButton === "command" ? this.settingScalsr : () => { return; }}>
 						<i className="iconfont iconshujujieguotongji" type="iconshujujieguotongji" />
 					</Tooltip>
-				</div>
+				</div> */}
 				<div className={lightButton}>
 					<Tooltip title='灯光' placement="bottom" onClick={lightButton === "command" ? this.settingLight : () => { return; }}>
 						<i className="iconfont iconlightbulb-on" type="iconlightbulb-on" />

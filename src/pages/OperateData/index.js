@@ -15,6 +15,7 @@ class index extends Component {
         stepNum: sessionStorage.getItem("stepNum") ? Number(sessionStorage.getItem("stepNum")) : 1,
         nowStep: sessionStorage.getItem("nowStep") ? Number(sessionStorage.getItem("nowStep")) : 1,
         loaded: false,
+        selected: false,
         treeData: [],
         fileName: "",
         selectedIndex: undefined,
@@ -109,40 +110,42 @@ class index extends Component {
     }
     getData = fileName => {
         let { dockerIP, vport } = this.state;
-        this.chart1_loading_mask.style.display = "flex";
-        this.chart2_loading_mask.style.display = "flex";
-        this.chart3_loading_mask.style.display = "flex";
-        this.setState({ loaded: false });
-        axios.get(`http://${dockerIP}:${vport}/fileData?fileName=${fileName}.json`)
-            .then(res => {
-                this.chart1_loading_mask.style.display = "none";
-                this.chart2_loading_mask.style.display = "none";
-                this.chart3_loading_mask.style.display = "none";
-                if (res.data.status === 1) {
-                    let { disper_map_stack_A2B, disper_map_stack_B2A, disper_map_stack_SYM, pshift } = JSON.parse(res.data.data);
-                    this.setState({
-                        loaded: true,
-                        disper_map_stack_A2B,
-                        disper_map_stack_B2A,
-                        disper_map_stack_SYM,
-                        pshift,
-                    });
-                    this.chartRender(this.chart1_heatmap, this.chart1_line, disper_map_stack_A2B);
-                    this.chartRender(this.chart2_heatmap, this.chart2_line, disper_map_stack_B2A);
-                    this.chartRender(this.chart3_heatmap, this.chart3_line, disper_map_stack_SYM,
-                        {
-                            xAxis: {
-                                name: "Frequency (Hz)",
-                                nameLocation: "middle",
-                                nameGap: 25
-                            },
+        if (fileName) {
+            this.chart1_loading_mask.style.display = "flex";
+            this.chart2_loading_mask.style.display = "flex";
+            this.chart3_loading_mask.style.display = "flex";
+            this.setState({ loaded: false });
+            axios.get(`http://${dockerIP}:${vport}/fileData?fileName=${fileName}.json`)
+                .then(res => {
+                    this.chart1_loading_mask.style.display = "none";
+                    this.chart2_loading_mask.style.display = "none";
+                    this.chart3_loading_mask.style.display = "none";
+                    if (res.data.status === 1) {
+                        let { disper_map_stack_A2B, disper_map_stack_B2A, disper_map_stack_SYM, pshift } = JSON.parse(res.data.data);
+                        this.setState({
+                            loaded: true,
+                            disper_map_stack_A2B,
+                            disper_map_stack_B2A,
+                            disper_map_stack_SYM,
+                            pshift,
                         });
-                    this.lineRender(this.chart4);
-                    this.getDisp();
-                } else {
-                    message.error("数据获取失败")
-                }
-            });
+                        this.chartRender(this.chart1_heatmap, this.chart1_line, disper_map_stack_A2B);
+                        this.chartRender(this.chart2_heatmap, this.chart2_line, disper_map_stack_B2A);
+                        this.chartRender(this.chart3_heatmap, this.chart3_line, disper_map_stack_SYM,
+                            {
+                                xAxis: {
+                                    name: "Frequency (Hz)",
+                                    nameLocation: "middle",
+                                    nameGap: 25
+                                },
+                            });
+                        this.lineRender(this.chart4);
+                        this.getDisp();
+                    } else {
+                        message.error("数据获取失败")
+                    }
+                });
+        }
     }
     getDisp = () => {
         let { dataType, disper_map_stack_A2B, disper_map_stack_B2A, disper_map_stack_SYM, pshift, fmin, fmax, Tout_min, dTout, Tout_max } = this.state;
@@ -569,7 +572,10 @@ class index extends Component {
         })
     }
     handleSelect = (selectedKeys, info) => {
-        let { treeData, loaded, selectedIndex } = this.state;
+        let { treeData, loaded, selectedIndex, selected } = this.state;
+        if (!selected) {
+            this.setState({ selected: true });
+        }
         if (!loaded) {
             this.handleClear();
             this.getData(selectedKeys[0]);
@@ -579,7 +585,6 @@ class index extends Component {
                 this.handleClear();
                 this.getData(selectedKeys[0]);
                 this.setState({ fileName: selectedKeys[0], selectedIndex: info.node.props.index });
-                console.log(treeData[info.node.props.index].status);
                 if (treeData[info.node.props.index].status === 2) {
                     this.setState({ treeData: [] });
                     treeData[info.node.props.index].status = 0
@@ -714,32 +719,36 @@ class index extends Component {
         });
     }
     handleSave = () => {
-        let { resultX, resultY, loaded, fileName, dockerIP, vport } = this.state
-        if (loaded) {
-            resultY = resultY.map(item => item.toFixed(4))
-            axios({
-                method: 'post',
-                url: `http://${dockerIP}:${vport}/saveData`,
-                data: {
-                    data: `${resultX}\r\n${resultY}`,
-                    fileName,
-                },
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => {
-                if (res.data.status === 1) {
-                    message.success("数据保存成功");
-                    let { treeData, selectedIndex } = this.state;
-                    this.setState({ treeData: [] });
-                    treeData[selectedIndex].status = 1;
-                    this.setState({ treeData });
-                } else {
-                    message.error("数据保存失败")
-                }
-            }).catch(err => {
-                message.error("服务器无响应")
-            });
+        let { resultX, resultY, loaded, selected, fileName, dockerIP, vport } = this.state;
+        if (selected) {
+            if (loaded) {
+                resultY = resultY.map(item => item.toFixed(4))
+                axios({
+                    method: 'post',
+                    url: `http://${dockerIP}:${vport}/saveData`,
+                    data: {
+                        data: `${resultX}\r\n${resultY}`,
+                        fileName,
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if (res.data.status === 1) {
+                        message.success("数据保存成功");
+                        let { treeData, selectedIndex } = this.state;
+                        this.setState({ treeData: [] });
+                        treeData[selectedIndex].status = 1;
+                        this.setState({ treeData });
+                    } else {
+                        message.error("数据保存失败")
+                    }
+                }).catch(err => {
+                    message.error("服务器无响应")
+                });
+            } else {
+                message.info("数据文件未加载完成");
+            }
         } else {
             message.info("请选择数据文件");
         }
@@ -897,7 +906,7 @@ class index extends Component {
                         <div className="dot-box">在此选择数据源</div>
                         <div className="dot-box">在此修改计算参数<br />修改完成后点击Calculate即可计算</div>
                         <div className="dot-box">选择线图数据源</div>
-                        <div className="dot-box">Clear:清空画布<br />Save:下载数据</div>
+                        <div className="dot-box">清空画布:清空可视化区域<br />保存数据:将操作后的数据保存至服务器</div>
                         <div className="dot-box">处理全部数据源并保存后<br />才可进行下一步操作</div>
                     </div>
                     <div className="column">

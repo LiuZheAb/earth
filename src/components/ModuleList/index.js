@@ -14,7 +14,7 @@ import IconFont from '../IconFont';
 import { getCookie } from '../../utils/cookies';
 import './index.css';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `./js/pdf.worker.js`;
 
 export default class ModuleList extends React.Component {
     state = {
@@ -42,10 +42,11 @@ export default class ModuleList extends React.Component {
             api
         });
         if (data) {
-            delete data["典型示范 (Demonstration)"];
+            let data_copy = JSON.parse(JSON.stringify(data));
+            delete data_copy["典型示范 (Demonstration)"];
             this.setState({
-                modules: Object.keys(this.props.data),
-                subModules: this.props.data,
+                modules: Object.keys(data_copy),
+                subModules: data_copy,
             });
         }
     };
@@ -221,19 +222,26 @@ export default class ModuleList extends React.Component {
             message.error("服务器无响应");
         });
     }
-    componentWillReceiveProps(prevProps) {
-        let data = prevProps.data && JSON.parse(JSON.stringify(prevProps.data));
-        this.setState({
-            loading: prevProps.loading,
-            api: prevProps.api
-        })
-        if (data) {
-            delete data["典型示范 (Demonstration)"];
-            this.setState({
-                modules: Object.keys(data),
-                subModules: data,
-            });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        let { loading, api, data } = nextProps;
+        if (loading !== prevState.loading) {
+            if (data) {
+                let data_copy = JSON.parse(JSON.stringify(data));
+                delete data_copy["典型示范 (Demonstration)"];
+                return {
+                    loading,
+                    api,
+                    modules: Object.keys(data_copy),
+                    subModules: data_copy,
+                }
+            } else {
+                return {
+                    loading,
+                    api,
+                }
+            }
         }
+        return null;
     }
     render() {
         const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2, pdfModalVisible, pageNumber, numPages } = this.state;
@@ -295,7 +303,7 @@ export default class ModuleList extends React.Component {
                                                                             ?
                                                                             <>
                                                                                 <IconFont type="earthjinru1" />
-                                                                                <Link to="/calculate" onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
+                                                                                <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                                             </>
                                                                             :
                                                                             <>
@@ -328,7 +336,7 @@ export default class ModuleList extends React.Component {
                     {currentMenu ?
                         <>
                             <Document
-                                file={currentMenu.indexOf("地质参数库") === -1 ? "./Geophysics.pdf" : "./Geology.pdf"}
+                                file={currentMenu.indexOf("地质参数库") === -1 ? "./static/pdf/Geophysics.pdf" : "./static/pdf/Geology.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
                                 loading="正在努力加载中"
                                 externalLinkTarget="_blank"
@@ -365,7 +373,7 @@ export default class ModuleList extends React.Component {
                                             :
                                             <>
                                                 <IconFont type="earthjinru1" />
-                                                <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
+                                                <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                             </>
                                     }
                                 </li>
@@ -393,7 +401,7 @@ export default class ModuleList extends React.Component {
                                     :
                                     <>
                                         <IconFont type="earthjinru1" />
-                                        <Link to="/calculate" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
+                                        <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                     </>
                                 }
                             </li>

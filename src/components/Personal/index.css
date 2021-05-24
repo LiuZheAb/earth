@@ -5,6 +5,11 @@
     background-color: #f4f6f8;
 }
 
+.personal .ant-btn {
+    height: 44px;
+    font-size: 16px;
+}
+
 .personal-content {
     background: #fff;
     padding: 0 24px;
@@ -103,6 +108,10 @@
     cursor: pointer;
 }
 
+.personal-content .ant-card {
+    font-size: 18px;
+}
+
 .edit-modal {
     width: 800px !important;
     max-width: 800px;
@@ -136,6 +145,7 @@
     }
     #personal-menu-h {
         display: block;
+        font-size: 18px;
     }
 }
 
@@ -144,10 +154,10 @@
         width: 100%;
         font-size: 14px;
     }
-    #personal-form .ant-form-item label {
+    #personal-form .ant-form-item label, .personal-content .ant-card, #personal-form .ant-input {
         font-size: 14px;
     }
-    #personal-form .ant-input {
+    #personal-menu-h {
         font-size: 14px;
     }
 }

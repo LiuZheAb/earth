@@ -16,14 +16,15 @@ const Loading = loadable(() => import('../pages/Loading'));
 const ErrorPage = loadable(() => import('../pages/ErrorPage'));
 const About = loadable(() => import('../pages/About'));
 const OperateData = loadable(() => import('../pages/OperateData'));
-const Comsol = loadable(() => import('../pages/Comsol'));
+const Bdcenter = loadable(() => import('../pages/Bdcenter'));
+const Vis = loadable(() => import('../components/Vis/components/echartsView/view_421&422/csvView_matrix3'));
 
 export default class EarthRouter extends React.Component {
     render() {
         return (
             <Router>
                 <Switch>
-                    <Route path={["/home", "/console", "/newapp", "/personal"]}>
+                    <Route path={["/home", "/console", "/console/:p", "/newapp", "/personal"]}>
                         <Homepage />
                     </Route>
                     <Route exact path="/calculate">
@@ -32,11 +33,14 @@ export default class EarthRouter extends React.Component {
                     <Route exact path="/operateData">
                         <OperateData />
                     </Route>
-                    <Route exact path="/comsol">
-                        <Comsol />
-                    </Route>
                     <Route exact path="/loading">
                         <Loading />
+                    </Route>
+                    <Route exact path="/vis">
+                        <Vis />
+                    </Route>
+                    <Route exact path="/bdcenter">
+                        <Bdcenter />
                     </Route>
                     <Route exact path="/">
                         <Redirect to="/home" />

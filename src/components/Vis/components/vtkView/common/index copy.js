@@ -749,7 +749,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (props.datatype === "重力数据投影" || props.datatype === "重力异常计算") {
+                    if (props.datatype === "坐标投影" || props.datatype === "重力异常计算") {
                         if (idx < num) {
                             textCtx.fillText(`${xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)].toFixed(4)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         } else {
@@ -2788,7 +2788,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
     let ScalPointData = [];
     let rulerScal = [];
     const rulers = [];
-    if (datatype === "重力数据网格化" || datatype === "重力数据求偏导" || datatype === "重力数据投影" || datatype === "六面体模型重力异常正演" || datatype === "球型棱柱体模型重力异常正演" || datatype === "典型矿区仿真数据反演一（最小模型约束反演）" || datatype === "典型矿区仿真数据反演二（深度加权约束反演）"
+    if (datatype === "数据网格化" || datatype === "重力数据求偏导" || datatype === "坐标投影" || datatype === "六面体模型重力异常正演" || datatype === "球型棱柱体模型重力异常正演" || datatype === "典型矿区仿真数据反演一（最小模型约束反演）" || datatype === "典型矿区仿真数据反演二（深度加权约束反演）"
         || datatype === "典型矿区仿真数据反演三（光滑约束反演）" || datatype === "典型矿区仿真数据反演四（多约束反演）" || datatype === "典型矿区仿真数据反演五（全变分约束）" || datatype === "重力数据延拓" || datatype === "重力异常计算" || datatype === "重力观测数据反演（多约束反演）"
         || datatype === "磁场方向导数求取" || datatype === "磁场模型正演" || datatype === "磁场空间延拓" || datatype === "磁化极" || datatype === "2d") {
         ScalPoint = [

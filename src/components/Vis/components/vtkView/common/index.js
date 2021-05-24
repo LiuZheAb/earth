@@ -629,12 +629,17 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
         outline.setInputData(polydata);
         let bound = outline.getOutputData().getState().points.values;
         let num, len;
-        if (yAxis.length > 5 * xAxis.length) {
-            num = 2;
-            len = Math.abs(bound[7] - bound[1])
-        } else {
-            num = 11;
+        if (props.datatype === "数据去趋势") {
+            num = 6;
             len = Math.abs(bound[3] - bound[0])
+        } else {
+            if (yAxis.length > 5 * xAxis.length) {
+                num = 2;
+                len = Math.abs(bound[7] - bound[1])
+            } else {
+                num = 11;
+                len = Math.abs(bound[3] - bound[0])
+            }
         }
         let ratio = Math.round(yAxis.length / xAxis.length * (num - 1));
         const cubeSource1 = vtkCubeSource.newInstance({
@@ -749,11 +754,13 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (props.datatype === "重力数据投影" || props.datatype === "重力异常计算") {
+                    if (["坐标投影", "重力异常计算", "重力数据求偏导", "重力数据延拓", "三维断层模型正演", "边缘识别", "曲化平", "数据扩边", "最小曲率补空白",
+                        "六面体模型重力异常正演", "六面体复杂模型构建及重力异常正演", "球型棱柱体模型重力异常正演", "球型棱柱体模型构建及重力异常正演", "四面体模型单元正演",
+                        "数据去趋势", "数据网格化","磁场方向导数求取","磁场空间延拓","磁化极","磁场模型正演"].includes(props.datatype)) {
                         if (idx < num) {
-                            textCtx.fillText(`${xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)].toFixed(4)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            textCtx.fillText(`${xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         } else {
-                            textCtx.fillText(`${yAxis[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)].toFixed(4)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            textCtx.fillText(`${yAxis[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         }
                     } else {
                         if (idx < num) {
@@ -2636,7 +2643,6 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
         xLength -= 1;
     }
 
-
     // 定义平面源
     const planeSource = vtkPlaneSource.newInstance({
         XResolution: xLength - 1,
@@ -2651,122 +2657,146 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
     model.renderer.resetCamera();
     model.renderer.resetCameraClippingRange();
 
-    if (datatype === "重力观测数据反演（多约束反演）" || datatype === "重力异常计算" || datatype === "磁场空间延拓" || datatype === "磁化极" || datatype === "磁场方向导数求取") {
-        for (let i = 0; i < yLength; i++) {
-            array1[i] = arrs.splice(0, xLength)
-        }
-        simpleFilter.setFormula({
-            getArrays: (inputDataSets) => ({
-                input: [
-                    { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
-                output: [
-                    {
-                        location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
-                        name: 'z',                // ... 有了名字。。。
-                        dataType: 'Float64Array',         // ... 这种类型的。。。
-                        attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
-                    },
-                ]
-            }),
-            evaluate: (arraysIn, arraysOut) => {
-                const [z] = arraysOut.map(d => d.getData());
-                for (let i = 0; i < data.length; i++) {
-                    let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
-                    z[index] = array1[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+    switch (datatype) {
+        case "重力观测数据反演（多约束反演）":
+        case "三维断层模型正演":
+        case "边缘识别":
+        case "曲化平":
+        case "数据扩边":
+        case "最小曲率补空白":
+            for (let i = 0; i < yLength; i++) {
+                array1[i] = arrs.splice(0, xLength)
+            }
+            simpleFilter.setFormula({
+                getArrays: (inputDataSets) => ({
+                    input: [
+                        { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                    output: [
+                        {
+                            location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                            name: 'z',                // ... 有了名字。。。
+                            dataType: 'Float64Array',         // ... 这种类型的。。。
+                            attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                        },
+                    ]
+                }),
+                evaluate: (arraysIn, arraysOut) => {
+                    const [z] = arraysOut.map(d => d.getData());
+                    for (let i = 0; i < data.length; i++) {
+                        let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                        z[index] = array1[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+                    }
+                    arraysOut.forEach(x => x.modified());
                 }
-                arraysOut.forEach(x => x.modified());
+            })
+            break;
+        case "重力异常计算":
+        case "ERPS USTC":
+        case "四面体模型单元正演":
+        case "重磁2D数据模糊聚类联合反演":
+        case "重磁3D数据模糊聚类联合反演":
+        case "重磁2D数据模糊c回归聚类联合反演":
+        case "重磁3D数据模糊c回归聚类联合反演":
+        case "重磁2D数据相关分析联合反演":
+        case "重磁3D数据相关分析联合反演":
+        case "重磁2D数据基于数据空间的相关分析联合反演":
+        case "重磁3D数据基于数据空间的相关分析联合反演":
+        case "重磁2D数据交叉梯度联合反演":
+        case "重磁3D数据交叉梯度联合反演":
+            if (datatype === "重力异常计算") {
+                yAxis = yAxis.reverse();
             }
-        })
-    } else if (appName === "ERPS USTC") {
-        simpleFilter.setFormula({
-            getArrays: (inputDataSets) => ({
-                input: [
-                    { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
-                output: [
-                    {
-                        location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
-                        name: 'z',                // ... 有了名字。。。
-                        dataType: 'Float64Array',         // ... 这种类型的。。。
-                        attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
-                    },
-                ]
-            }),
-            evaluate: (arraysIn, arraysOut) => {
-                const [z] = arraysOut.map(d => d.getData());
-                for (let i = 0; i < data.length; i++) {
-                    let index = yR.indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
-                    z[index] = data[i];
+            simpleFilter.setFormula({
+                getArrays: (inputDataSets) => ({
+                    input: [
+                        { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                    output: [
+                        {
+                            location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                            name: 'z',                // ... 有了名字。。。
+                            dataType: 'Float64Array',         // ... 这种类型的。。。
+                            attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                        },
+                    ]
+                }),
+                evaluate: (arraysIn, arraysOut) => {
+                    const [z] = arraysOut.map(d => d.getData());
+                    for (let i = 0; i < data.length; i++) {
+                        let index = yR.indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                        z[index] = data[i];
+                    }
+                    arraysOut.forEach(x => x.modified());
                 }
-                arraysOut.forEach(x => x.modified());
+            })
+            break;
+        case "2D-DNN-SeismicInv":
+            for (let i = 0; i < xLength; i++) {
+                array1[i] = arrs.splice(0, yLength)
             }
-        })
-    } else if (appName === "2D-DNN-SeismicInv") {
-        for (let i = 0; i < xLength; i++) {
-            array1[i] = arrs.splice(0, yLength)
-        }
-        for (let i = 0; i < yLength; i++) {
-            array[i] = []
-            for (let j = 0; j < xLength; j++) {
-                array[i][j] = array1[j][i]
-            }
-        }
-        array.reverse()
-        simpleFilter.setFormula({
-            getArrays: (inputDataSets) => ({
-                input: [
-                    { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
-                output: [
-                    {
-                        location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
-                        name: 'z',                // ... 有了名字。。。
-                        dataType: 'Float64Array',         // ... 这种类型的。。。
-                        attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
-                    },
-                ]
-            }),
-            evaluate: (arraysIn, arraysOut) => {
-                const [z] = arraysOut.map(d => d.getData());
-                for (let i = 0; i < data.length; i++) {
-                    let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
-                    z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+            for (let i = 0; i < yLength; i++) {
+                array[i] = []
+                for (let j = 0; j < xLength; j++) {
+                    array[i][j] = array1[j][i]
                 }
-                arraysOut.forEach(x => x.modified());
             }
-        });
-    } else {
-        for (let i = 0; i < xLength; i++) {
-            array1[i] = arrs.splice(0, yLength)
-        }
-        for (let i = 0; i < yLength; i++) {
-            array[i] = []
-            for (let j = 0; j < xLength; j++) {
-                array[i][j] = array1[j][i]
-            }
-        }
-        simpleFilter.setFormula({
-            getArrays: (inputDataSets) => ({
-                input: [
-                    { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
-                output: [
-                    {
-                        location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
-                        name: 'z',                // ... 有了名字。。。
-                        dataType: 'Float64Array',         // ... 这种类型的。。。
-                        attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
-                    },
-                ]
-            }),
-            evaluate: (arraysIn, arraysOut) => {
-                const [z] = arraysOut.map(d => d.getData());
-                for (let i = 0; i < data.length; i++) {
-                    let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
-                    z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+            array.reverse()
+            simpleFilter.setFormula({
+                getArrays: (inputDataSets) => ({
+                    input: [
+                        { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                    output: [
+                        {
+                            location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                            name: 'z',                // ... 有了名字。。。
+                            dataType: 'Float64Array',         // ... 这种类型的。。。
+                            attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                        },
+                    ]
+                }),
+                evaluate: (arraysIn, arraysOut) => {
+                    const [z] = arraysOut.map(d => d.getData());
+                    for (let i = 0; i < data.length; i++) {
+                        let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                        z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+                    }
+                    arraysOut.forEach(x => x.modified());
                 }
-                arraysOut.forEach(x => x.modified());
+            });
+            break;
+        default:
+            for (let i = 0; i < xLength; i++) {
+                array1[i] = arrs.splice(0, yLength)
             }
-        });
+            for (let i = 0; i < yLength; i++) {
+                array[i] = []
+                for (let j = 0; j < xLength; j++) {
+                    array[i][j] = array1[j][i]
+                }
+            }
+            simpleFilter.setFormula({
+                getArrays: (inputDataSets) => ({
+                    input: [
+                        { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                    output: [
+                        {
+                            location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                            name: 'z',                // ... 有了名字。。。
+                            dataType: 'Float64Array',         // ... 这种类型的。。。
+                            attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                        },
+                    ]
+                }),
+                evaluate: (arraysIn, arraysOut) => {
+                    const [z] = arraysOut.map(d => d.getData());
+                    for (let i = 0; i < data.length; i++) {
+                        let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                        z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+                    }
+                    arraysOut.forEach(x => x.modified());
+                }
+            });
+            break;
     }
-
     mapper.setInputConnection(simpleFilter.getOutputPort());
 
     planeSource.set({ "xResolution": xLength - 1 });
@@ -2776,20 +2806,17 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
     planeSource.set({ "Point2": [cen[0], -yLength + cen[1], cen[2]] });
     // let cen = planeSource.getCenter();
     actor.setMapper(mapper);
-
     let pointDatas = [...data];
     pointDatas.sort(function (a, b) {
         return a - b;
     });
     let unique = [...new Set(pointDatas)];
-    console.log(unique);
     if (unique[0] === "null") unique.splice(0, 1);
     unique.sort(function (a, b) {
         return a - b;
     });
     let min = Number(unique[0]);
     let max = Number(unique[unique.length - 1]);
-
     lookupTable.setMappingRange(min, max);
     mapper.setLookupTable(lookupTable);
     let pointLeft = planeSource.getOrigin();
@@ -2810,7 +2837,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
     _this.setState({
         xAxis: xR,
         yAxis: yR
-    })
+    });
 }
 
 // 显示colorBar刻度
@@ -2820,88 +2847,165 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
     let ScalPointData = [];
     let rulerScal = [];
     const rulers = [];
-    if (datatype === "重力数据网格化" || datatype === "重力数据求偏导" || datatype === "重力数据投影" || datatype === "六面体模型重力异常正演" || datatype === "球型棱柱体模型重力异常正演" || datatype === "典型矿区仿真数据反演一（最小模型约束反演）" || datatype === "典型矿区仿真数据反演二（深度加权约束反演）"
-        || datatype === "典型矿区仿真数据反演三（光滑约束反演）" || datatype === "典型矿区仿真数据反演四（多约束反演）" || datatype === "典型矿区仿真数据反演五（全变分约束）" || datatype === "重力数据延拓" || datatype === "重力异常计算" || datatype === "重力观测数据反演（多约束反演）"
-        || datatype === "磁场方向导数求取" || datatype === "磁场模型正演" || datatype === "磁场空间延拓" || datatype === "磁化极" || datatype === "2d") {
-        ScalPoint = [
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] + xlon / 2, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] + xlon / 2, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] + 2 * xlon / 5, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] + 2 * xlon / 5, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] + 3 * xlon / 10, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] + 3 * xlon / 10, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] + xlon / 5, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] + xlon / 5, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] + xlon / 10, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] + xlon / 10, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1], 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1], 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] - xlon / 10, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] - xlon / 10, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] - xlon / 5, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] - xlon / 5, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] - 3 * xlon / 10, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] - 3 * xlon / 10, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
-            pointLeft[0] + 2.5 * xlon, planeCenter[1] - xlon / 2, 0,
-            pointLeft[0] + 2.55 * xlon, planeCenter[1] - xlon / 2, 0
-        ]
-        for (let i = 0; i < ScalPoint.length - 2; i++) {
-            ScalCell.push(3, i, i + 1, i + 2)
-        }
-        for (let i = 0; i < 11; i++) {
-            rulers.push({
-                xLength: Math.abs(xlon) * 0.05,
-                yLength: Math.abs(xlon) * 0.005,
-                zLength: 0,
-                center: [ScalPoint[i * 6 + 3], ScalPoint[i * 6 + 4], 0],
-            });
-            rulerScal.push(ScalPoint[i * 6 + 3] + 0.05 * xlon, ScalPoint[i * 6 + 4], 0);
-        }
-        for (let i = 0; i <= 10; i++) {
-            ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
-        }
-    } else {
-        ScalPoint = [
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] + ylon / 2, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] + ylon / 2, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] + 2 * ylon / 5, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] + 2 * ylon / 5, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] + 3 * ylon / 10, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] + 3 * ylon / 10, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] + ylon / 5, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] + ylon / 5, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] + ylon / 10, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] + ylon / 10, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1], 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1], 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] - ylon / 10, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] - ylon / 10, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] - ylon / 5, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] - ylon / 5, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] - 3 * ylon / 10, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] - 3 * ylon / 10, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] - 2 * ylon / 5, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] - 2 * ylon / 5, 0,
-            pointLeft[0] + 0.5 * ylon, planeCenter[1] - ylon / 2, 0,
-            pointLeft[0] + 0.55 * ylon, planeCenter[1] - ylon / 2, 0
-        ]
-        for (let i = 0; i < ScalPoint.length - 2; i++) {
-            ScalCell.push(3, i, i + 1, i + 2)
-        }
-        for (let i = 0; i < 11; i++) {
-            rulers.push({
-                xLength: Math.abs(ylon) * 0.05,
-                yLength: Math.abs(ylon) * 0.005,
-                zLength: 0,
-                center: [ScalPoint[i * 6 + 3], ScalPoint[i * 6 + 4], 0],
-            });
-            rulerScal.push(ScalPoint[i * 6 + 3] + 0.15 * ylon, ScalPoint[i * 6 + 4], 0);
-        }
-        for (let i = 0; i <= 10; i++) {
-            ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
-        }
+    switch (datatype) {
+        case "数据网格化":
+        case "重力数据求偏导":
+        case "坐标投影":
+        case "六面体模型重力异常正演":
+        case "六面体复杂模型构建及重力异常正演":
+        case "球型棱柱体模型重力异常正演":
+        case "球型棱柱体模型构建及重力异常正演":
+        case "典型矿区仿真数据反演一（最小模型约束反演）":
+        case "典型矿区仿真数据反演二（深度加权约束反演）":
+        case "典型矿区仿真数据反演三（光滑约束反演）":
+        case "典型矿区仿真数据反演四（多约束反演）":
+        case "典型矿区仿真数据反演五（全变分约束）":
+        case "重力数据延拓":
+        case "重力异常计算":
+        case "重力观测数据反演（多约束反演）":
+        case "三维断层模型正演":
+        case "四面体模型单元正演":
+        case "磁场方向导数求取":
+        case "磁场模型正演":
+        case "磁场空间延拓":
+        case "磁化极":
+        case "欧拉反演(扩展窗)":
+        case "欧拉反演(移动窗)":
+        case "边缘识别":
+        case "曲化平":
+        case "数据扩边":
+        case "最小曲率补空白":
+        case "重磁2D数据模糊聚类联合反演":
+        case "重磁3D数据模糊聚类联合反演":
+        case "重磁2D数据模糊c回归聚类联合反演":
+        case "重磁3D数据模糊c回归聚类联合反演":
+        case "重磁2D数据相关分析联合反演":
+        case "重磁3D数据相关分析联合反演":
+        case "重磁2D数据基于数据空间的相关分析联合反演":
+        case "重磁3D数据基于数据空间的相关分析联合反演":
+        case "重磁2D数据交叉梯度联合反演":
+        case "重磁3D数据交叉梯度联合反演":
+        case "2d":
+            ScalPoint = [
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] + xlon / 2, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] + xlon / 2, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] + 2 * xlon / 5, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] + 2 * xlon / 5, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] + 3 * xlon / 10, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] + 3 * xlon / 10, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] + xlon / 5, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] + xlon / 5, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] + xlon / 10, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] + xlon / 10, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1], 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1], 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] - xlon / 10, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] - xlon / 10, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] - xlon / 5, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] - xlon / 5, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] - 3 * xlon / 10, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] - 3 * xlon / 10, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
+                pointLeft[0] + 2.3 * xlon, planeCenter[1] - xlon / 2, 0,
+                pointLeft[0] + 2.35 * xlon, planeCenter[1] - xlon / 2, 0
+            ]
+            for (let i = 0; i < ScalPoint.length - 2; i++) {
+                ScalCell.push(3, i, i + 1, i + 2)
+            }
+            for (let i = 0; i < 11; i++) {
+                rulers.push({
+                    xLength: Math.abs(xlon) * 0.05,
+                    yLength: Math.abs(xlon) * 0.005,
+                    zLength: 0,
+                    center: [ScalPoint[i * 6 + 3], ScalPoint[i * 6 + 4], 0],
+                });
+                rulerScal.push(ScalPoint[i * 6 + 3] + 0.05 * xlon, ScalPoint[i * 6 + 4], 0);
+            }
+            for (let i = 0; i <= 10; i++) {
+                ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
+            }
+            break;
+        case "数据去趋势":
+            ScalPoint = [
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] + xlon / 2, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] + xlon / 2, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] + 2 * xlon / 5, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] + 2 * xlon / 5, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] + 3 * xlon / 10, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] + 3 * xlon / 10, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] + xlon / 5, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] + xlon / 5, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] + xlon / 10, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] + xlon / 10, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1], 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1], 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] - xlon / 10, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] - xlon / 10, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] - xlon / 5, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] - xlon / 5, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] - 3 * xlon / 10, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] - 3 * xlon / 10, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
+                pointLeft[0] + 2.1 * xlon, planeCenter[1] - xlon / 2, 0,
+                pointLeft[0] + 2.15 * xlon, planeCenter[1] - xlon / 2, 0
+            ]
+            for (let i = 0; i < ScalPoint.length - 2; i++) {
+                ScalCell.push(3, i, i + 1, i + 2)
+            }
+            for (let i = 0; i < 11; i++) {
+                rulers.push({
+                    xLength: Math.abs(xlon) * 0.05,
+                    yLength: Math.abs(xlon) * 0.005,
+                    zLength: 0,
+                    center: [ScalPoint[i * 6 + 3], ScalPoint[i * 6 + 4], 0],
+                });
+                rulerScal.push(ScalPoint[i * 6 + 3] + 0.05 * xlon, ScalPoint[i * 6 + 4], 0);
+                ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
+            }
+            break;
+        default:
+            ScalPoint = [
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] + ylon / 2, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] + ylon / 2, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] + 2 * ylon / 5, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] + 2 * ylon / 5, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] + 3 * ylon / 10, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] + 3 * ylon / 10, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] + ylon / 5, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] + ylon / 5, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] + ylon / 10, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] + ylon / 10, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1], 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1], 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] - ylon / 10, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] - ylon / 10, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] - ylon / 5, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] - ylon / 5, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] - 3 * ylon / 10, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] - 3 * ylon / 10, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] - 2 * ylon / 5, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] - 2 * ylon / 5, 0,
+                pointLeft[0] + 0.5 * ylon, planeCenter[1] - ylon / 2, 0,
+                pointLeft[0] + 0.55 * ylon, planeCenter[1] - ylon / 2, 0
+            ]
+            for (let i = 0; i < ScalPoint.length - 2; i++) {
+                ScalCell.push(3, i, i + 1, i + 2)
+            }
+            for (let i = 0; i < 11; i++) {
+                rulers.push({
+                    xLength: Math.abs(ylon) * 0.05,
+                    yLength: Math.abs(ylon) * 0.005,
+                    zLength: 0,
+                    center: [ScalPoint[i * 6 + 3], ScalPoint[i * 6 + 4], 0],
+                });
+                rulerScal.push(ScalPoint[i * 6 + 3] + 0.15 * ylon, ScalPoint[i * 6 + 4], 0);
+            }
+            for (let i = 0; i <= 10; i++) {
+                ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
+            }
+            break;
     }
     // lookupTable.setHueRange(-1, 1);
     // lookupTable.setSaturationRange(0, 0);
@@ -2999,8 +3103,8 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
             textCtx.textAlign = 'left';
             textCtx.textBaseline = 'middle';
             if (idx < 11) {
-                if (datatype === "重力数据求偏导") {
-                    textCtx.fillText(`${ScalPointData[idx * 2]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                if (datatype === "数据去趋势") {
+                    textCtx.fillText(`${ScalPointData[idx * 2].toFixed(0)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                 } else {
                     textCtx.fillText(`${ScalPointData[idx * 2].toFixed(4)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                 }
