@@ -3,12 +3,12 @@
         "重力数据延拓": {
             "calcApi": "/grav_upcontinue",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "xNum",
-                        "paramNameCN": "设置X方向个数",
+                        "paramNameCN": "x方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -19,7 +19,7 @@
                     },
                     {
                         "paramName": "yNum",
-                        "paramNameCN": "设置Y方向个数",
+                        "paramNameCN": "y方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -62,7 +62,7 @@
                         "paramNameCN": "重力数据文件",
                         "defaultValue": "demo_data.csv",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "数据文件为csv格式，有效数据列为x,y,data",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -74,7 +74,7 @@
         "重力异常计算": {
             "calcApi": "/gravity_corrections",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": null,
                 "selects": null,
@@ -85,10 +85,10 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "ynyx_grav file",
-                        "defaultValue": "ynyx_grav.csv",
+                        "paramNameCN": "数据文件",
+                        "defaultValue": "ynyx1.csv",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "数据文件为csv格式，有效数据列为lat,elev,grav",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -100,27 +100,28 @@
         "重力数据求偏导": {
             "calcApi": "/grav_deriv",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "deriv_direction",
-                        "paramNameCN": "输入求导方向",
+                        "paramNameCN": "求导方向",
                         "defaultValue": null,
                         "currentValue": "z",
-                        "tip": "可选项（x, y, z）",
+                        "tip": "可选项（x,y,z,tga）",
                         "type": "enum",
                         "enumList": [
                             "x",
                             "y",
-                            "z"
+                            "z",
+                            "tga"
                         ],
                         "max": null,
                         "min": null
                     },
                     {
                         "paramName": "xNum",
-                        "paramNameCN": "设置X方向个数",
+                        "paramNameCN": "X方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -131,7 +132,7 @@
                     },
                     {
                         "paramName": "yNum",
-                        "paramNameCN": "设置Y方向个数",
+                        "paramNameCN": "Y方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -163,7 +164,7 @@
                         "paramNameCN": "重力数据文件",
                         "defaultValue": "demo_data.csv",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "数据文件为csv格式，有效数据列为x,y,data",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -174,69 +175,28 @@
         },
         "计算完全布格异常": {
             "calcApi": "/FA_Bouguer",
-            "requestMethod": "get",
-            "vis": "0",
+            "requestMethod": "post",
+            "vis": false,
             "params": {
                 "texts": [
                     {
-                        "paramName": "path",
-                        "paramNameCN": "文件路径",
-                        "defaultValue": null,
-                        "currentValue": "data",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "topofilename",
-                        "paramNameCN": "文件路径",
-                        "defaultValue": null,
-                        "currentValue": "topo_cart.xyz",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "gravfilename",
-                        "paramNameCN": "文件路径",
-                        "defaultValue": null,
-                        "currentValue": "gravi_cart.xyz",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "topoDetfname",
-                        "paramNameCN": "文件路径",
-                        "defaultValue": null,
-                        "currentValue": "topo_cart_det.xyz",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
                         "paramName": "det_flag",
-                        "paramNameCN": "是否执行细节计算，1-是，others-不执行",
+                        "paramNameCN": "是否执行细节计算，yes/no",
                         "defaultValue": null,
-                        "currentValue": "0",
+                        "currentValue": "no",
                         "tip": null,
-                        "type": "int",
-                        "enumList": null,
+                        "type": "enum",
+                        "enumList": [
+                            "yes",
+                            "no"
+                        ],
                         "max": null,
                         "min": null,
                         "required": false
                     },
                     {
                         "paramName": "inc_Rd",
-                        "paramNameCN": "网格步距",
+                        "paramNameCN": "远区网格步距",
                         "defaultValue": null,
                         "currentValue": "4",
                         "tip": null,
@@ -247,7 +207,7 @@
                     },
                     {
                         "paramName": "inc_Ri",
-                        "paramNameCN": "格阶中间区",
+                        "paramNameCN": "近区网格步距",
                         "defaultValue": null,
                         "currentValue": "2",
                         "tip": null,
@@ -280,7 +240,7 @@
                     },
                     {
                         "paramName": "N_topo",
-                        "paramNameCN": "x中高程网格的节点数",
+                        "paramNameCN": "DEM数据中的x方向点数",
                         "defaultValue": null,
                         "currentValue": "725",
                         "tip": null,
@@ -291,7 +251,7 @@
                     },
                     {
                         "paramName": "M_topo",
-                        "paramNameCN": "y中高程网格的节点数",
+                        "paramNameCN": "DEM数据中的y方向点数",
                         "defaultValue": null,
                         "currentValue": "780",
                         "tip": null,
@@ -302,7 +262,7 @@
                     },
                     {
                         "paramName": "R_i",
-                        "paramNameCN": "中间区域的极限",
+                        "paramNameCN": "校正区域近区半径",
                         "defaultValue": null,
                         "currentValue": "20",
                         "tip": null,
@@ -313,7 +273,7 @@
                     },
                     {
                         "paramName": "R_d",
-                        "paramNameCN": "网格步距的极限",
+                        "paramNameCN": "校正区域远区半径",
                         "defaultValue": null,
                         "currentValue": "167",
                         "tip": null,
@@ -324,9 +284,9 @@
                     },
                     {
                         "paramName": "land_flag",
-                        "paramNameCN": null,
+                        "paramNameCN": "是否计算陆地区域（值为on计算陆地和海洋区域，其他值仅计算海洋区域）",
                         "defaultValue": null,
-                        "currentValue": "false",
+                        "currentValue": "off",
                         "tip": null,
                         "type": "string",
                         "enumList": null,
@@ -336,19 +296,22 @@
                     },
                     {
                         "paramName": "slab_Boug_flag",
-                        "paramNameCN": null,
+                        "paramNameCN": "重力数据类型",
                         "defaultValue": null,
                         "currentValue": "0",
                         "tip": "1-输入重力异常为去掉平板效应的布格异常，0-输入为自由空间异常",
-                        "type": "string",
-                        "enumList": null,
+                        "type": "enum",
+                        "enumList": [
+                            "0",
+                            "1"
+                        ],
                         "max": null,
                         "min": null,
                         "required": false
                     },
                     {
                         "paramName": "isos_flag",
-                        "paramNameCN": null,
+                        "paramNameCN": "是否计算均衡异常",
                         "defaultValue": null,
                         "currentValue": "1",
                         "tip": "1-计算均衡异常，others-无均衡异常",
@@ -384,7 +347,7 @@
                     },
                     {
                         "paramName": "N_topoDet",
-                        "paramNameCN": null,
+                        "paramNameCN": "Detailed DEM文件x方向节点数(可选)",
                         "defaultValue": null,
                         "currentValue": "0",
                         "tip": null,
@@ -396,7 +359,7 @@
                     },
                     {
                         "paramName": "M_topoDet",
-                        "paramNameCN": null,
+                        "paramNameCN": "Detailed DEM文件y方向节点数(可选)",
                         "defaultValue": null,
                         "currentValue": "0",
                         "tip": null,
@@ -408,7 +371,7 @@
                     },
                     {
                         "paramName": "inc_det",
-                        "paramNameCN": null,
+                        "paramNameCN": "Detailed DEM格网间距(可选)",
                         "defaultValue": null,
                         "currentValue": "0",
                         "tip": null,
@@ -424,21 +387,56 @@
                 "checkBoxs": null,
                 "textAreas": null,
                 "uploadBoxs": null,
-                "inputFiles": null
+                "inputFiles": [
+                    {
+                        "paramName": "topofile",
+                        "paramNameCN": "DEM文件",
+                        "defaultValue": "topo_cart.xyz",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "gravfile",
+                        "paramNameCN": "重力数据文件",
+                        "defaultValue": "gravi_cart.xyz",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "topoDetfname",
+                        "paramNameCN": "Detailed DEM文件(可选)",
+                        "defaultValue": "",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null,
+                        "required": false
+                    }
+                ]
             }
         },
         "圆盘模型正演": {
             "calcApi": "/Disk_gra",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "xstart",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测起始位置",
                         "defaultValue": null,
                         "currentValue": "1",
-                        "tip": null,
+                        "tip": "距圆盘中心水平投影点距离",
                         "type": "double",
                         "enumList": null,
                         "max": null,
@@ -446,10 +444,10 @@
                     },
                     {
                         "paramName": "xend",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测终点位置",
                         "defaultValue": null,
                         "currentValue": "10",
-                        "tip": null,
+                        "tip": "距圆盘中心水平投影点距离",
                         "type": "double",
                         "enumList": null,
                         "max": null,
@@ -490,12 +488,15 @@
                     },
                     {
                         "paramName": "icat",
-                        "paramNameCN": null,
+                        "paramNameCN": "负密度,Yes/No",
                         "defaultValue": null,
-                        "currentValue": "false",
+                        "currentValue": "No",
                         "tip": null,
-                        "type": "string",
-                        "enumList": null,
+                        "type": "enum",
+                        "enumList": [
+                            "Yes",
+                            "No"
+                        ],
                         "max": null,
                         "min": null,
                         "required": false
@@ -513,12 +514,15 @@
                     },
                     {
                         "paramName": "isdz",
-                        "paramNameCN": null,
+                        "paramNameCN": "计算垂向导数,Yes/No",
                         "defaultValue": null,
-                        "currentValue": "false",
+                        "currentValue": "No",
                         "tip": null,
-                        "type": "string",
-                        "enumList": null,
+                        "type": "enum",
+                        "enumList": [
+                            "Yes",
+                            "No"
+                        ],
                         "max": null,
                         "min": null,
                         "required": false
@@ -535,7 +539,7 @@
         "二维多边形正演": {
             "calcApi": "/Polygon_forward",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
@@ -562,7 +566,7 @@
                     },
                     {
                         "paramName": "noise",
-                        "paramNameCN": "噪声水平",
+                        "paramNameCN": "观测噪声",
                         "defaultValue": null,
                         "currentValue": "0.05",
                         "tip": null,
@@ -581,7 +585,7 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "多边形数据文件",
+                        "paramNameCN": "数据文件",
                         "defaultValue": "depths_polygon.csv",
                         "currentValue": null,
                         "tip": null,
@@ -595,87 +599,39 @@
         },
         "三维断层模型正演": {
             "calcApi": "/fault3d_forward",
-            "requestMethod": "get",
-            "vis": "0",
+            "requestMethod": "post",
+            "vis": true,
             "params": {
-                "texts": [
-                    {
-                        "paramName": "configfile",
-                        "paramNameCN": "配置文件路径",
-                        "defaultValue": null,
-                        "currentValue": "data/fault3d.inp",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "logfile",
-                        "paramNameCN": "日志文件路径",
-                        "defaultValue": null,
-                        "currentValue": "data/f3_log.txt",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    }
-                ],
+                "texts": null,
                 "selects": null,
                 "radios": null,
                 "checkBoxs": null,
                 "textAreas": null,
                 "uploadBoxs": null,
-                "inputFiles": null
-            }
-        },
-        "起伏界面重力正演": {
-            "calcApi": "​/gparker_forward",
-            "requestMethod": "get",
-            "vis": "0",
-            "params": {
-                "texts": [
+                "inputFiles": [
                     {
-                        "paramName": "configfile",
-                        "paramNameCN": "配置文件路径",
-                        "defaultValue": null,
-                        "currentValue": "data/GPARKER1.txt",
+                        "paramName": "upfile",
+                        "paramNameCN": "配置文件",
+                        "defaultValue": "fault3d.inp",
+                        "currentValue": null,
                         "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "logfile",
-                        "paramNameCN": "日志文件路径",
-                        "defaultValue": null,
-                        "currentValue": "data/gp_log.txt",
-                        "tip": null,
-                        "type": "string",
+                        "type": null,
                         "enumList": null,
                         "max": null,
                         "min": null
                     }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
+                ]
             }
         },
         "六面体模型重力异常正演": {
             "calcApi": "/grav_forward",
             "requestMethod": "get",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "g_component",
-                        "paramNameCN": "输入重力分量",
+                        "paramNameCN": "重力分量",
                         "defaultValue": null,
                         "currentValue": "gz",
                         "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）",
@@ -696,7 +652,7 @@
                     },
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型区域设置(x1,x2,y1,y2,z1,z2)",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-100,100,-100,100,0,100",
                         "tip": null,
@@ -707,7 +663,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -716,31 +672,10 @@
                         "max": null,
                         "min": null
                     },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                        "defaultValue": null,
-                        "currentValue": "-200,200,-200,200",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20,20",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
+                    
                     {
                         "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
+                        "paramNameCN": "密度分布(nx1,nx2,ny1,ny2,nz1,nz2)",
                         "defaultValue": null,
                         "currentValue": "1,3,3,7,3,7",
                         "tip": null,
@@ -751,7 +686,7 @@
                     },
                     {
                         "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
+                        "paramNameCN": "密度值",
                         "defaultValue": null,
                         "currentValue": "0.5",
                         "tip": null,
@@ -761,8 +696,30 @@
                         "min": null
                     },
                     {
+                        "paramName": "narea",
+                        "paramNameCN": "观测区域（x1,x2,y1,y2)",
+                        "defaultValue": null,
+                        "currentValue": "-200,200,-200,200",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "nshape",
+                        "paramNameCN": "观测格网(ny,nx)",
+                        "defaultValue": null,
+                        "currentValue": "20,20",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
                         "paramName": "z0",
-                        "paramNameCN": "观测面深度",
+                        "paramNameCN": "观测面高度",
                         "defaultValue": null,
                         "currentValue": "-1",
                         "tip": null,
@@ -783,7 +740,7 @@
         "六面体复杂模型构建及重力异常正演": {
             "calcApi": "/grav_forward",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -809,7 +766,7 @@
                     },
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型区域设置(x1,x2,y1,y2,z1,z2)",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-100,100,-100,100,0,100",
                         "tip": null,
@@ -820,7 +777,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -831,7 +788,7 @@
                     },
                     {
                         "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                        "paramNameCN": "观测区域（x1,x2,y1,y2)",
                         "defaultValue": null,
                         "currentValue": "-200,200,-200,200",
                         "tip": null,
@@ -842,7 +799,7 @@
                     },
                     {
                         "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
+                        "paramNameCN": "观测网格(ny,nx)",
                         "defaultValue": null,
                         "currentValue": "20,20",
                         "tip": null,
@@ -853,235 +810,7 @@
                     },
                     {
                         "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null,
-                        "type": "double",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "noise",
-                        "paramNameCN": "观测噪声",
-                        "defaultValue": null,
-                        "currentValue": " 0.05",
-                        "tip": null,
-                        "type": "double",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": [
-                    {
-                        "paramName": "upfile",
-                        "paramNameCN": "输入模型密度文件",
-                        "defaultValue": "model1.txt/model2.txt",
-                        "currentValue": null,
-                        "tip": null,
-                        "type": null,
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    }
-                ]
-            }
-        },
-        "球型棱柱体模型重力异常正演": {
-            "calcApi": "/grav_forward_tesseroid",
-            "requestMethod": "get",
-            "vis": "1",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "g_component",
-                        "paramNameCN": "输入重力分量",
-                        "defaultValue": null,
-                        "currentValue": "gz",
-                        "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）",
-                        "type": "enum",
-                        "enumList": [
-                            "gx",
-                            "gxx",
-                            "gxy",
-                            "gxz",
-                            "gy",
-                            "gyy",
-                            "gyz",
-                            "gz",
-                            "gzz"
-                        ],
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型区域设置(x1,x2,y1,y2,z1,z2)",
-                        "defaultValue": null,
-                        "currentValue": "30,40,30,40,-50,-200",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5,10,10",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（lon_s,lon_e,lat_s,lat_y)",
-                        "defaultValue": null,
-                        "currentValue": "30,40,30,40",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20,20",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "1,3,3,7,3,7",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
-                        "defaultValue": null,
-                        "currentValue": "0.5",
-                        "tip": null,
-                        "type": "double",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null,
-                        "type": "double",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
-            }
-        },
-        "球型棱柱体模型构建及重力异常正演": {
-            "calcApi": "/grav_forward_tesseroid",
-            "requestMethod": "post",
-            "vis": "1",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "g_component",
-                        "paramNameCN": "输入重力分量",
-                        "defaultValue": null,
-                        "currentValue": "gz",
-                        "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）",
-                        "type": "enum",
-                        "enumList": [
-                            "gx",
-                            "gxx",
-                            "gxy",
-                            "gxz",
-                            "gy",
-                            "gyy",
-                            "gyz",
-                            "gz",
-                            "gzz"
-                        ],
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型区域设置(lon_s,lon_e,lat_s,lat_y,depth_s,depth_e)",
-                        "defaultValue": null,
-                        "currentValue": "30,40,30,40,-50,-200",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5,10,10",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（lon_s,lon_e,lat_s,lat_y)",
-                        "defaultValue": null,
-                        "currentValue": "30,40,30,40",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20,20",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
+                        "paramNameCN": "观测面高度",
                         "defaultValue": null,
                         "currentValue": "-1",
                         "tip": null,
@@ -1111,8 +840,236 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "输入模型密度文件",
-                        "defaultValue": "model1.txt/model2.txt",
+                        "paramNameCN": "密度文件",
+                        "defaultValue": "model1.txt,model2.txt",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    }
+                ]
+            }
+        },
+        "球型棱柱体模型重力异常正演": {
+            "calcApi": "/grav_forward_tesseroid",
+            "requestMethod": "get",
+            "vis": true,
+            "params": {
+                "texts": [
+                    {
+                        "paramName": "g_component",
+                        "paramNameCN": "输入重力分量",
+                        "defaultValue": null,
+                        "currentValue": "gz",
+                        "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）",
+                        "type": "enum",
+                        "enumList": [
+                            "gx",
+                            "gxx",
+                            "gxy",
+                            "gxz",
+                            "gy",
+                            "gyy",
+                            "gyz",
+                            "gz",
+                            "gzz"
+                        ],
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "area",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
+                        "defaultValue": null,
+                        "currentValue": "30,40,30,40,-50,-200",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "shape",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
+                        "defaultValue": null,
+                        "currentValue": "5,10,10",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "den_region_1",
+                        "paramNameCN": "密度分布(nx1,nx2,ny1,ny2,nz1,nz2)",
+                        "defaultValue": null,
+                        "currentValue": "1,3,3,7,3,7",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "density_1",
+                        "paramNameCN": "密度值",
+                        "defaultValue": null,
+                        "currentValue": "0.5",
+                        "tip": null,
+                        "type": "double",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "narea",
+                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                        "defaultValue": null,
+                        "currentValue": "30,40,30,40",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "nshape",
+                        "paramNameCN": "重力观测区域网格划分(ny,nx)",
+                        "defaultValue": null,
+                        "currentValue": "20,20",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "z0",
+                        "paramNameCN": "观测面高度",
+                        "defaultValue": null,
+                        "currentValue": "-1",
+                        "tip": null,
+                        "type": "double",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    }
+                ],
+                "selects": null,
+                "radios": null,
+                "checkBoxs": null,
+                "textAreas": null,
+                "uploadBoxs": null,
+                "inputFiles": null
+            }
+        },
+        "球型棱柱体模型构建及重力异常正演": {
+            "calcApi": "/grav_forward_tesseroid",
+            "requestMethod": "post",
+            "vis": true,
+            "params": {
+                "texts": [
+                    {
+                        "paramName": "g_component",
+                        "paramNameCN": "输入重力分量",
+                        "defaultValue": null,
+                        "currentValue": "gz",
+                        "tip": "可选项（gx,gxx,gxy,gxz,gy,gyy,gyz,gz,gzz）",
+                        "type": "enum",
+                        "enumList": [
+                            "gx",
+                            "gxx",
+                            "gxy",
+                            "gxz",
+                            "gy",
+                            "gyy",
+                            "gyz",
+                            "gz",
+                            "gzz"
+                        ],
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "area",
+                        "paramNameCN": "模型场源区域设置(x1,x2,y1,y2,z1,z2)",
+                        "defaultValue": null,
+                        "currentValue": "30,40,30,40,-50,-200",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "shape",
+                        "paramNameCN": "模型场源格网划分(nz,ny,nx)",
+                        "defaultValue": null,
+                        "currentValue": "5,10,10",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "narea",
+                        "paramNameCN": "重力观测区域（x1,x2,y1,y2)",
+                        "defaultValue": null,
+                        "currentValue": "30,40,30,40",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "nshape",
+                        "paramNameCN": "重力观测区域网格划分(ny,nx)",
+                        "defaultValue": null,
+                        "currentValue": "20,20",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "z0",
+                        "paramNameCN": "观测面高度",
+                        "defaultValue": null,
+                        "currentValue": "-1",
+                        "tip": null,
+                        "type": "double",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "noise",
+                        "paramNameCN": "观测噪声",
+                        "defaultValue": null,
+                        "currentValue": "0.05",
+                        "tip": null,
+                        "type": "double",
+                        "enumList": null,
+                        "max": null,
+                        "min": null,
+                        "required": false
+                    }
+                ],
+                "selects": null,
+                "radios": null,
+                "checkBoxs": null,
+                "textAreas": null,
+                "uploadBoxs": null,
+                "inputFiles": [
+                    {
+                        "paramName": "upfile",
+                        "paramNameCN": "密度文件",
+                        "defaultValue": "model1.txt,model2.txt",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1124,14 +1081,14 @@
             }
         },
         "四面体模型单元正演": {
-            "calcApi": "​/tetrabody_model_forward",
+            "calcApi": "/tetrabody_model_forward",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "fbody",
-                        "paramNameCN": null,
+                        "paramNameCN": "四面体模型配置文件",
                         "defaultValue": null,
                         "currentValue": "data/tetrasrc0.am",
                         "tip": null,
@@ -1142,7 +1099,7 @@
                     },
                     {
                         "paramName": "fobs",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测网格配置文件",
                         "defaultValue": null,
                         "currentValue": "data/tetraobs.grd",
                         "tip": null,
@@ -1152,19 +1109,8 @@
                         "min": null
                     },
                     {
-                        "paramName": "fout",
-                        "paramNameCN": null,
-                        "defaultValue": null,
-                        "currentValue": "data/tetra_gravity.grd",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
                         "paramName": "flog",
-                        "paramNameCN": null,
+                        "paramNameCN": "日志文件",
                         "defaultValue": null,
                         "currentValue": "data/tb_log.txt",
                         "tip": null,
@@ -1175,7 +1121,7 @@
                     },
                     {
                         "paramName": "ncoor",
-                        "paramNameCN": null,
+                        "paramNameCN": "节点数",
                         "defaultValue": null,
                         "currentValue": "9",
                         "tip": null,
@@ -1186,7 +1132,7 @@
                     },
                     {
                         "paramName": "nbody",
-                        "paramNameCN": null,
+                        "paramNameCN": "四面体个数",
                         "defaultValue": null,
                         "currentValue": "12",
                         "tip": null,
@@ -1205,36 +1151,36 @@
             }
         },
         "固体潮计算": {
-            "calcApi": "​/longmantide",
+            "calcApi": "/longmantide",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "lon",
-                        "paramNameCN": null,
+                        "paramNameCN": "经度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "180",
+                        "min": "-180"
                     },
                     {
                         "paramName": "lat",
-                        "paramNameCN": null,
+                        "paramNameCN": "纬度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "90",
+                        "min": "-90"
                     },
                     {
                         "paramName": "alti",
-                        "paramNameCN": null,
+                        "paramNameCN": "高程(m)",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -1245,7 +1191,7 @@
                     },
                     {
                         "paramName": "Year",
-                        "paramNameCN": null,
+                        "paramNameCN": "年",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -1256,69 +1202,69 @@
                     },
                     {
                         "paramName": "Month",
-                        "paramNameCN": null,
+                        "paramNameCN": "月",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "12",
+                        "min": "1"
                     },
                     {
                         "paramName": "Day",
-                        "paramNameCN": null,
+                        "paramNameCN": "日",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "31",
+                        "min": "1"
                     },
                     {
                         "paramName": "hour",
-                        "paramNameCN": null,
+                        "paramNameCN": "时",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "23",
+                        "min": "0"
                     },
                     {
                         "paramName": "minute",
-                        "paramNameCN": null,
+                        "paramNameCN": "分",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "59",
+                        "min": "0"
                     },
                     {
                         "paramName": "second",
-                        "paramNameCN": null,
+                        "paramNameCN": "秒",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "60",
+                        "min": "0"
                     },
                     {
                         "paramName": "utc",
-                        "paramNameCN": null,
+                        "paramNameCN": "时区",
                         "defaultValue": null,
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "正数为东时区，负数为西时区",
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "12",
+                        "min": "-11"
                     }
                 ],
                 "selects": null,
@@ -1330,25 +1276,25 @@
             }
         },
         "计算正常重力场": {
-            "calcApi": "​/normgrav",
+            "calcApi": "/normgrav",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "lat",
-                        "paramNameCN": null,
+                        "paramNameCN": "纬度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "90",
+                        "min": "-90"
                     },
                     {
                         "paramName": "height",
-                        "paramNameCN": null,
+                        "paramNameCN": "高程",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -1369,12 +1315,12 @@
         "重力观测数据反演（多约束反演）": {
             "calcApi": "/grav_data_inversion",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2),根据实际观测资料设置",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-100,100,-100,100,0,100",
                         "tip": null,
@@ -1385,7 +1331,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx),根据实际观测资料设置",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -1396,7 +1342,7 @@
                     },
                     {
                         "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2),根据实际观测资料设置",
+                        "paramNameCN": "观测区域（x1,x2,y1,y2)",
                         "defaultValue": null,
                         "currentValue": "-200,200,-200,200",
                         "tip": null,
@@ -1407,7 +1353,7 @@
                     },
                     {
                         "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx).ny-南北向数据",
+                        "paramNameCN": "观测网格(ny,nx)",
                         "defaultValue": null,
                         "currentValue": "20,20",
                         "tip": null,
@@ -1503,7 +1449,7 @@
                     {
                         "paramName": "upfile",
                         "paramNameCN": "重力数据文件",
-                        "defaultValue": "model1_obsgravity.csv/model2_obsgravity.csv",
+                        "defaultValue": "model1_obsgravity.csv,model2_obsgravity.csv",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1517,12 +1463,12 @@
         "重力观测数据反演（三维正则，参考模型约束）": {
             "calcApi": "/grav_data_inversion1",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2),根据实际观测资料设置",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-100,100,-100,100,0,100",
                         "tip": null,
@@ -1533,7 +1479,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx),根据实际观测资料设置",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -1543,8 +1489,30 @@
                         "min": null
                     },
                     {
+                        "paramName": "narea",
+                        "paramNameCN": "观测区域（x1, x2, y1, y2)",
+                        "defaultValue": null,
+                        "currentValue": "-200,200,-200,200",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "nshape",
+                        "paramNameCN": "观测格网(ny, nx)",
+                        "defaultValue": null,
+                        "currentValue": "20,20",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
                         "paramName": "am",
-                        "paramNameCN": "全局空间约束因子",
+                        "paramNameCN": "全局约束因子",
                         "defaultValue": null,
                         "currentValue": "1000",
                         "tip": null,
@@ -1629,7 +1597,7 @@
                     {
                         "paramName": "gravity_file",
                         "paramNameCN": "重力数据文件",
-                        "defaultValue": "model1_obsgravity.csv/model2_obsgravity.csv",
+                        "defaultValue": "model1_obsgravity.csv,model2_obsgravity.csv",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1640,7 +1608,7 @@
                     {
                         "paramName": "ref_file",
                         "paramNameCN": "参考密度文件",
-                        "defaultValue": "model1_ref.txt/model2_ref.txt",
+                        "defaultValue": "model1_ref.txt,model2_ref.txt",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1654,12 +1622,12 @@
         "重力观测数据反演（参考模型-全变分约束）": {
             "calcApi": "/grav_data_inversion2",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-200,200,-200,200,0,300",
                         "tip": null,
@@ -1670,7 +1638,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -1681,9 +1649,9 @@
                     },
                     {
                         "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
+                        "paramNameCN": "观测区域（x1,x2,y1,y2)",
                         "defaultValue": null,
-                        "currentValue": "-200, 200,-200,200",
+                        "currentValue": "-200,200,-200,200",
                         "tip": null,
                         "type": "string",
                         "enumList": null,
@@ -1692,7 +1660,7 @@
                     },
                     {
                         "paramName": "nshape",
-                        "paramNameCN": "重力观测区域格网划分(ny, nx)",
+                        "paramNameCN": "观测格网(ny,nx)",
                         "defaultValue": null,
                         "currentValue": "20,20",
                         "tip": null,
@@ -1703,7 +1671,7 @@
                     },
                     {
                         "paramName": "am",
-                        "paramNameCN": "全局空间约束因子",
+                        "paramNameCN": "全局约束因子",
                         "defaultValue": null,
                         "currentValue": "1000",
                         "tip": null,
@@ -1799,7 +1767,7 @@
                     {
                         "paramName": "gravity_file",
                         "paramNameCN": "重力数据文件",
-                        "defaultValue": "model1_obsgravity.csv/model2_obsgravity.csv",
+                        "defaultValue": "model1_obsgravity.csv,model2_obsgravity.csv",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1810,7 +1778,7 @@
                     {
                         "paramName": "ref_file",
                         "paramNameCN": "参考密度文件",
-                        "defaultValue": "model1_ref.txt/model2_ref.txt",
+                        "defaultValue": "model1_ref.txt,model2_ref.txt",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1822,14 +1790,14 @@
             }
         },
         "MCMC反演": {
-            "calcApi": "​​/grav_data_inversion_MCMC",
+            "calcApi": "/grav_data_inversion_MCMC",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-200,200,-200,200,0,300",
                         "tip": null,
@@ -1840,7 +1808,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -1850,8 +1818,30 @@
                         "min": null
                     },
                     {
+                        "paramName": "narea",
+                        "paramNameCN": "观测区域（x1, x2, y1, y2)",
+                        "defaultValue": null,
+                        "currentValue": "-200,200,-200,200",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "nshape",
+                        "paramNameCN": "观测格网(ny, nx)",
+                        "defaultValue": null,
+                        "currentValue": "20,20",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
                         "paramName": "z0",
-                        "paramNameCN": "观测面深度",
+                        "paramNameCN": "观测面高度",
                         "defaultValue": null,
                         "currentValue": "-1",
                         "tip": null,
@@ -1870,8 +1860,8 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "上传数据文件",
-                        "defaultValue": "model1_obsgravity.csv/model1_obsgravity.csv",
+                        "paramNameCN": "重力数据文件",
+                        "defaultValue": "model1_obsgravity.csv,model1_obsgravity.csv",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1883,14 +1873,14 @@
             }
         },
         "MCMC反演（参考模型约束）": {
-            "calcApi": "​​/grav_data_inversion_MCMC1",
+            "calcApi": "/grav_data_inversion_MCMC1",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-200,200,-200,200,0,300",
                         "tip": null,
@@ -1901,7 +1891,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -1911,8 +1901,30 @@
                         "min": null
                     },
                     {
+                        "paramName": "narea",
+                        "paramNameCN": "观测区域（x1, x2, y1, y2)",
+                        "defaultValue": null,
+                        "currentValue": "-200,200,-200,200",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
+                        "paramName": "nshape",
+                        "paramNameCN": "观测格网(ny, nx)",
+                        "defaultValue": null,
+                        "currentValue": "20,20",
+                        "tip": null,
+                        "type": "string",
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    },
+                    {
                         "paramName": "z0",
-                        "paramNameCN": "观测面深度",
+                        "paramNameCN": "观测面高度",
                         "defaultValue": null,
                         "currentValue": "-1",
                         "tip": null,
@@ -1931,8 +1943,8 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "上传数据文件",
-                        "defaultValue": "model1_obsgravity.csv/model2_obsgravity.csv",
+                        "paramNameCN": "重力数据文件",
+                        "defaultValue": "model1_obsgravity.csv,model2_obsgravity.csv",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1943,7 +1955,7 @@
                     {
                         "paramName": "ref_file",
                         "paramNameCN": "参考密度文件",
-                        "defaultValue": "model1_ref.txt/model2_ref.txt",
+                        "defaultValue": "model1_ref.txt,model2_ref.txt",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -1955,9 +1967,9 @@
             }
         },
         "二维多边形反演": {
-            "calcApi": "​​/Polygon_inversion",
+            "calcApi": "/Polygon_inversion",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
@@ -1980,7 +1992,7 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "多边形数据文件",
+                        "paramNameCN": "多边形观测数据文件",
                         "defaultValue": "gravity_polygon.csv",
                         "currentValue": null,
                         "tip": null,
@@ -1991,487 +2003,18 @@
                     }
                 ]
             }
-        },
-        "典型矿区仿真数据反演一（最小模型约束反演）": {
-            "calcApi": "/grav_inversion_regu0",
-            "requestMethod": "get",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                        "defaultValue": null,
-                        "currentValue": "-200,200,-200,200,0,300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5,10,10",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                        "defaultValue": null,
-                        "currentValue": "-200, 200, -200, 200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20,20",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "2,3,4,6,4,6",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
-                        "defaultValue": null,
-                        "currentValue": "0.5",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
-            }
-        },
-        "典型矿区仿真数据反演二（深度加权约束反演）": {
-            "calcApi": "/grav_inversion_regu1",
-            "requestMethod": "get",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                        "defaultValue": null,
-                        "currentValue": "-200,200,-200,200,0,300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5, 10, 10",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                        "defaultValue": null,
-                        "currentValue": "-200, 200, -200, 200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20, 20",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "2,3,4,6,4,6",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
-                        "defaultValue": null,
-                        "currentValue": "0.5",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "am",
-                        "paramNameCN": "全局空间约束因子",
-                        "defaultValue": null,
-                        "currentValue": "1000",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z00",
-                        "paramNameCN": "深度加权常数",
-                        "defaultValue": null,
-                        "currentValue": "200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "beta",
-                        "paramNameCN": "深度加权因子",
-                        "defaultValue": null,
-                        "currentValue": "1",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
-            }
-        },
-        "典型矿区仿真数据反演三（光滑约束反演）": {
-            "calcApi": "/grav_inversion_regu2",
-            "requestMethod": "get",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                        "defaultValue": null,
-                        "currentValue": "-200,200,-200,200,0,300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5,10,10",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                        "defaultValue": null,
-                        "currentValue": "-200, 200, -200, 200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20, 20",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "2,3,4,6,4,6",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
-                        "defaultValue": null,
-                        "currentValue": "0.5",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "am",
-                        "paramNameCN": "全局空间约束因子",
-                        "defaultValue": null,
-                        "currentValue": "1000",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "ax",
-                        "paramNameCN": "X方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "ay",
-                        "paramNameCN": "Y方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "az",
-                        "paramNameCN": "Z方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z00",
-                        "paramNameCN": "深度加权常数",
-                        "defaultValue": null,
-                        "currentValue": "200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "beta",
-                        "paramNameCN": "深度加权因子",
-                        "defaultValue": null,
-                        "currentValue": "1",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
-            }
-        },
-        "典型矿区仿真数据反演四（多约束反演）": {
-            "calcApi": "/grav_inversion_regu3",
-            "requestMethod": "get",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                        "defaultValue": null,
-                        "currentValue": "-200,200,-200,200,0,300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5,10,10",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                        "defaultValue": null,
-                        "currentValue": "-200, 200, -200, 200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20, 20",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "2,3,4,6,4,6",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
-                        "defaultValue": null,
-                        "currentValue": "0.5",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "am",
-                        "paramNameCN": "全局空间约束因子",
-                        "defaultValue": null,
-                        "currentValue": "1000",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "ax",
-                        "paramNameCN": "X方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "ay",
-                        "paramNameCN": "Y方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "az",
-                        "paramNameCN": "Z方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z00",
-                        "paramNameCN": "深度加权常数",
-                        "defaultValue": null,
-                        "currentValue": "200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "beta",
-                        "paramNameCN": "深度加权因子",
-                        "defaultValue": null,
-                        "currentValue": "1",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
-            }
-        },
-        "典型矿区仿真数据反演五（全变分约束）": {
-            "calcApi": "/grav_inversion_regu4",
-            "requestMethod": "get",
-            "params": {
-                "texts": [
-                    {
-                        "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
-                        "defaultValue": null,
-                        "currentValue": "-200,200,-200,200,0,300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
-                        "defaultValue": null,
-                        "currentValue": "5, 10, 10",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "narea",
-                        "paramNameCN": "重力观测区域（x1, x2, y1, y2)",
-                        "defaultValue": null,
-                        "currentValue": "-200, 200, -200, 200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "nshape",
-                        "paramNameCN": "重力观测区域网格划分(ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "20, 20",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "den_region_1",
-                        "paramNameCN": "密度异常格网分布(nz, ny, nx)",
-                        "defaultValue": null,
-                        "currentValue": "2,3,4,6,4,6",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "density_1",
-                        "paramNameCN": "密度值设置",
-                        "defaultValue": null,
-                        "currentValue": "0.5",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "am",
-                        "paramNameCN": "全局空间约束因子",
-                        "defaultValue": null,
-                        "currentValue": "1000",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "ax",
-                        "paramNameCN": "X方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "ay",
-                        "paramNameCN": "Y方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "az",
-                        "paramNameCN": "Z方向平滑因子",
-                        "defaultValue": null,
-                        "currentValue": "300",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z00",
-                        "paramNameCN": "深度加权常数",
-                        "defaultValue": null,
-                        "currentValue": "200",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "beta",
-                        "paramNameCN": "深度加权因子",
-                        "defaultValue": null,
-                        "currentValue": "1",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "z0",
-                        "paramNameCN": "观测面深度",
-                        "defaultValue": null,
-                        "currentValue": "-1",
-                        "tip": null
-                    },
-                    {
-                        "paramName": "tvalue",
-                        "paramNameCN": "全变分约束参数",
-                        "defaultValue": null,
-                        "currentValue": "0.0001",
-                        "tip": null
-                    }
-                ],
-                "selects": null,
-                "radios": null,
-                "checkBoxs": null,
-                "textAreas": null,
-                "uploadBoxs": null,
-                "inputFiles": null
-            }
         }
     },
     "magnetic": {
         "剩磁退磁": {
             "calcApi": "/Demag",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "kx",
-                        "paramNameCN": "标本磁化率SI，平行",
+                        "paramNameCN": "标本磁化率SI，水平",
                         "defaultValue": null,
                         "currentValue": "2.5",
                         "tip": null,
@@ -2603,7 +2146,7 @@
                     },
                     {
                         "paramName": "b",
-                        "paramNameCN": "等效退磁椭球,平行长度",
+                        "paramNameCN": "等效退磁椭球,水平长度",
                         "defaultValue": null,
                         "currentValue": "2",
                         "tip": null,
@@ -2635,15 +2178,15 @@
         "磁场方向导数求取": {
             "calcApi": "/mag_deriv",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "deriv_direction",
-                        "paramNameCN": null,
+                        "paramNameCN": "求导方向",
                         "defaultValue": null,
                         "currentValue": "z",
-                        "tip": "可选项(x, y, z, tga)",
+                        "tip": "可选项(x,y,z,tga)",
                         "type": "enum",
                         "enumList": [
                             "x",
@@ -2656,7 +2199,7 @@
                     },
                     {
                         "paramName": "xNum",
-                        "paramNameCN": "设置X方向个数",
+                        "paramNameCN": "x方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -2667,7 +2210,7 @@
                     },
                     {
                         "paramName": "yNum",
-                        "paramNameCN": "设置Y方向个数",
+                        "paramNameCN": "y方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -2699,7 +2242,7 @@
                         "paramNameCN": "地磁数据文件",
                         "defaultValue": "magnetic.csv",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "数据文件为csv格式，有效数据列为x,y,data",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -2711,7 +2254,7 @@
         "磁场空间延拓": {
             "calcApi": "/mag_upcontinue",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -2728,7 +2271,7 @@
                     },
                     {
                         "paramName": "xNum",
-                        "paramNameCN": "设置X方向个数",
+                        "paramNameCN": "x方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -2739,7 +2282,7 @@
                     },
                     {
                         "paramName": "yNum",
-                        "paramNameCN": "设置Y方向个数",
+                        "paramNameCN": "y方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -2771,7 +2314,7 @@
                         "paramNameCN": "地磁数据文件",
                         "defaultValue": "magnetic.csv",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "数据文件为csv格式，有效数据列为x,y,data",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -2783,12 +2326,12 @@
         "磁化极": {
             "calcApi": "/reduce_to_pole",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "xNum",
-                        "paramNameCN": "设置X方向个数",
+                        "paramNameCN": "x方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -2799,7 +2342,7 @@
                     },
                     {
                         "paramName": "yNum",
-                        "paramNameCN": "设置Y方向个数",
+                        "paramNameCN": "y方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -2874,7 +2417,7 @@
                         "paramName": "upfile",
                         "paramNameCN": "地磁数据文件",
                         "defaultValue": "magnetic.csv",
-                        "currentValue": null,
+                        "currentValue": "数据文件为csv格式，有效数据列为x,y,data",
                         "tip": null,
                         "type": null,
                         "enumList": null,
@@ -2887,34 +2430,34 @@
         "IGRF": {
             "calcApi": "/igrf",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "declon",
-                        "paramNameCN": null,
+                        "paramNameCN": "经度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "180",
+                        "min": "-180"
                     },
                     {
                         "paramName": "declat",
-                        "paramNameCN": null,
+                        "paramNameCN": "纬度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "90",
+                        "min": "-90"
                     },
                     {
                         "paramName": "alti",
-                        "paramNameCN": null,
+                        "paramNameCN": "高程(m)",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -2925,7 +2468,7 @@
                     },
                     {
                         "paramName": "minYear",
-                        "paramNameCN": null,
+                        "paramNameCN": "年",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -2936,58 +2479,58 @@
                     },
                     {
                         "paramName": "minMonth",
-                        "paramNameCN": null,
+                        "paramNameCN": "月",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "12",
+                        "min": "1"
                     },
                     {
                         "paramName": "minDay",
-                        "paramNameCN": null,
+                        "paramNameCN": "日",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "31",
+                        "min": "1"
                     },
                     {
                         "paramName": "hour",
-                        "paramNameCN": null,
+                        "paramNameCN": "时",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "23",
+                        "min": "0"
                     },
                     {
                         "paramName": "minute",
-                        "paramNameCN": null,
+                        "paramNameCN": "分",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "59",
+                        "min": "0"
                     },
                     {
                         "paramName": "utc",
-                        "paramNameCN": null,
+                        "paramNameCN": "时区",
                         "defaultValue": null,
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "正数为东时区，负数为西时区",
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "12",
+                        "min": "-11"
                     }
                 ],
                 "selects": null,
@@ -3001,34 +2544,34 @@
         "IGRF(xyz)": {
             "calcApi": "/igrf1",
             "requestMethod": "get",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "declon",
-                        "paramNameCN": null,
+                        "paramNameCN": "经度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "180",
+                        "min": "-180"
                     },
                     {
                         "paramName": "declat",
-                        "paramNameCN": null,
+                        "paramNameCN": "纬度",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "double",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "90",
+                        "min": "-90"
                     },
                     {
                         "paramName": "alti",
-                        "paramNameCN": null,
+                        "paramNameCN": "高程(m)",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -3039,7 +2582,7 @@
                     },
                     {
                         "paramName": "minYear",
-                        "paramNameCN": null,
+                        "paramNameCN": "年",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
@@ -3050,58 +2593,58 @@
                     },
                     {
                         "paramName": "minMonth",
-                        "paramNameCN": null,
+                        "paramNameCN": "月",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "12",
+                        "min": "1"
                     },
                     {
                         "paramName": "minDay",
-                        "paramNameCN": null,
+                        "paramNameCN": "日",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "31",
+                        "min": "1"
                     },
                     {
                         "paramName": "hour",
-                        "paramNameCN": null,
+                        "paramNameCN": "时",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "23",
+                        "min": "0"
                     },
                     {
                         "paramName": "minute",
-                        "paramNameCN": null,
+                        "paramNameCN": "分",
                         "defaultValue": null,
                         "currentValue": null,
                         "tip": null,
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "59",
+                        "min": "0"
                     },
                     {
                         "paramName": "utc",
-                        "paramNameCN": null,
+                        "paramNameCN": "时区",
                         "defaultValue": null,
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "正数为东时区，负数为西时区",
                         "type": "int",
                         "enumList": null,
-                        "max": null,
-                        "min": null
+                        "max": "12",
+                        "min": "-11"
                     }
                 ],
                 "selects": null,
@@ -3115,15 +2658,15 @@
         "磁场模型正演": {
             "calcApi": "/mag_forward",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "mag_component",
-                        "paramNameCN": null,
+                        "paramNameCN": "磁分量",
                         "defaultValue": null,
                         "currentValue": "z",
-                        "tip": "可选项(x, y, z, tf)",
+                        "tip": "可选项(x,y,z,tf)",
                         "type": "enum",
                         "enumList": [
                             "x",
@@ -3136,7 +2679,7 @@
                     },
                     {
                         "paramName": "area",
-                        "paramNameCN": "模型大小设置(x1,x2,y1,y2,z1,z2)",
+                        "paramNameCN": "场源区域设置(x1,x2,y1,y2,z1,z2)",
                         "defaultValue": null,
                         "currentValue": "-100,100,-100,100,0,500",
                         "tip": null,
@@ -3147,7 +2690,7 @@
                     },
                     {
                         "paramName": "shape",
-                        "paramNameCN": "模型网格划分(nz, ny ,nx)",
+                        "paramNameCN": "场源格网划分(nz,ny,nx)",
                         "defaultValue": null,
                         "currentValue": "5,10,10",
                         "tip": null,
@@ -3158,7 +2701,7 @@
                     },
                     {
                         "paramName": "narea",
-                        "paramNameCN": "磁场观测区域（x1, x2, y1, y2)",
+                        "paramNameCN": "观测区域（x1,x2,y1,y2)",
                         "defaultValue": null,
                         "currentValue": "-200,200,-200,200",
                         "tip": null,
@@ -3169,7 +2712,7 @@
                     },
                     {
                         "paramName": "nshape",
-                        "paramNameCN": "磁场观测区域网格划分(ny, nx)",
+                        "paramNameCN": "观测网格(ny,nx)",
                         "defaultValue": null,
                         "currentValue": "20,20",
                         "tip": null,
@@ -3180,7 +2723,7 @@
                     },
                     {
                         "paramName": "z0",
-                        "paramNameCN": "观测面深度",
+                        "paramNameCN": "观测面高度",
                         "defaultValue": null,
                         "currentValue": "-1",
                         "tip": null,
@@ -3213,7 +2756,7 @@
                     },
                     {
                         "paramName": "noise",
-                        "paramNameCN": "噪声水平",
+                        "paramNameCN": "观测噪声",
                         "defaultValue": null,
                         "currentValue": "0.05",
                         "tip": null,
@@ -3233,7 +2776,7 @@
                     {
                         "paramName": "upfile",
                         "paramNameCN": "磁化率模型文件",
-                        "defaultValue": "model1.txt/model2.txt",
+                        "defaultValue": "model1.txt,model2.txt",
                         "currentValue": null,
                         "tip": null,
                         "type": null,
@@ -3247,7 +2790,7 @@
         "欧拉反演(扩展窗)": {
             "calcApi": "/euler_expwin",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -3263,7 +2806,7 @@
                     },
                     {
                         "paramName": "center",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测中心",
                         "defaultValue": null,
                         "currentValue": "2000,2000",
                         "tip": null,
@@ -3275,7 +2818,7 @@
                     },
                     {
                         "paramName": "sizes",
-                        "paramNameCN": null,
+                        "paramNameCN": "扩展大小",
                         "defaultValue": null,
                         "currentValue": "300,7000,20",
                         "tip": null,
@@ -3294,7 +2837,7 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测数据",
                         "defaultValue": "data_euler.csv",
                         "currentValue": null,
                         "tip": null,
@@ -3309,7 +2852,7 @@
         "欧拉反演(移动窗)": {
             "calcApi": "/euler_movwin",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -3325,7 +2868,7 @@
                     },
                     {
                         "paramName": "windows",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测窗数量",
                         "defaultValue": null,
                         "currentValue": "10,20",
                         "tip": null,
@@ -3337,7 +2880,7 @@
                     },
                     {
                         "paramName": "size",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测窗大小",
                         "defaultValue": null,
                         "currentValue": "1000,500",
                         "tip": null,
@@ -3356,7 +2899,7 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": null,
+                        "paramNameCN": "观测数据",
                         "defaultValue": "data_euler.csv",
                         "currentValue": null,
                         "tip": null,
@@ -3372,111 +2915,62 @@
     "common": {
         "边缘识别": {
             "calcApi": "/gtrans_process",
-            "requestMethod": "get",
-            "vis": "0",
+            "requestMethod": "post",
+            "vis": true,
             "params": {
-                "texts": [
-                    {
-                        "paramName": "configfile",
-                        "paramNameCN": "配置文件名",
-                        "defaultValue": null,
-                        "currentValue": "data/gtrans.inp",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    },
-                    {
-                        "paramName": "logfile",
-                        "paramNameCN": "log文件名",
-                        "defaultValue": null,
-                        "currentValue": "data/gt_log.txt",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    }
-                ],
+                "texts": null,
                 "selects": null,
                 "radios": null,
                 "checkBoxs": null,
                 "textAreas": null,
                 "uploadBoxs": null,
-                "inputFiles": null
+                "inputFiles": [
+                    {
+                        "paramName": "upfile",
+                        "paramNameCN": "配置文件",
+                        "defaultValue": "gtrans.inp",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    }
+                ]
             }
         },
         "曲化平": {
-            "calcApi": "​/urf2plane_forward",
-            "requestMethod": "get",
-            "vis": "0",
+            "calcApi": "/urf2plane_forward",
+            "requestMethod": "post",
+            "vis": true,
             "params": {
-                "texts": [
-                    {
-                        "paramName": "configfile",
-                        "paramNameCN": "配置文件名",
-                        "defaultValue": null,
-                        "currentValue": "data/cmd_Taylor_iter.txt",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    },
-                    {
-                        "paramName": "logfile",
-                        "paramNameCN": "log文件名",
-                        "defaultValue": null,
-                        "currentValue": "data/s2p_log.txt",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    }
-                ],
+                "texts": null,
                 "selects": null,
                 "radios": null,
                 "checkBoxs": null,
                 "textAreas": null,
                 "uploadBoxs": null,
-                "inputFiles": null
+                "inputFiles": [
+                    {
+                        "paramName": "upfile",
+                        "paramNameCN": "配置文件",
+                        "defaultValue": "cmd_Taylor_iter.txt",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    }
+                ]
             }
         },
         "数据扩边": {
             "calcApi": "/expend_method_cos_vs_mincurv",
-            "requestMethod": "get",
-            "vis": "0",
+            "requestMethod": "post",
+            "vis": true,
             "params": {
                 "texts": [
-                    {
-                        "paramName": "inp_file",
-                        "paramNameCN": "原始数据路径(带文件名)",
-                        "defaultValue": null,
-                        "currentValue": "data/v8lin5.grd",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null
-                    },
-                    {
-                        "paramName": "exp_file",
-                        "paramNameCN": "结果数据路径(带文件名)",
-                        "defaultValue": null,
-                        "currentValue": "data/g2exp.grd",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    },
                     {
                         "paramName": "method",
                         "paramNameCN": "扩边方法（1:余弦；2:最小曲率）",
@@ -3498,52 +2992,51 @@
                 "checkBoxs": null,
                 "textAreas": null,
                 "uploadBoxs": null,
-                "inputFiles": null
+                "inputFiles": [
+                    {
+                        "paramName": "upfile",
+                        "paramNameCN": "原始数据",
+                        "defaultValue": "v8lin5.grd",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    }
+                ]
             }
         },
         "最小曲率补空白": {
             "calcApi": "/fix_grd",
-            "requestMethod": "get",
-            "vis": "0",
+            "requestMethod": "post",
+            "vis": true,
             "params": {
-                "texts": [
-                    {
-                        "paramName": "inp_file",
-                        "paramNameCN": "原始数据",
-                        "defaultValue": null,
-                        "currentValue": "data/moho35blk.grd",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    },
-                    {
-                        "paramName": "exp_file",
-                        "paramNameCN": "结果数据名",
-                        "defaultValue": null,
-                        "currentValue": "data/moho35blk_fix.grd",
-                        "tip": null,
-                        "type": "string",
-                        "enumList": null,
-                        "max": null,
-                        "min": null,
-                        "required": false
-                    }
-                ],
+                "texts": null,
                 "selects": null,
                 "radios": null,
                 "checkBoxs": null,
                 "textAreas": null,
                 "uploadBoxs": null,
-                "inputFiles": null
+                "inputFiles": [
+                    {
+                        "paramName": "upfile",
+                        "paramNameCN": "原始数据",
+                        "defaultValue": "moho35blk.grd",
+                        "currentValue": null,
+                        "tip": null,
+                        "type": null,
+                        "enumList": null,
+                        "max": null,
+                        "min": null
+                    }
+                ]
             }
         },
         "数据去趋势": {
             "calcApi": "/data_trend",
             "requestMethod": "post",
-            "vis": "1",
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -3551,11 +3044,11 @@
                         "paramNameCN": "去趋势阶数",
                         "defaultValue": null,
                         "currentValue": "3",
-                        "tip": null,
-                        "type": "double",
+                        "tip": "大于0的整数，一般取3到8",
+                        "type": "int",
                         "enumList": null,
                         "max": null,
-                        "min": null,
+                        "min": 0,
                         "required": false
                     }
                 ],
@@ -3570,7 +3063,7 @@
                         "paramNameCN": "重力数据文件",
                         "defaultValue": "demo_data.csv",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "数据文件为csv格式，有效数据列为x,y,data",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -3582,12 +3075,12 @@
         "数据网格化": {
             "calcApi": "/data_gridder",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": true,
             "params": {
                 "texts": [
                     {
                         "paramName": "xNum",
-                        "paramNameCN": "设置X方向个数",
+                        "paramNameCN": "x方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -3598,7 +3091,7 @@
                     },
                     {
                         "paramName": "yNum",
-                        "paramNameCN": "设置Y方向个数",
+                        "paramNameCN": "y方向格网数",
                         "defaultValue": null,
                         "currentValue": "100",
                         "tip": null,
@@ -3632,7 +3125,7 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "重力数据文件",
+                        "paramNameCN": "数据文件",
                         "defaultValue": "demo_data.csv",
                         "currentValue": null,
                         "tip": null,
@@ -3645,14 +3138,14 @@
             }
         },
         "坐标投影": {
-            "calcApi": "​/grav_projections",
+            "calcApi": "/grav_projections",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": [
                     {
                         "paramName": "method",
-                        "paramNameCN": "投影方法选择（ jw 投影 或 lcc 投影）",
+                        "paramNameCN": "投影方法选择（jw投影或lcc投影）",
                         "defaultValue": null,
                         "currentValue": "jw",
                         "tip": null,
@@ -3673,7 +3166,7 @@
                 "inputFiles": [
                     {
                         "paramName": "upfile",
-                        "paramNameCN": "ynyx.csv fileparameters",
+                        "paramNameCN": "数据文件",
                         "defaultValue": "ynyx_grav.csv",
                         "currentValue": null,
                         "tip": null,
@@ -3688,7 +3181,7 @@
         "上传文件": {
             "calcApi": "/uploadfile",
             "requestMethod": "post",
-            "vis": "0",
+            "vis": false,
             "params": {
                 "texts": null,
                 "selects": null,
@@ -3700,9 +3193,9 @@
                     {
                         "paramName": "upfile",
                         "paramNameCN": "文件",
-                        "defaultValue": null,
+                        "defaultValue": "",
                         "currentValue": null,
-                        "tip": null,
+                        "tip": "部分功能采用配置文件传参，需要单独上传数据",
                         "type": null,
                         "enumList": null,
                         "max": null,

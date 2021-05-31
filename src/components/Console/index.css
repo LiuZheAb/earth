@@ -16,7 +16,7 @@
     padding-top: 0;
 }
 
-.ant-table .ellipsis-column {
+#console .ant-table .ellipsis-column {
     max-width: 200px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -78,7 +78,8 @@
     width: 28px;
     height: 28px;
     line-height: 28px;
-    float: right;
+    position: absolute;
+    right: 8px;
 }
 
 .log-modal .ant-modal-close, .file-modal .ant-modal-close, .img-modal .ant-modal-close {
@@ -147,13 +148,14 @@
 
 .vis-modal .ant-modal-body {
     padding: 0;
+    overflow-y: hidden;
 }
 
 .filelist-table .ant-table-tbody>tr>td {
     padding: 16px 8px;
 }
 
-.table-item-name {
+.filelist-table .table-item-name {
     margin: 0;
     max-width: 200px;
     overflow: hidden;

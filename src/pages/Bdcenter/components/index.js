@@ -5,38 +5,77 @@
  * 文件描述：展示页面主文件
  */
 import React from "react";
-import { Row, Col, Layout, Table, Form, Button, message, Upload, Tabs, Input, Card, Select, Icon } from "antd";
+import { Row, Col, Layout, Table, Form, Icon, Button, message, Upload, Input, Radio, Select, Divider, Modal, Tabs, Tooltip } from "antd";
 import "./index.css";
 import Header from "../../../components/HomeNavbar";
 import axios from "axios";
-import { baseUrl, hdfsUploadUrl, hbaseUploadUrl, importUrl, getAllTableUrl, downloadUrl, downloadHref, selectByOneUrl, selectByTwoUrl, selectByThreeUrl } from "../assets/url";
+import { baseUrl, selectByOneUrl, selectByTwoUrl, selectByThreeUrl } from "../assets/url";
 import reqwest from 'reqwest';
 
 const { Option } = Select;
-const { TabPane } = Tabs;
 const { Content } = Layout;
+const { TabPane } = Tabs;
 
-export default class Download extends React.Component {
+const layout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+
+const tailLayout = {
+  wrapperCol: { span: 24 },
+};
+//所有信息
+const columns = [{
+  dataIndex: "dataEntity",
+  title: "数据文件",
+  width: 182,
+  render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+}, {
+  dataIndex: "dataFormat",
+  title: "数据格式"
+}, {
+  dataIndex: "dataSetName",
+  title: "数据集名称",
+  width: 182,
+  render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+}, {
+  dataIndex: "dataSource",
+  title: "数据来源"
+}, {
+  dataIndex: "keyWords",
+  title: "关键词",
+  width: 182,
+  render: text => <p className="ellipsis-column2"><Tooltip title={text}>{text}</Tooltip></p>
+}, {
+  dataIndex: "principal",
+  title: "数据负责人",
+  width: 182,
+  render: text => <p className="ellipsis-column2"><Tooltip title={text}>{text}</Tooltip></p>
+}, {
+  dataIndex: "proDataCategory",
+  title: "专业数据类别"
+}, {
+  dataIndex: "summary",
+  title: "摘要",
+  width: 332,
+  render: text => <p className="ellipsis-column3"><Tooltip title={text}>{text}</Tooltip></p>
+}, {
+  dataIndex: "time",
+  title: "创建时间"
+}];
+const suffix = ["bmp", "jpg", "png", "tif", "gif", "pcx", "tga", "exif", "fpx", "svg", "psd", "cdr", "pcd", "dxf", "ufo", "eps", "ai", "raw", "WMF", "webp", "avif"]
+class Download extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hbaseProps: null,
-      hdfsProps: null,
-      data: [],
       dataSource: [],
       pagination: {
         current: 1,
         pageSize: 10,
-        total: 20000
+        total: 0
       },
       loading: false,
       keyLoading: false,
-      //sheet表单
-      sheetList: [],
-      //当前表单
-      currentSheet: "",
-      //所有信息
-      allCol: [],
       allData: [],
       //关键字查询
       keyCol: [],
@@ -44,504 +83,610 @@ export default class Download extends React.Component {
       //表单对应的数据数量
       sheetDataLen: {},
       //当前表单对应的数据数量
-      currentSheetDataLen: null,
+      currentDataSetName: "",
       //查询关键字
-      selectKey1: "",
-      selectKey2: "",
-      selectKey3: "",
+      selectKeys: "",
       //关键词查询结果的列名和数据
       keyCols: [],
-      keyDatas: []
+      keyDatas: [],
+      //数据集名称
+      datasetNames: [],
+      //当前数据集
+      currentDataSet: "",
+      //可否修改数据集名字
+      dataSetSelect: true,
+      //已上传文件列表
+      fileList: [],
+      //当前drawer显示内容对应的数据集
+      dataSetDrawer: "",
+      //drawer中的文件列表
+      drawerFileList: [],
+      selectKey: "",
+      btnLoading: {},
+      previewUrl: "",
+      visible: false,
+      open: false,
+      name: "",
+      searchType: true,
+      selectedCategory: undefined
     };
+    this.lock = null;
   };
 
   componentDidMount() {
-    document.title = "HDFS&HBASE";
     axios.defaults.timeout = 600000;
-    //查询所有sheet表单
+    //获取所有数据集名称
     axios({
       method: 'get',
-      url: getAllTableUrl,
+      url: baseUrl + "/Bigdata/service/ipig/getDataSetNameList"
     }).then((res) => {
-      if (res.data.value) {
-        let data = res.data.value.split("][");
-        data[0] = data[0].substring(1);
-        data[data.length - 1] = data[data.length - 1].substring(0, data[data.length - 1].length - 1);
-        let newData = {};
-        let sheetList = [];
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].split("|[GENERIC]|")) {
-            let data1 = data[i].split("|[GENERIC]|")[0];
-            let data2 = data[i].split("|[GENERIC]|")[1];
-            sheetList.push(data1);
-            newData[data1] = data2;
-          };
-        };
-        this.setState({
-          sheetList,
-          sheetDataLen: newData,
-          currentSheet: sheetList.length > 0 ? sheetList[0] : '',
-          currentSheetDataLen: sheetList.length > 0 ? newData[sheetList[0]] : 0
-        }, () => {
-          this.handleSelect();
-          // const { pagination , currentSheet } = this.state;
-          // this.fetch({ pagination },currentSheet);
-        });
-      };
-    }).catch((err) => {
-      message.error("网络错误！")
+      res.data.length > 0 && this.setState({ datasetNames: Array.from(new Set(res.data)) });
     });
-
-    axios({
-      method: 'get',
-      url: baseUrl + "/Bigdata/service/ipig/selectByOne",
-      params: { Key1: "地震", tableName: "Sheet3" }
-    })
+    this.handleSelect();
   };
 
   //查询数据（通用）
   handleSelect = () => {
-    const { pagination, currentSheet } = this.state;
-    this.fetch({ pagination }, currentSheet);
+    const { pagination } = this.state;
+    this.fetch({ pagination });
   };
 
-  handleImport = () => {
-    axios({
-      method: 'get',
-      url: importUrl
-    });
-    message.info("导入中，请稍后刷新页面查询")
+  //全部数据集（未分类）
+  handleTableChange = (pagination, filters, sorter) => {
+    if (!this.state.select) {
+      this.fetch({
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        pagination,
+        ...filters,
+      });
+    } else {
+      this.setState({
+        pagination
+      })
+    }
   };
 
-  handleTableChange = (pagination, filters, sorter, sheetName) => {
-    this.fetch({
-      sortField: sorter.field,
-      sortOrder: sorter.order,
-      pagination,
-      ...filters,
-    }, this.state.currentSheet);
-  };
-
-  arrayToObj = (array) => {
-    let newArr = [];
-    for (let i = 0; i < array.length; i++) {
-      let obj = {};
-      for (let j = 0; j < array[i].length; j++) {
-        obj[j.toString()] = array[i][j]
-      };
-      newArr.push(obj);
-    };
-    return newArr;
-  };
-
-  handleDownload = (e, dataName) => {
-    let { currentSheet } = this.state;
-    axios({
-      method: 'get',
-      url: downloadUrl,
-      params: { tableName: currentSheet, dataName: dataName }
-    }).then((res => {
-      let value = res.data.value;
-      let values = value.split(";");
-      for (let i = 0; i < values.length; i++) {
-        window.open(downloadHref + values[i], "_blank");
-      }
-    })).catch((err) => {
-      message.error("下载错误")
-    })
+  handleDownload = (e, dataSetName, fileName) => {
+    this.btnLoadingStatus(dataSetName + "" + fileName, true);
+    let dataSetNameArr = fileName.split(".");
+    if (suffix.indexOf(dataSetNameArr[dataSetNameArr.length - 1]) > -1) {
+      axios({
+        method: 'get',
+        url: baseUrl + "/Bigdata/service/ipig/downDataFile",
+        params: { downDataFileName: fileName, dataSetName: dataSetName }
+      }).then((res) => {
+        if (res.data) {
+          this.setState({
+            previewUrl: baseUrl + res.data,
+            visible: true
+          });
+        };
+        this.btnLoadingStatus(dataSetName + "" + fileName, false);
+      }).catch(() => {
+        message.error("文件信息获取错误");
+        this.btnLoadingStatus(dataSetName + "" + fileName, false);
+      })
+    } else {
+      axios({
+        method: 'get',
+        url: baseUrl + "/Bigdata/service/ipig/downDataFile",
+        params: { downDataFileName: fileName, dataSetName: dataSetName }
+      }).then((res) => {
+        if (res.data) {
+          window.open(baseUrl + res.data, "_blank")
+        };
+        this.btnLoadingStatus(dataSetName + "" + fileName, false);
+      }).catch(() => {
+        message.error("下载错误");
+        this.btnLoadingStatus(dataSetName + "" + fileName, false);
+      })
+    }
   }
 
-  colToObj = (colArr) => {
-    let colObj = [];
-    for (let i = 0; i < colArr.length; i++) {
-      let obj = {};
-      obj["title"] = colArr[i];
-      obj["dataIndex"] = i;
-      obj["key"] = i;
-      colObj.push(obj);
-    };
-    let obj = {};
-    obj["title"] = "操作";
-    obj["dataIndex"] = "operation";
-    obj["render"] = (_, text) => {
-      return (
-        <Button onClick={(e) => this.handleDownload(e, text["6"])}>下载</Button>
-      )
-    };
-    colObj.push(obj);
-    return colObj;
-  }
-
-  fetch = (params = {}, sheetName) => {
+  fetch = (params = {}) => {
     this.setState({ loading: true });
-    let current = params.pagination.current;
-    let rowKey = ((current - 1) * 10 + 1) + "-" + ((current - 1) * 10 + 10);
-    let { currentSheetDataLen } = this.state;
+    let { current, pageSize } = params.pagination;
+    let rowKey = ((current - 1) * pageSize + 1) + "-" + (current * pageSize);
     reqwest({
       url: baseUrl + "/Bigdata/service/ipig/select",
       method: 'get',
       type: 'json',
-      data: { Key: rowKey, tableName: sheetName }
+      data: { Key: rowKey }
     }).then(res => {
-      if (res.value) {
-        let data = res.value.split("], [");
-        data[0] = data[0].split("[[")[1];
-        data[data.length - 1] = data[data.length - 1].split("]]")[0];
-        let allCol = [], allData = [];
-        if (data.length % 9 === 0) {
-          let dataLen = data.length / 9;
-          for (let i = 0; i < data.length; i++) {
-            if (i < 9) {
-              allCol.push(data[i].split("|")[0]);
-            }
-            allData.push(data[i].split("|")[1]);
-          };
-          let allDataCopy = JSON.parse(JSON.stringify(allData));
-          allData = [];
-          for (let i = 0; i < dataLen; i++) {
-            allData.push(allDataCopy.splice(0, 9))
-          };
-          allCol = this.colToObj(allCol);
-          allData = this.arrayToObj(allData);
-          this.setState({
-            allCol,
-            allData
-          })
-        } else {
-          message.error("查询异常");
-        }
+      if (res.list.length > 0) {
+        res.list.map((item, index) => { item.key = index; return item });
+        this.setState({
+          allData: res.list
+        });
       };
+      let total = parseInt(res.list[0]["num"]);
+      if (total > 0) {
+        this.setState({
+          loading: false,
+          pagination: {
+            ...params.pagination,
+            total,
+          },
+        });
+      };
+    }).catch(() => {
+      message.error("数据获取失败")
       this.setState({
         loading: false,
-        data: res.results,
-        pagination: {
-          ...params.pagination,
-          total: currentSheetDataLen ? currentSheetDataLen : 10,
-        },
-      });
+      })
     });
   };
 
-  //更改要查询的数据表单（select rowkey)
-  sheetSelect = (e) => {
-    let { sheetDataLen } = this.state;
+  //查询数据类别（select rowkey)
+  dataCategorySelect = (value) => {
     this.setState({
-      currentSheet: e,
-      currentSheetDataLen: sheetDataLen[e] ? sheetDataLen[e] : 10
-    }, () => {
-      this.handleSelect();
+      select: true,
+      selectedCategory: value
     });
+    if (value !== "无") {
+      axios({
+        method: 'get',
+        url: baseUrl + "/Bigdata/service/ipig/getDataSetNameByCategory",
+        params: { category: value }
+      }).then((res) => {
+        if (res.data.length > 0) {
+          res.data.map((item, index) => { item.key = index; return item });
+          this.setState({
+            allData: res.data,
+            pagination: {
+              current: 1,
+              pageSize: 10,
+              total: res.data.length
+            }
+          });
+        };
+      });
+    } else {
+      this.handleSelect();
+    };
   };
 
   handleSelectKey = (e, key) => {
-    let value = e.target.value;
-    switch (key) {
-      case "Key1":
-        this.setState({
-          selectKey1: value
-        });
-        break;
-      case "Key2":
-        this.setState({
-          selectKey2: value
-        });
-        break;
-      case "Key3":
-        this.setState({
-          selectKey3: value
-        });
-        break;
-      default:
-        break;
-    }
+    this.setState({
+      selectKey: e.target.value
+    })
+  };
+
+  //按钮加载状态
+  btnLoadingStatus = (key, bool) => {
+    let { btnLoading } = this.state;
+    btnLoading[key] = bool;
+    this.setState({
+      btnLoading
+    });
   };
 
   //根据关键字查询
   handleKeySelect = () => {
-    let { selectKey1, selectKey2, selectKey3, currentSheet } = this.state;
-    let keyNum = 0;
+    let { selectKey } = this.state;
+    this.setState({
+      select: true
+    });
+    this.btnLoadingStatus("keySelect", true);
     //判断关键字个数
-    if (selectKey1) {
-      keyNum = keyNum + 1;
-    };
-    if (selectKey2) {
-      keyNum = keyNum + 1;
-    };
-    if (selectKey3) {
-      keyNum = keyNum + 1;
-    };
-    if (keyNum === 1) {
+    let selectKeys = selectKey ? selectKey.split(",") : [];
+    let keyNum = selectKeys.length;
+    let params = {};
+    for (let i = 0; i < keyNum; i++) {
+      params["Key" + (i + 1)] = selectKeys[i]
+    }
+    if (keyNum >= 1 && keyNum <= 3) {
       this.setState({ keyLoading: true })
       axios({
         method: 'get',
-        url: selectByOneUrl,
-        params: { Key1: selectKey1 ? selectKey1 : (selectKey2 ? selectKey2 : selectKey3), tableName: currentSheet }
+        url: keyNum === 1 ? selectByOneUrl : keyNum === 2 ? selectByTwoUrl : keyNum === 3 && selectByThreeUrl,
+        params
       }).then((res) => {
-        let value = res.data.value;
-        let data = value.split("][");
-        data[0] = data[0].split("[")[1];
-        data[data.length - 1] = data[data.length - 1].split("]")[0];
-        if (data.length % 9 === 0) {
-          let dataLen = data.length / 9;
-          let keyCols = [], keyDatas = [];
-          for (let i = 0; i < data.length; i++) {
-            let data1 = data[i].split(",")[1];
-            let data2 = data[i].split(",")[2];
-            if (i < 9) {
-              keyCols.push(data1);
-            };
-            keyDatas.push(data2);
-          };
-          keyCols = this.colToObj(keyCols);
-          let keyDatasCopy = JSON.parse(JSON.stringify(keyDatas));
-          keyDatas = [];
-          for (let i = 0; i < dataLen; i++) {
-            keyDatas.push(keyDatasCopy.splice(0, 9))
-          };
-          keyDatas = this.arrayToObj(keyDatas);
-          this.setState({
-            keyCols,
-            keyDatas,
-            keyLoading: false
-          })
-        };
-      })
-    } else if (keyNum === 2) {
-      axios({
-        method: 'get',
-        url: selectByTwoUrl,
-        params: { Key1: selectKey1 ? selectKey1 : (selectKey2 ? selectKey2 : selectKey3), Key2: selectKey2 ? selectKey2 : selectKey3, tableName: currentSheet }
-      }).then((res) => {
-        let value = res.data.value;
-        let data = value.split("][");
-        data[0] = data[0].split("[")[1];
-        data[data.length - 1] = data[data.length - 1].split("]")[0];
-        if (data.length % 9 === 0) {
-          let dataLen = data.length / 9;
-          let keyCols = [], keyDatas = [];
-          for (let i = 0; i < data.length; i++) {
-            let data1 = data[i].split(",")[1];
-            let data2 = data[i].split(",")[2];
-            if (i < 9) {
-              keyCols.push(data1);
-            };
-            keyDatas.push(data2);
-          };
-          keyCols = this.colToObj(keyCols);
-          let keyDatasCopy = JSON.parse(JSON.stringify(keyDatas));
-          keyDatas = [];
-          for (let i = 0; i < dataLen; i++) {
-            keyDatas.push(keyDatasCopy.splice(0, 9))
-          };
-          keyDatas = this.arrayToObj(keyDatas);
-          this.setState({
-            keyCols,
-            keyDatas,
-            keyLoading: false
-          })
-        };
-      })
-    } else if (keyNum === 3) {
-      axios({
-        method: 'get',
-        url: selectByThreeUrl,
-        params: { Key1: selectKey1, Key2: selectKey2, Key3: selectKey3, tableName: currentSheet }
-      }).then((res) => {
-        let value = res.data.value;
-        let data = value.split("][");
-        data[0] = data[0].split("[")[1];
-        data[data.length - 1] = data[data.length - 1].split("]")[0];
-        if (data.length % 9 === 0) {
-          let dataLen = data.length / 9;
-          let keyCols = [], keyDatas = [];
-          for (let i = 0; i < data.length; i++) {
-            let data1 = data[i].split(",")[1];
-            let data2 = data[i].split(",")[2];
-            if (i < 9) {
-              keyCols.push(data1);
-            };
-            keyDatas.push(data2);
-          };
-          keyCols = this.colToObj(keyCols);
-          let keyDatasCopy = JSON.parse(JSON.stringify(keyDatas));
-          keyDatas = [];
-          for (let i = 0; i < dataLen; i++) {
-            keyDatas.push(keyDatasCopy.splice(0, 9))
-          };
-          keyDatas = this.arrayToObj(keyDatas);
-          this.setState({
-            keyCols,
-            keyDatas,
-            keyLoading: false
-          })
-        };
+        let value = res.data.value ? res.data.value : res.data;
+        value.map((item, index) => { item.key = index; return item });
+        this.setState({
+          allData: value,
+          keyLoading: false,
+          pagination: {
+            current: 1,
+            pageSize: 10,
+            total: value.length
+          }
+        })
+        this.btnLoadingStatus("keySelect", false);
+      }).catch(() => {
+        message.error("查询失败！")
+        this.btnLoadingStatus("keySelect", false);
       })
     } else {
-      message.error("请至少输入一个关键字！")
-    }
+      message.error("请输入1~3个关键字！")
+      this.btnLoadingStatus("keySelect", false);
+    };
   };
 
-  //下载hdfs文件的名称
-  hdfsFileName = (e) => {
+  onFinish = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields({ force: true }, (err, values) => {
+      if (!err) {
+        this.btnLoadingStatus("submit", true)
+        let newObj = JSON.parse(JSON.stringify(values));
+        let { fileList } = this.state;
+        // let fileListStr = "";
+        // for (let i = 0; i < fileList.length; i++) {
+        //   fileListStr = fileListStr + fileList[i] + ";"
+        // };
+        // fileListStr = fileListStr.substring(0, fileListStr.length - 1);
+        newObj["dataEntity"] = fileList;
+        axios({
+          method: 'post',
+          url: baseUrl + "/Bigdata/service/ipig/addMetaData",
+          data: newObj
+        }).then((res) => {
+          if (res.data === "元数据插入成功") {
+            message.success("元数据插入成功")
+            this.handleSelect();
+          } else {
+            message.error(res.data)
+          };
+          this.btnLoadingStatus("submit", false);
+        }).catch(() => {
+          message.error("提交失败")
+          this.btnLoadingStatus("submit", false);
+        })
+      }
+    })
+  };
+  onNameChange = event => {
     this.setState({
-      hdfsName: e.target.value
+      name: event.target.value,
     });
   };
 
-  render() {
-    const { pagination, loading, sheetList, allCol, allData, keyCols, keyDatas, keyLoading } = this.state;
-    const hbaseProps = {
-      name: 'file',
-      multiple: true,
-      action: hbaseUploadUrl,
-      onChange(info) {
-        const { status } = info.file;
-        if (status !== 'uploading') {
-        };
-        if (status === 'done') {
-          message.success(`${info.file.name} 上传成功`);
-        } else if (status === 'error') {
-          message.error(`${info.file.name} 上传失败`);
-        };
+  addItem = () => {
+    const { datasetNames, name } = this.state;
+    if (name) {
+      this.setState({
+        datasetNames: [...datasetNames, name],
+        name: '',
+      });
+    } else {
+      message.warn("请填写新数据集名称");
+    }
+  };
+
+  //当前数据集名
+  handleCurrentDataSet = () => {
+    let { btnLoading, currentDataSetName } = this.state;
+    if (currentDataSetName) {
+      btnLoading["dataSetName"] = true;
+      this.setState({
+        dataSetSelect: false,
+        btnLoading
+      }, () => {
+        let { btnLoading } = this.state;
+        btnLoading["dataSetName"] = false;
+        this.setState({
+          btnLoading
+        });
+      });
+    } else {
+      message.warn("请选择数据集名称");
+    }
+  };
+
+  dataSetNameSelect = (e) => {
+    this.setState({
+      currentDataSetName: e
+    });
+  };
+
+  customRequest = (info) => {
+    let { file } = info;
+    let { fileList, currentDataSetName } = this.state;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('dataSetName', currentDataSetName);
+    axios({
+      method: 'post',
+      url: baseUrl + "/Bigdata/service/ipig/addDataEntity",
+      data: formData
+    }).then((res) => {
+      if (res.data === "数据插入成功") {
+        info.onSuccess(res, file);
+        message.success("上传成功");
+        fileList.push(info.file.name);
+        this.setState({
+          fileList
+        });
+      } else {
+        info.onError(res, file);
+        message.error("上传失败");
+      };
+    });
+  };
+  onClose = () => {
+    this.setState({
+      visible: false
+    });
+  };
+  lockClose = e => {
+    clearTimeout(this.lock);
+    this.lock = setTimeout(() => {
+      this.lock = null;
+    }, 100);
+  };
+  onDropdownVisibleChange = open => {
+    if (this.lock) return;
+    this.setState({ open });
+  };
+  handleCancleFilter = () => {
+    this.setState({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0
       },
-    };
-    const hdfsProps = {
-      name: 'file',
-      multiple: true,
-      action: hdfsUploadUrl,
-      data: { hdfsPath: "/data/", serverPath: "" },
-      onChange(info) {
-        const { status } = info.file;
-        if (status !== 'uploading') {
-        };
-        if (status === 'done') {
-          message.success(`${info.file.name} 上传成功`);
-        } else if (status === 'error') {
-          message.error(`${info.file.name} 上传失败`);
-        };
-      }
-    };
+      selectedCategory: undefined,
+      select: false
+    })
+    this.fetch({ pagination: { current: 1, pageSize: 10, total: 0 } })
+  }
+  render() {
+    const { pagination, loading, allData, datasetNames, dataSetSelect, btnLoading, name, currentDataSetName, previewUrl, visible, open, searchType, select, selectedCategory } = this.state;
+    const { getFieldDecorator } = this.props.form;
     return (
       <Layout id="bdcenter" style={{ minHeight: '100vh' }}>
         <Header />
         <Layout style={{ paddingTop: 50 }}>
-          <Content className="site-layout-background"
-            style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 280,
-            }}>
+          <Content className="site-layout-background">
             <Row>
-              <Col span={2}></Col>
-              <Col span={20}>
-                <Form>
-                  <Form.Item key="uploadFile">
-                    <div id="fileUpload">
-                      <Card key="fileUpload">
-                        <Tabs onChange={this.tabChange}>
-                          <TabPane tab="数据库存储" key="1">
-                            <div id="uploadFile">
-                              <Row>
-                                <Col span={10}><p>上传数据信息表格到服务器</p></Col>
-                                <Col span={14} style={{ textAlign: "right" }}><Button onClick={this.handleImport} type="primary">导入</Button></Col>
-                              </Row>
-                              <Upload.Dragger className="uploadFile"
-                                {...hbaseProps}
+              <Col md={2} sm={0} xs={0}></Col>
+              <Col md={20} sm={24} xs={24} style={{ background: "#fff", padding: "0 16px", minHeight: "calc(100vh - 90px)" }}>
+                <Tabs defaultActiveKey="1">
+                  <TabPane tab="数据文件上传" key="1">
+                    <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
+                      <Form
+                        {...layout}
+                        onSubmit={this.onFinish}
+                      >
+                        <Row>
+                          <Form.Item label="数据集名称">
+                            {getFieldDecorator('dataSetName', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: '请输入数据集名称',
+                                },
+                              ],
+                              setFieldsValue: currentDataSetName
+                            })(
+                              <Select
+                                id="currentDataSet"
+                                disabled={!dataSetSelect}
+                                style={{ width: "calc(100% - 80px)" }}
+                                onChange={this.dataSetNameSelect}
+                                open={open}
+                                onDropdownVisibleChange={this.onDropdownVisibleChange}
+                                placeholder="选择/新建数据集"
+                                dropdownRender={menu => (
+                                  <div>
+                                    {menu}
+                                    <Divider style={{ margin: '4px 0' }} />
+                                    <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+                                      <Input
+                                        style={{ flex: 'auto' }}
+                                        value={name}
+                                        onChange={this.onNameChange}
+                                        onMouseDown={this.lockClose}
+                                        onMouseUp={this.lockClose}
+                                        placeholder="数据集名称"
+                                      />
+                                      <span style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={this.addItem} onMouseDown={this.lockClose} onMouseUp={this.lockClose}>
+                                        <Icon type="plus" /> 新增数据集
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
                               >
-                                <p className="ant-upload-drag-icon">
-                                  <Icon type="inbox"></Icon>
-                                </p>
-                                <p className="ant-upload-text">点击或拖拽文件至此区域以上传</p>
-                              </Upload.Dragger>
-                            </div>
-                          </TabPane>
-                        </Tabs>
-                      </Card>
-                    </div>
-                    <div id="fileinfo">
-                      <Card key="fileUpload">
-                        <Tabs>
-                          <TabPane tab="文件信息查询" key="2">
-                            <Form.Item label="表单名称">
-                              <Select onChange={this.sheetSelect}>
-                                {sheetList ? sheetList.map((item, index) => {
-                                  return (
-                                    <Option key={index} value={item}>{item}</Option>
-                                  )
-                                }) : <Option>无数据</Option>}
+                                {datasetNames.length > 0 && datasetNames.map(item => (
+                                  <Option key={item}>{item}</Option>
+                                ))}
                               </Select>
+                            )}
+                          </Form.Item>
+                          <Button onClick={this.handleCurrentDataSet} type="primary" loading={btnLoading["dataSetName"]} style={{ position: "absolute", right: 0, top: 3 }}>确定</Button>
+                        </Row>
+                        <Form.Item label="摘要(50字以内)" >
+                          {getFieldDecorator('summary', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入摘要',
+                              },
+                            ],
+                          })(
+                            <Input.TextArea></Input.TextArea>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="关键字">
+                          {getFieldDecorator('keyWords', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入关键字',
+                              },
+                            ],
+                          })(
+                            <Input></Input>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="专业数据类别">
+                          {getFieldDecorator('proDataCategory', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入专业数据类别',
+                              },
+                            ],
+                          })(
+                            <Input></Input>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="数据格式">
+                          {getFieldDecorator('dataFormat', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入数据集格式',
+                              },
+                            ],
+                          })(
+                            <Input></Input>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="创建时间">
+                          {getFieldDecorator('time', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入创建时间',
+                              },
+                            ],
+                          })(
+                            <Input></Input>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="数据来源">
+                          {getFieldDecorator('dataSource', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入数据来源',
+                              },
+                            ],
+                          })(
+                            <Input></Input>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="数据负责人">
+                          {getFieldDecorator('principal', {
+                            rules: [
+                              {
+                                required: true,
+                                message: '请输入数据负责人',
+                              },
+                            ],
+                          })(
+                            <Input></Input>
+                          )}
+                        </Form.Item>
+                        <Form.Item label="数据文件">
+                          {getFieldDecorator('dataEntity', {
+                            valuePropName: 'fileList',
+                            getValueFromEvent: e => {
+                              if (Array.isArray(e)) {
+                                return e;
+                              }
+                              return e && e.fileList;
+                            },
+                            rules: [{
+                              validator: (rule, value, callback) => {
+                                if (currentDataSetName && !value) {
+                                  return callback('请上传数据文件！')
+                                } else if (!currentDataSetName) {
+                                  return callback('请选择数据集名称并确定！')
+                                } else {
+                                  return callback()
+                                }
+                              }
+                            }],
+                          })(
+                            <Upload className="uploadFile" customRequest={this.customRequest} multiple={true}>
+                              <Button disabled={dataSetSelect} title={dataSetSelect ? "请选择数据集名称并确定" : ""} type="primary"><Icon type="upload" />上传</Button>
+                            </Upload>
+                          )}
+                        </Form.Item>
+                        <Form.Item {...tailLayout} style={{ textAlign: "center" }}>
+                          <Button type="primary" htmlType="submit" >提交</Button>
+                        </Form.Item>
+                      </Form>
+                    </div>
+                  </TabPane>
+                  <TabPane tab="文件信息检索" key="2">
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+                      <label style={{ width: 120, textAlign: "right" }}>数据检索方式：</label>
+                      <Radio.Group onChange={(e) => { this.setState({ searchType: e.target.value }) }} value={searchType}>
+                        <Radio value={true}>数据集名称检索</Radio>
+                        <Radio value={false}>关键词检索</Radio>
+                      </Radio.Group>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+                      {searchType ?
+                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500, marginRight: 20 }}>
+                          <label style={{ width: 120, textAlign: "right" }}>数据集名称：</label>
+                          <Select onChange={this.dataCategorySelect} value={selectedCategory} placeholder="选择数据集" id="dataSetSelect" style={{ width: "calc(100% - 120px)" }}>
+                            {datasetNames.length > 0 && datasetNames.map((item, index) => {
+                              return (
+                                <Option key={index} value={item}>{item}</Option>
+                              )
+                            })}
+                          </Select>
+                        </div>
+                        :
+                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500, marginRight: 20 }}>
+                          <Form layout="inline" className="selectKey" style={{ width: "100%" }}>
+                            <Form.Item label="关键词">
+                              {getFieldDecorator('selectKey', {
+                                rules: [
+                                  {
+                                    validator: (rule, value, callback) => {
+                                      if (value.split(",").length < 4) {
+                                        return callback()
+                                      } else {
+                                        return callback('请不要输入三个以上的关键字！')
+                                      }
+                                    }
+                                  },
+                                ],
+                              })(
+                                <Input placeholder="请输入1~3个关键字，以,分隔" id="keyWord" onChange={this.handleSelectKey}></Input>
+                              )}
                             </Form.Item>
-                          </TabPane>
-                        </Tabs>
-                        {allCol.length > 0 ? (<Table
-                          columns={allCol}
-                          rowKey={record => record.time}
-                          dataSource={allData}
-                          pagination={pagination}
-                          loading={loading}
-                          onChange={this.handleTableChange}
-                          scroll={{ x: "max-content" }}
-                        />) : null}
-
-                      </Card>
+                          </Form>
+                        </div>
+                      }
+                      {!searchType && <Button onClick={this.handleKeySelect} type="primary">查询</Button>}
                     </div>
-                    <div id="keySelect">
-                      <Card id="keySelect">
-                        <Tabs>
-                          <TabPane tab="关键字查询" key="1">
-                            <div id="keySelect">
-                              <Row>
-                                <Col>
-                                  <Form.Item label="关键词1">
-                                    <Input onChange={(e) => { this.handleSelectKey(e, "Key1") }}></Input>
-                                  </Form.Item>
-                                  <Form.Item label="关键词2">
-                                    <Input onChange={(e) => { this.handleSelectKey(e, "Key2") }}></Input>
-                                  </Form.Item>
-                                  <Form.Item label="关键词3">
-                                    <Input onChange={(e) => { this.handleSelectKey(e, "Key3") }}></Input>
-                                  </Form.Item>
-                                </Col>
-                              </Row>
-                              <Row style={{ textAlign: "center" }}>
-                                <Button onClick={this.handleKeySelect} type="primary">查询</Button>
-                              </Row>
-                              {keyCols.length > 0 ?
-                                (<Table loading={keyLoading} columns={keyCols} dataSource={keyDatas} rowKey={record => record.time} scroll={{ x: "max-content" }} pagination={false} ></Table>) : null}
-                            </div>
-                          </TabPane>
-                        </Tabs>
-                      </Card>
+                    <div style={{ textAlign: "right", marginBottom: 24 }}>
+                      <Button disabled={!select} type="primary" onClick={this.handleCancleFilter}>取消筛选</Button>
                     </div>
-                    <div id="hdfsUpload">
-                      <Card key="fileUpload">
-                        <Tabs onChange={this.tabChange}>
-                          <TabPane tab="hdfs文件上传" key="1">
-                            <div id="uploadFile">
-                              <Row>
-                                <Col span={10}><p>上传源数据到服务器</p></Col>
-                              </Row>
-                              <Upload.Dragger className="uploadFile"
-                                {...hdfsProps}
-                              >
-                                <p className="ant-upload-drag-icon">
-                                  <Icon type="inbox"></Icon>
-                                </p>
-                                <p className="ant-upload-text">点击或拖拽文件至此区域以上传</p>
-                              </Upload.Dragger>
-                            </div>
-                          </TabPane>
-                        </Tabs>
-                      </Card>
-                    </div>
-                  </Form.Item>
-                </Form>
+                    <Table
+                      columns={columns}
+                      dataSource={allData}
+                      pagination={{
+                        ...pagination,
+                        hideOnSinglePage: true,
+                      }}
+                      loading={loading}
+                      onChange={this.handleTableChange}
+                      scroll={{ x: "max-content" }}
+                    />
+                  </TabPane>
+                </Tabs>
               </Col>
-              <Col span={2}></Col>
+              <Col md={2} sm={0} xs={0}></Col>
             </Row>
           </Content>
         </Layout>
-      </Layout>
+        <Modal visible={visible} onClose={this.onClose} footer={null} onCancel={this.onClose} centered={true}>
+          <div style={{ width: "100%", textAlign: "center" }}>
+            <img alt="preview" src={previewUrl} style={{ width: "100%", height: "100%", marginTop: "40px" }}></img>
+          </div>
+        </Modal>
+      </Layout >
     );
   };
 };
+
+export default Form.create({ name: "uploadFile" })(Download);

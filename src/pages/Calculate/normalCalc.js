@@ -16,7 +16,7 @@ import checkNullvalue from "../../utils/checkNullvalue";
 import apiPromise from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import GMDataSource from "./G&Mdata.json";
-import GMIDataSource from "./G&MinversionData.json";
+// import GMIDataSource from "./G&MinversionData.json";
 import Vis from "../../components/Vis";
 import './index.css';
 
@@ -79,16 +79,13 @@ class Calculate extends React.Component {
             listener: sessionStorage.getItem("dockerIP") ? true : false,
             currentStep: 0,
             currentStep2: 0,
-            apiData: Number(sessionStorage.getItem("idenMod")) === 311 ? Object.assign(GMDataSource.gravity, GMDataSource.common) :
-                Number(sessionStorage.getItem("idenMod")) === 312 ? Object.assign(GMDataSource.magnetic, GMDataSource.common) :
-                    Number(sessionStorage.getItem("idenMod")) === 321 ? GMIDataSource.cor :
-                        Number(sessionStorage.getItem("idenMod")) === 322 ? GMIDataSource.fcm :
-                            Number(sessionStorage.getItem("idenMod")) === 323 ? GMIDataSource.cor_space :
-                                Number(sessionStorage.getItem("idenMod")) === 324 ? GMIDataSource.cross :
-                                    Number(sessionStorage.getItem("idenMod")) === 325 ? GMIDataSource.fcrm :
-                                        Number(sessionStorage.getItem("idenMod")) === 326 ? GMIDataSource.observe : {},
+            apiData: Number(sessionStorage.getItem("idenMod")) === 311 ? GMDataSource.GMDataProcessing :
+                Number(sessionStorage.getItem("idenMod")) === 312 ? GMDataSource.Gridding :
+                    Number(sessionStorage.getItem("idenMod")) === 313 ? GMDataSource.GMForward :
+                        Number(sessionStorage.getItem("idenMod")) === 314 ? GMDataSource.GMInversion :
+                            {},
             resultData: [],
-            resultFileList: [],
+            resFileListData: [],
             isComputing: false,
             started: Number(sessionStorage.getItem("nowStep")) > 1 ? true : false,
             uri: sessionStorage.getItem("baseUrl") || "",
@@ -109,6 +106,7 @@ class Calculate extends React.Component {
             resType: undefined,
             visVisible: false,
             toggle: true,
+            tinyListener: false,
             tdataDrawerVisible: false,
             tdataFileListData: [],
             fileListLoading: false,
@@ -117,6 +115,7 @@ class Calculate extends React.Component {
             imgModalVisible: false,
             filePath: "",
             dataType: "",
+            hasGotInfo: true
         };
     };
     logTimer = undefined;
@@ -128,6 +127,12 @@ class Calculate extends React.Component {
                 this.getPram(modelIndex);
             }
         });
+        if (window.innerWidth > 768) {
+            this.setState({ tinyListener: false })
+        }
+        window.addEventListener("resize", () => {
+            this.setState({ tinyListener: window.innerWidth > 768 ? false : true })
+        })
     };
     /**
      * 获取texts当前输入的值，并把值赋给texts数组
@@ -168,8 +173,10 @@ class Calculate extends React.Component {
         let { uploadFileList } = this.state;
         let fileList = [...info.fileList];
         fileList = fileList.slice(-1);
-        uploadFileList[index] = fileList;
-        this.setState({ uploadFileList });
+        if (info.file.status) {
+            uploadFileList[index] = fileList;
+            this.setState({ uploadFileList });
+        }
         if (info.file.status === "done") {
             let { uploadBoxs } = this.state;
             uploadBoxs[index].currentValue = info.file.name;
@@ -198,7 +205,7 @@ class Calculate extends React.Component {
     }
     //启动容器
     startDocker = () => {
-        let { username, idenMod, currentStep, appName } = this.state;
+        let { username, idenMod, currentStep, appName, stepNum } = this.state;
         this.setState({ loading: true });
         axios({
             method: 'post',
@@ -234,6 +241,9 @@ class Calculate extends React.Component {
                     });
                     break;
                 case 2:
+                    if (stepNum === 1) {
+                        proList.unshift("用户自定义计算");
+                    }
                     //常规docker返回结果
                     if (proList.length === 1) {
                         this.getPram(1);
@@ -244,7 +254,7 @@ class Calculate extends React.Component {
                         dockerID: data.dockerID,
                         dockerIP: data.dockerIP,
                         vport: data.vport,
-                        currentStep: currentStep + 1,
+                        currentStep: idenMod === 731 ? currentStep + 2 : currentStep + 1,
                         proList,
                         started: true
                     });
@@ -280,8 +290,8 @@ class Calculate extends React.Component {
     //选择模型
     handleSelectModel = value => {
         this.setState({
-            modelIndex: value,
-            funcName: this.state.proList[value - 1],
+            modelIndex: value === 0 ? 1 : value,
+            funcName: this.state.proList[value],
             texts: [],
             selects: [],
             radios: [],
@@ -291,7 +301,7 @@ class Calculate extends React.Component {
             inputFiles: [],
             uploadFileList: []
         });
-        this.getPram(value);
+        this.getPram(value === 0 ? 1 : value);
     }
     //重&磁选择计算接口
     handleSelectApi = value => {
@@ -365,7 +375,7 @@ class Calculate extends React.Component {
                 this.props.form.validateFields({ force: true }, (err, values) => {
                     if (!err) {
                         // baseUrl = "http://139.217.82.132:5050";
-                        baseUrl = "http://192.168.0.161:9999";
+                        // baseUrl = "http://192.168.0.161:9999";
                         if (requestMethod === "get") {
                             let params = {};
                             for (let i = 0, len = texts.length; i < len; i++) {
@@ -457,20 +467,11 @@ class Calculate extends React.Component {
                                         'Content-Type': 'multipart/formdata'
                                     }
                                 }).then(res => {
-                                    console.log(typeof (res.data));
-                                    if (apiName === "最小曲率补空白") {
-                                        this.setState({
-                                            loading: false,
-                                            isComputing: false,
-                                            calcResData: typeof (res.data) === "string" ? JSON.parse(res.data.replace(/NaN/g, 0)) : res.data
-                                        });
-                                    } else {
-                                        this.setState({
-                                            loading: false,
-                                            isComputing: false,
-                                            calcResData: typeof (res.data) === "string" ? { message: res.data } : res.data
-                                        });
-                                    }
+                                    this.setState({
+                                        loading: false,
+                                        isComputing: false,
+                                        calcResData: typeof (res.data) === "string" ? { message: res.data } : res.data
+                                    });
                                 }).catch(err => {
                                     this.setState({ loading: false, isComputing: false, calcStatus: false });
                                     message.error(err.message);
@@ -482,10 +483,10 @@ class Calculate extends React.Component {
                 })
                 // }
             } else {
-                message.error("请选择模型");
+                message.error("请选择功能");
             }
         } else {
-            if (modelIndex) {
+            if (modelIndex >= 0) {
                 if (checkNullvalue(texts) && checkNullvalue(selects) && checkNullvalue(radios) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
                     this.props.form.validateFields({ force: true }, (err, values) => {
                         if (!err) {
@@ -599,7 +600,7 @@ class Calculate extends React.Component {
                         }
                         Object.keys(data).map((item, index) => resFileList[index].key = index);
                         this.setState({
-                            resultFileList: resFileList
+                            resFileListData: resFileList
                         });
                     }
                     this.setState({
@@ -620,39 +621,49 @@ class Calculate extends React.Component {
     }
     //查看运行状态
     handleViewInfo = () => {
-        let { dockerID, dockerIP } = this.state;
+        let { dockerID, dockerIP, hasGotInfo } = this.state;
         this.setState({ modalVisible: true });
         let times = 0;
         this.logTimer = setInterval(() => {
-            axios({
-                method: 'post',
-                url: api + 'logInfo',
-                data: {
-                    dockerID,
-                    dockerIP,
-                },
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => {
-                let data = res.data.data.split("Calculation begins...");
-                // eslint-disable-next-line
-                data = data.pop().replace(/\u0008/g, "").split("\r\n");
-                for (let i = 0; i < data.length; i++) {
-                    let p = data[i];
-                    if (p.toLowerCase().replace(/ +/g, "").indexOf("matlab") > -1 || data[i].indexOf("r:/status") > -1 || data[i].indexOf(".go:") > -1) {
-                        data.splice(i, 1);
-                        i -= 1;
+            if (hasGotInfo) {
+                this.setState({ hasGotInfo: false });
+                axios({
+                    method: 'post',
+                    url: api + 'logInfo',
+                    data: {
+                        dockerID,
+                        dockerIP,
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                }
-                this.setState({ logInfoArray: data });
-            }).catch(() => {
-                times += 1;
-                if (times > 4) {
-                    message.error("服务器无响应");
-                    clearInterval(this.logTimer);
-                }
-            });
+                }).then(res => {
+                    this.setState({ hasGotInfo: true });
+                    let data = res.data.data.split("Calculation begins...");
+                    // eslint-disable-next-line
+                    data = data.pop().replace(/[\u0000-\u0008]|[\u0010-\u001f]/g, "");
+                    if (data.indexOf("\r\n") > -1) {
+                        data = data.split("\r\n");
+                    } else if (data.indexOf("\n") > -1) {
+                        data = data.split("\n");
+                    }
+                    for (let i = 0; i < data.length; i++) {
+                        let p = data[i];
+                        if (p.toLowerCase().replace(/ +/g, "").indexOf("matlab") > -1 || data[i].indexOf("r:/status") > -1 || data[i].indexOf(".go:") > -1) {
+                            data.splice(i, 1);
+                            i -= 1;
+                        }
+                    }
+                    this.setState({ logInfoArray: data });
+                }).catch(() => {
+                    this.setState({ hasGotInfo: true });
+                    times += 1;
+                    if (times > 4) {
+                        message.error("服务器无响应");
+                        clearInterval(this.logTimer);
+                    }
+                });
+            }
         }, 1000)
     }
     //关闭运行状态模态框
@@ -757,15 +768,14 @@ class Calculate extends React.Component {
                 break;
         }
     }
-    downloadData = () => {
+    downloadData = file => {
         let { calcResData, apiName, baseUrl } = this.state;
         // baseUrl = "http://139.217.82.132:5050";
-        baseUrl = "http://192.168.0.161:9999";
+        // baseUrl = "http://192.168.0.161:9999";
         if (apiName === "计算完全布格异常") {
             let elementA = document.createElement('a');
-            //隐藏dom点不显示x
             elementA.style.display = 'none';
-            elementA.href = baseUrl + "/downloadfile?fullfilename=" + calcResData.message;
+            elementA.href = baseUrl + "/downloadfile?fullfilename=" + file;
             document.body.appendChild(elementA);
             elementA.click();
             document.body.removeChild(elementA);
@@ -857,12 +867,12 @@ class Calculate extends React.Component {
     }
     handleOpenVisModal = info => {
         let { absolutePath, name } = info;
-        let { dockerIP, vport, idenMod, resultFileList } = this.state;
+        let { dockerIP, vport, idenMod, resFileListData, funcName } = this.state;
         if ((idenMod === 411 || idenMod === 412) && absolutePath.split("/").pop() === "mod.csv") {
             message.warn("数据错误，无法可视化");
-        } if (idenMod === 421) {
+        } else if (idenMod === 421) {
             this.setState({ dataLoading: true });
-            if (name.indexOf("xoy") > -1) {
+            if (name.indexOf("xoy") > -1 || name.indexOf("xoz") > -1) {
                 axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
                     params: { path: absolutePath }
                 }).then(res => {
@@ -872,7 +882,7 @@ class Calculate extends React.Component {
                             visVisible: true,
                             dataLoading: false,
                             calcResData: data,
-                            dataType: "2d"
+                            dataType: "2d_1"
                         })
                     } else {
                         message.warn("无数据");
@@ -889,52 +899,64 @@ class Calculate extends React.Component {
                 let path_25D = "", path_3D = "";
                 if (name.indexOf("25D") > -1) {
                     path_25D = absolutePath;
-                    for (let i = 0; i < resultFileList.length; i++) {
-                        if (resultFileList[i].name === name.replace("25D", "3D")) {
-                            path_3D = resultFileList[i].absolutePath;
+                    for (let i = 0; i < resFileListData.length; i++) {
+                        if (resFileListData[i].name === name.replace("25D", "3D")) {
+                            path_3D = resFileListData[i].absolutePath;
                         }
                     }
                 } else if (name.indexOf("3D") > -1) {
                     path_3D = absolutePath;
-                    for (let i = 0; i < resultFileList.length; i++) {
-                        if (resultFileList[i].name === name.replace("3D", "25D")) {
-                            path_25D = resultFileList[i].absolutePath;
+                    for (let i = 0; i < resFileListData.length; i++) {
+                        if (resFileListData[i].name === name.replace("3D", "25D")) {
+                            path_25D = resFileListData[i].absolutePath;
                         }
                     }
                 }
                 let resTime = 0, calcResData = {};
                 let getData = (path, dataName) => {
-                    axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
-                        params: { path }
-                    }).then(res => {
-                        let { data } = res.data;
-                        if (Array.isArray(data) && data.length > 0) {
-                            calcResData[dataName] = data;
-                            resTime += 1;
-                        } else {
-                            message.warn("无数据");
+                    if (path) {
+                        axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                            params: { path }
+                        }).then(res => {
+                            let { data } = res.data;
+                            if (Array.isArray(data) && data.length > 0) {
+                                calcResData[dataName] = data;
+                                resTime += 1;
+                            } else {
+                                message.warn("无数据");
+                                this.setState({
+                                    dataLoading: false
+                                })
+                            }
+                            if (resTime === 2) {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false,
+                                    calcResData,
+                                    dataType: "line_1"
+                                })
+                            }
+                        }).catch(err => {
                             this.setState({
                                 dataLoading: false
                             })
-                        }
+                        });
+                    } else {
+                        resTime += 1;
                         if (resTime === 2) {
                             this.setState({
                                 visVisible: true,
                                 dataLoading: false,
                                 calcResData,
-                                dataType: "line"
+                                dataType: "line_1"
                             })
                         }
-                    }).catch(err => {
-                        this.setState({
-                            dataLoading: false
-                        })
-                    });
+                    }
                 }
                 getData(path_25D, "data_25D");
                 getData(path_3D, "data_3D");
             }
-        } if (idenMod === 422) {
+        } else if (idenMod === 422) {
             this.setState({ dataLoading: true });
             axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
                 params: { path: absolutePath }
@@ -943,7 +965,7 @@ class Calculate extends React.Component {
                 if (Array.isArray(data) && data.length > 0) {
                     this.setState({
                         calcResData: data,
-                        dataType: "single"
+                        dataType: "2d_2"
                     }, () => {
                         this.setState({
                             visVisible: true,
@@ -951,14 +973,12 @@ class Calculate extends React.Component {
                         })
                     });
                 } else {
-                    this.checkTimer = setInterval(this.pollingData, 5000);
                     message.warn("无数据");
                     this.setState({
                         dataLoading: false
                     })
                 }
             }).catch(err => {
-                this.checkTimer = setInterval(this.pollingData, 5000);
                 this.setState({
                     dataLoading: false
                 })
@@ -970,8 +990,45 @@ class Calculate extends React.Component {
             }).then(res => {
                 let { data } = res.data;
                 if (Array.isArray(data) && data.length > 0) {
+                    if (idenMod === 325) {
+                        if ((funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) || name.indexOf("residuals") > -1) {
+                            data = data.map(item => {
+                                item = item[0].trim().replace(/\s+/g, " ").split(" ");
+                                return item
+                            });
+                        }
+                    }
+                    if ([321, 322, 323, 324].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) {
+                        data.map(item => item.splice(1, 1));
+                    }
+                    if ([322].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_anomaly") > -1) {
+                        data.map(item => item.splice(1, 1));
+                    }
+                    if (idenMod === 7214) {
+                        data = data.map(item => {
+                            item = item[0].trim().replace(/\s+/g, " ").split(" ");
+                            return item
+                        });
+                    }
                     if (idenMod !== 51) {
                         data = data.map(item => item.map(item2 => Number(item2)));
+                    }
+                    if (idenMod === 2131 || idenMod === 7213) {
+                        let new_data = data[0].map((col, i) => data.map(row => row[i]));
+                        let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
+                        let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
+                        if (xData.length === 1) {
+                            data = data.map(item => {
+                                item.splice(0, 1)
+                                return item;
+                            })
+                        }
+                        if (yData.length === 1) {
+                            data = data.map(item => {
+                                item.splice(1, 1)
+                                return item;
+                            })
+                        }
                     }
                     let dataType = "";
                     if (info.suffix === "csv") {
@@ -992,6 +1049,9 @@ class Calculate extends React.Component {
                         dataType = "msh";
                     } else if (info.suffix === "txt") {
                         dataType = "txt";
+                    }
+                    if ((idenMod === 2131 || idenMod === 7213) && funcName.indexOf("Real") > -1 && dataType === "2d") {
+                        dataType = "2d_heatmap";
                     }
                     this.setState({
                         calcResData: data,
@@ -1053,11 +1113,11 @@ class Calculate extends React.Component {
                 break;
             case 311:
             case 312:
-            case 321:
-            case 322:
-            case 323:
-            case 324:
-            case 325:
+                // case 321:
+                // case 322:
+                // case 323:
+                // case 324:
+                // case 325:
                 var elementA = document.createElement('a');
                 elementA.download = paramName;//文件名
                 //隐藏dom点不显示
@@ -1083,9 +1143,9 @@ class Calculate extends React.Component {
             },
         };
         let { apiData, username, appName, texts, selects, radios, checkBoxs, textAreas, uploadBoxs, inputFiles, uploadFileList, loading, listener, currentStep,
-            started, resultData, resultFileList, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
+            started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, currentStep2, disabled, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
-            tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis
+            tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         return (
@@ -1103,20 +1163,27 @@ class Calculate extends React.Component {
                     <Row style={{ height: "100%", width: "100%" }}>
                         <Col md={8} sm={24} xs={24} className="calculate-col">
                             <Card title="参数数据" bordered={false} className="params-card">
-                                {dockerType === 2 && nowStep !== 3 &&
-                                    (
-                                        nowStep > 1 ?
-                                            <Steps current={currentStep2}>
-                                                <Step title="提交参数"></Step>
-                                                <Step title="应用服务计算"></Step>
-                                            </Steps>
-                                            :
-                                            <Steps current={currentStep}>
-                                                <Step title="启动容器"></Step>
-                                                <Step title="提交参数"></Step>
-                                                <Step title="应用服务计算"></Step>
-                                            </Steps>
-                                    )
+                                {dockerType === 2 && nowStep !== 3 && (
+                                    idenMod === 731 ?
+                                        <Steps current={currentStep}>
+                                            <Step title="启动容器"></Step>
+                                            <Step title="应用服务计算"></Step>
+                                        </Steps>
+                                        :
+                                        (
+                                            nowStep > 1 ?
+                                                <Steps current={currentStep2}>
+                                                    <Step title="提交参数"></Step>
+                                                    <Step title="应用服务计算"></Step>
+                                                </Steps>
+                                                :
+                                                <Steps current={currentStep}>
+                                                    <Step title="启动容器"></Step>
+                                                    <Step title="提交参数"></Step>
+                                                    <Step title="应用服务计算"></Step>
+                                                </Steps>
+                                        )
+                                )
                                 }
                                 <div>
                                     {/* {(idenMod === 51 || idenMod === 52) &&
@@ -1157,7 +1224,7 @@ class Calculate extends React.Component {
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
                                                         <Select onChange={this.handleSelectModel} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
                                                             {proList.map((value, index) =>
-                                                                <Option key={value} value={index + 1}>
+                                                                <Option key={value} value={index}>
                                                                     {value}
                                                                 </Option>
                                                             )}
@@ -1168,10 +1235,10 @@ class Calculate extends React.Component {
                                             {dockerType === 5 &&
                                                 <Row>
                                                     <Col xs={24} sm={8} className="ant-form-item-label">
-                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择模型</label>
+                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择功能</label>
                                                     </Col>
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
-                                                        <Select onChange={this.handleSelectApi} placeholder="--请选择模型--" style={{ width: "100%" }}>
+                                                        <Select onChange={this.handleSelectApi} placeholder="--请选择功能--" style={{ width: "100%" }}>
                                                             {Object.keys(apiData).map((value, index) =>
                                                                 <Option key={value} value={value}>
                                                                     {value}
@@ -1198,12 +1265,14 @@ class Calculate extends React.Component {
                                                                         <Tooltip title={apiName !== "上传文件" && ((tip || paramNameCN) + (defaultValue && "，若不上传，则使用默认文件" + defaultValue.split(",")[0]))}>
                                                                             <span className="ant-btn ant-btn-default input-file">
                                                                                 选择文件
-                                                                                <input type="file" id="file" onChange={this.changeInputFile.bind(this, index)} />
+                                                                                <input type="file" onChange={this.changeInputFile.bind(this, index)} />
                                                                             </span>
                                                                         </Tooltip>
                                                                         <div className="file-name" title={currentValue && currentValue.name}>{currentValue && currentValue.name}</div>
                                                                     </Form.Item>
-                                                                    {(idenMod === 311 || idenMod === 312 || idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325 || apiName === "计算完全布格异常") && apiName !== "上传文件" && defaultValue &&
+                                                                    {(idenMod === 311 || idenMod === 312
+                                                                        // || idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325
+                                                                    ) && apiName !== "上传文件" && defaultValue &&
                                                                         <div className="file-icon file-icon-2" onClick={this.getExampleFile.bind(this, defaultValue.split(",")[0])}>
                                                                             <Icon type="download" title="获取示例文件" />
                                                                             <span className="file-name">示例文件</span>
@@ -1267,7 +1336,7 @@ class Calculate extends React.Component {
                                                                                                     callback(`${paramName}的值不能为空!`);
                                                                                                 } else if (/\s/.test(value)) {
                                                                                                     callback(`${paramName}的值不能包含空格`);
-                                                                                                } else if (!/^-?\d*$/.test(value)) {
+                                                                                                } else if (!/^-?\d*$/.test(Number(value))) {
                                                                                                     callback(`${paramName}的值只能为整型`);
                                                                                                 } else if (max && Number(value) > Number(max)) {
                                                                                                     callback(`${paramName}的值不能大于${max}`);
@@ -1321,10 +1390,20 @@ class Calculate extends React.Component {
                                                                     </Select>
                                                                 </Form.Item>
                                                             )}
-                                                            {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map(({ paramNameCN, paramName, tip, enumList }, index) =>
+                                                            {textAreas === null ? null : textAreas.map(({ paramName, paramNameCN, tip, currentValue }, index) =>
+                                                                <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
+                                                                    <Tooltip title={tip || paramNameCN}>
+                                                                        <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={currentValue} onChange={this.changeTextarea.bind(this, index)} />
+                                                                    </Tooltip>
+                                                                </Form.Item>
+                                                            )}
+                                                            {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map(({ paramNameCN, paramName, defaultValue, tip, enumList }, index) =>
                                                                 <div style={{ position: "relative" }} key={index}>
                                                                     <Form.Item label={<label title={paramNameCN}>{paramName}</label>}>
-                                                                        <Tooltip title={tip || (enumList && `请上传${enumList.join("，")}文件`) || paramNameCN}>
+                                                                        <Tooltip title={(idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue ?
+                                                                            tip || paramNameCN + ",请上传名称为" + defaultValue + "的文件"
+                                                                            :
+                                                                            tip || (enumList && `请上传${enumList.join("，")}文件`) || paramNameCN}>
                                                                             <Upload
                                                                                 name="uploadParamFile"
                                                                                 action={"http://" + dockerIP + ":" + vport + "/upFile"}
@@ -1336,6 +1415,18 @@ class Calculate extends React.Component {
                                                                                     vport,
                                                                                     index: modelIndex,
                                                                                     fileIndex: index + 1
+                                                                                }}
+                                                                                beforeUpload={(file, fileList) => {
+                                                                                    if ((idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue) {
+                                                                                        if (file.name === defaultValue) {
+                                                                                            return true
+                                                                                        } else {
+                                                                                            message.error("文件名必须为" + defaultValue, 4)
+                                                                                            return false
+                                                                                        }
+                                                                                    } else {
+                                                                                        return true;
+                                                                                    }
                                                                                 }}
                                                                                 onChange={this.changeUpload.bind(this, index)}
                                                                                 accept={enumList && enumList.join(",")}
@@ -1375,13 +1466,6 @@ class Calculate extends React.Component {
                                                                     <CheckboxGroup options={defaultValue} value={currentValue} onChange={this.changeCheck.bind(this, index)} />
                                                                 </Form.Item>
                                                             )}
-                                                            {textAreas === null ? null : textAreas.map(({ paramName, paramNameCN, tip, currentValue }, index) =>
-                                                                <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
-                                                                    <Tooltip title={tip || paramNameCN}>
-                                                                        <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={currentValue} onChange={this.changeTextarea.bind(this, index)} />
-                                                                    </Tooltip>
-                                                                </Form.Item>
-                                                            )}
                                                             <Row className="app-button">
                                                                 <Button type="primary" htmlType="submit" loading={loading}>提交参数</Button>
                                                             </Row>
@@ -1403,7 +1487,11 @@ class Calculate extends React.Component {
                                                 <div className="btn-area">
                                                     <Button type="default" style={{ marginBottom: 16 }} onClick={this.handleViewInfo}>查看运行日志</Button>
                                                     <Modal className="loginfo-modal" visible={modalVisible} onCancel={this.handleCancleModal} footer={null}>
-                                                        {logInfoArray.map((item, index) => <p key={index} style={{ marginBottom: 5 }}>{item}</p>)}
+                                                        {Array.isArray(logInfoArray) ?
+                                                            logInfoArray.map((item, index) => <p key={index} style={{ marginBottom: 5 }}>{item}</p>)
+                                                            :
+                                                            <p style={{ marginBottom: 5 }}>{logInfoArray}</p>
+                                                        }
                                                     </Modal>
                                                     <Button type="default" style={{ marginBottom: 16 }} onClick={this.handleViewTdata}>查看模板结果</Button>
                                                     <Button type="default" style={{ marginBottom: 16, width: 128 }} onClick={() => { this.props.history.push("/console") }}>前往控制台</Button>
@@ -1426,7 +1514,7 @@ class Calculate extends React.Component {
                         <Col md={6} sm={24} xs={24} className="calculate-col listener-col">
                             <Card title="运行监控" bordered={false} className="params-card">
                                 <div className="normal-listener">
-                                    {listener && (dockerIP || uri) ?
+                                    {listener && (dockerIP || uri) && !tinyListener ?
                                         <Listener
                                             ip={(dockerType === 2 || dockerType === 4) && dockerIP}
                                             uri={(dockerType === 1 || dockerType === 5) && uri}
@@ -1437,7 +1525,7 @@ class Calculate extends React.Component {
                                     }
                                 </div>
                                 <div className="tiny-listener">
-                                    {listener && (dockerIP || uri) ?
+                                    {listener && (dockerIP || uri) && tinyListener ?
                                         <>
                                             <Listener
                                                 ip={(dockerType === 2 || dockerType === 4) && dockerIP}
@@ -1449,13 +1537,15 @@ class Calculate extends React.Component {
                                         :
                                         <span style={{ color: "#bbb" }}>容器未启动</span>
                                     }
-                                    <Modal className="listener-modal" visible={!toggle} onCancel={() => { this.setState({ toggle: true }) }} footer={null}>
-                                        <Listener
-                                            ip={(dockerType === 2 || dockerType === 4) && dockerIP}
-                                            uri={(dockerType === 1 || dockerType === 5) && uri}
-                                            toggle={false}
-                                        />
-                                    </Modal>
+                                    {tinyListener &&
+                                        <Modal className="listener-modal" visible={!toggle} onCancel={() => { this.setState({ toggle: true }) }} footer={null}>
+                                            <Listener
+                                                ip={(dockerType === 2 || dockerType === 4) && dockerIP}
+                                                uri={(dockerType === 1 || dockerType === 5) && uri}
+                                                toggle={false}
+                                            />
+                                        </Modal>
+                                    }
                                 </div>
                             </Card>
                         </Col>
@@ -1502,13 +1592,13 @@ class Calculate extends React.Component {
                                             :
                                             <div>
                                                 <p style={{ fontWeight: "bold", marginBottom: 10 }}>计算结果</p>
-                                                <Table className="filelist-table"
-                                                    dataSource={resultFileList}
+                                                <Table className="calc-filelist-table"
+                                                    dataSource={resFileListData}
                                                     columns={fileTableColumns(this)}
                                                     loading={fileListLoading}
                                                     sticky
                                                     pagination={{
-                                                        showQuickJumper: resultFileList.length > 50 && true,
+                                                        showQuickJumper: resFileListData.length > 50 && true,
                                                         hideOnSinglePage: true,
                                                         showLessItems: true,
                                                     }}
@@ -1523,15 +1613,41 @@ class Calculate extends React.Component {
                                     calcStatus ?
                                         Object.keys(calcResData).length > 0 &&
                                         <>
-                                            {Object.keys(calcResData).map((item, index) =>
-                                                <div key={index}>
-                                                    {(item === "message" ? "" : item + "：\r\n")}
-                                                    <p className="resdata-p">{String(calcResData[item])}</p>
-                                                </div>)}
-                                            <div style={{ display: "flex", justifyContent: "space-around" }}>
-                                                <Button type="primary" onClick={this.downloadData}>下载数据</Button>
-                                                {needVis && <Button type="primary" onClick={() => { this.setState({ visVisible: true }) }}>可视化</Button>}
-                                            </div>
+                                            {apiName === "计算完全布格异常" ?
+                                                <Table className="filelist-table"
+                                                    title={() => <span style={{ fontWeight: "bold" }}>计算结果文件</span>}
+                                                    dataSource={Object.values(calcResData).map(item => ({ fileName: item.split("/").pop(), path: item }))}
+                                                    columns={[{
+                                                        title: '文件名',
+                                                        dataIndex: 'fileName',
+                                                        align: "center",
+                                                        render: text => <p className="table-item-name" title={text}>{text}</p>
+                                                    }, {
+                                                        title: '下载',
+                                                        dataIndex: 'path',
+                                                        align: "center",
+                                                        render: text => <Button type="primary" onClick={this.downloadData.bind(this, text)}>下载</Button>
+                                                    }]}
+                                                    footer={null}
+                                                    pagination={{
+                                                        hideOnSinglePage: true,
+                                                        showLessItems: true,
+                                                    }}
+                                                />
+                                                :
+                                                <>
+                                                    {Object.keys(calcResData).map((item, index) =>
+                                                        <div key={index}>
+                                                            {(item === "message" ? "" : item + "：\r\n")}
+                                                            <p className="resdata-p">{String(calcResData[item])}</p>
+                                                        </div>
+                                                    )}
+                                                    <div style={{ display: "flex", justifyContent: "space-around" }}>
+                                                        <Button type="primary" onClick={this.downloadData}>下载数据</Button>
+                                                        {needVis && <Button type="primary" onClick={() => { this.setState({ visVisible: true }) }}>可视化</Button>}
+                                                    </div>
+                                                </>
+                                            }
                                             <Modal className="vis-modal" visible={visVisible} onCancel={() => { this.setState({ visVisible: false }) }} footer={null} destroyOnClose>
                                                 <Vis data={calcResData} datatype={apiName} />
                                             </Modal>
@@ -1544,7 +1660,7 @@ class Calculate extends React.Component {
                     </Row>
                     <Drawer title="模板结果" placement="left" visible={tdataDrawerVisible} onClose={this.handleCloseTdataDrawer} width={550}>
                         <ConfigProvider locale={zhCN}>
-                            <Table className="filelist-table"
+                            <Table className="calc-filelist-table"
                                 dataSource={tdataFileListData}
                                 columns={fileTableColumns(this)}
                                 loading={fileListLoading}

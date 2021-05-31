@@ -1,27 +1,27 @@
-#chart-container {
+#chart-container-2 {
     padding: 80px 90px 80px 80px;
     position: relative;
-    width: 1000px;
+    width: 860px;
     font-size: 14px;
 }
 
-#matrix_chart {
+#chart-container-2 #matrix_chart {
     box-sizing: unset;
     border: 1px solid #000;
-    width: 600px;
-    height: 600px;
+    width: 690px;
+    height: 460px;
 }
 
-#chart-container #legend {
+#chart-container-2 #legend {
     position: absolute;
     right: 0;
     top: 80px;
     width: 75px;
     display: flex;
-    height: 600px;
+    height: 460px;
 }
 
-#chart-container #legend .color-bar {
+#chart-container-2 #legend .color-bar {
     box-sizing: unset;
     height: 100%;
     width: 30px;
@@ -29,7 +29,7 @@
     background: linear-gradient(#f5ff13, #ffc23a, #c2bc5f, #64bf85, #0dafbc, #118ad1, #0662e1, #362f86);
 }
 
-#chart-container #legend .color-num {
+#chart-container-2 #legend .color-num {
     box-sizing: unset;
     height: 100%;
     width: 40px;
@@ -40,46 +40,46 @@
     margin-left: 5px;
 }
 
-#chart-container #legend .color-num span {
+#chart-container-2 #legend .color-num span {
     height: 0;
     display: flex;
     align-items: center;
 }
 
-#chart-container #x-axis {
+#chart-container-2 #x-axis {
     position: absolute;
     left: 80px;
     bottom: 55px;
     height: 20px;
-    width: 600px;
+    width: 690px;
 }
 
-#chart-container #x-axis span {
+#chart-container-2 #x-axis span {
     width: 0;
     display: flex;
     justify-content: center;
     position: absolute;
 }
 
-#chart-container #x-axis::before {
+#chart-container-2 #x-axis::before {
     content: "X";
     position: absolute;
     top: 1em;
-    width: 600px;
+    width: 690px;
     text-align: center;
     font-weight: bold;
 }
 
-#chart-container #y-axis {
+#chart-container-2 #y-axis {
     position: absolute;
     left: 35px;
     top: 80px;
-    height: 600px;
+    height: 460px;
     width: 40px;
     line-height: 1em;
 }
 
-#chart-container #y-axis span {
+#chart-container-2 #y-axis span {
     height: 0;
     display: flex;
     align-items: center;
@@ -88,144 +88,12 @@
     right: 0;
 }
 
-#chart-container #y-axis::before {
+#chart-container-2 #y-axis::before {
     content: "Y";
     position: absolute;
-    height: 600px;
+    height: 460px;
     writing-mode: vertical-lr;
     text-align: center;
     transform: rotate(180deg);
     font-weight: bold;
-}
-
-@media(max-width:998px) {
-    #chart-container {
-        padding: 40px 70px 40px 40px;
-        width: 730px;
-    }
-    #matrix_chart {
-        width: 620px;
-        height: 220px;
-    }
-    #chart-container #legend {
-        right: 0;
-        top: 40px;
-        width: 60px;
-        height: 220px;
-    }
-    #chart-container #legend .color-bar {
-        height: 100%;
-        width: 20px;
-    }
-    #chart-container #legend .color-num {
-        height: 100%;
-        width: 40px;
-    }
-    #chart-container #x-axis {
-        left: 40px;
-        bottom: 15px;
-        height: 20px;
-        width: 620px;
-    }
-    #chart-container #x-axis::before {
-        top: 1em;
-        width: 620px;
-    }
-    #chart-container #y-axis {
-        left: 0px;
-        top: 40px;
-        height: 220px;
-        width: 40px;
-    }
-    #chart-container #y-axis::before {
-        height: 220px;
-    }
-}
-
-@media(max-width:768px) {
-    #chart-container {
-        padding: 40px 70px 40px 40px;
-        width: 580px;
-    }
-    #matrix_chart {
-        width: 470px;
-        height: 168px;
-    }
-    #chart-container #legend {
-        right: 0;
-        top: 40px;
-        width: 60px;
-        height: 168px;
-    }
-    #chart-container #legend .color-bar {
-        height: 100%;
-        width: 20px;
-    }
-    #chart-container #legend .color-num {
-        height: 100%;
-        width: 40px;
-    }
-    #chart-container #x-axis {
-        left: 40px;
-        bottom: 15px;
-        height: 20px;
-        width: 470px;
-    }
-    #chart-container #x-axis::before {
-        top: 1em;
-        width: 470px;
-    }
-    #chart-container #y-axis {
-        left: 0px;
-        top: 40px;
-        height: 168px;
-        width: 40px;
-    }
-    #chart-container #y-axis::before {
-        height: 168px;
-    }
-}
-
-@media(max-width:576px) {
-    #chart-container {
-        padding: 40px 60px 40px 40px;
-        width: 430px;
-    }
-    #matrix_chart {
-        width: 330px;
-        height: 122px;
-    }
-    #chart-container #legend {
-        right: 0px;
-        top: 40px;
-        width: 50px;
-        height: 122px;
-    }
-    #chart-container #legend .color-bar {
-        height: 100%;
-        width: 10px;
-    }
-    #chart-container #legend .color-num {
-        height: 100%;
-        width: 40px;
-    }
-    #chart-container #x-axis {
-        left: 40px;
-        bottom: 15px;
-        height: 20px;
-        width: 330px;
-    }
-    #chart-container #x-axis::before {
-        top: 1em;
-        width: 330px;
-    }
-    #chart-container #y-axis {
-        left: 0px;
-        top: 40px;
-        height: 122px;
-        width: 40px;
-    }
-    #chart-container #y-axis::before {
-        height: 122px;
-    }
 }

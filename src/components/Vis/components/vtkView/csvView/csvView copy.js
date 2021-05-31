@@ -82,7 +82,7 @@ export default class csvView extends Component {
         if (vtkBox) {
             vtkBox.innerHTML = null;
         }
-        if (appName === "最小二乘逆时偏移 (LSRTM)" || appName === "Super Resolution ITSMF") {
+        if (appName === "最小二乘逆时偏移 (LSRTM)" || appName === "Super Resolution ITSMF" || appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
             for (let i = 0; i < data.length; i++) {
                 xAxis.push(...data[i].splice(0, 1))
                 yAxis.push(...data[i].splice(0, 1))
@@ -537,10 +537,10 @@ export default class csvView extends Component {
 
     componentDidMount() {
         let { appName } = this.props;
-        if (appName === "最小二乘逆时偏移 (LSRTM)" || appName === "Super Resolution ITSMF") {
+        if (appName === "最小二乘逆时偏移 (LSRTM)" || appName === "Super Resolution ITSMF" || appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
             this.props.dispatch(actions.setMoveStyle(actions.moveType.PAN));
             this.setState({
-                mode:"X Ray"
+                mode: "X Ray"
             })
         } else {
             this.props.dispatch(actions.setMoveStyle(actions.moveType.ROTATE));
@@ -570,7 +570,7 @@ export default class csvView extends Component {
     }
 
     render() {
-        let { boxBgColor, model, mode, unique, min, max, activeScalar, dx, dy, dz} = this.state;
+        let { boxBgColor, model, mode, unique, min, max, activeScalar, dx, dy, dz } = this.state;
         let { show, state, data } = this.props;
         let { moveStyle, screen, ruler, attribute, scale, ranging, theme, scalar, fontSize, modelStyle } = state;
         let scaleOpc = 0;
@@ -696,7 +696,6 @@ export default class csvView extends Component {
         // }
         //改变鼠标事件
         changeManipulators(model, moveStyle, modelStyle);
-
         return (
             <div>
                 <Draggable handle=".handle"

@@ -17,7 +17,6 @@ const ErrorPage = loadable(() => import('../pages/ErrorPage'));
 const About = loadable(() => import('../pages/About'));
 const OperateData = loadable(() => import('../pages/OperateData'));
 const Bdcenter = loadable(() => import('../pages/Bdcenter'));
-const Vis = loadable(() => import('../components/Vis/components/echartsView/view_421&422/csvView_matrix3'));
 
 export default class EarthRouter extends React.Component {
     render() {
@@ -35,9 +34,6 @@ export default class EarthRouter extends React.Component {
                     </Route>
                     <Route exact path="/loading">
                         <Loading />
-                    </Route>
-                    <Route exact path="/vis">
-                        <Vis />
                     </Route>
                     <Route exact path="/bdcenter">
                         <Bdcenter />

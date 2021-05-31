@@ -102,8 +102,6 @@ export default class csvViewXy extends Component {
                 model.renderWindow.render();
                 model.renderer.addActor(actor);
                 model.interactorStyle.setCenterOfRotation(mapper.getCenter());
-                model.renderer.resetCamera();
-                model.renderWindow.render();
                 model.lookupTable = lookupTable;
                 model.actor = actor;
                 model.mapper = mapper;
@@ -444,7 +442,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "磁场模型正演": {
-                let xAxis = data.xp.map(item => Number(item.toFixed(2))), yAxis = data.yp.map(item => Number(item.toFixed(2))), arrs = [...data.field_mag];
+                let xAxis = data.xp.map(item => Number(item.toFixed(2))), yAxis = data.yp.map(item => Number(item.toFixed(2))), arrs = [...data.field_mag].reverse();
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -487,8 +485,8 @@ export default class csvViewXy extends Component {
                 model.mapper = mapper;
                 break;
             }
-            case "欧拉反演(扩展窗)": 
-            case "欧拉反演(移动窗)":{
+            case "欧拉反演(扩展窗)":
+            case "欧拉反演(移动窗)": {
                 let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.y.map(item => Number(item.toFixed(0))), arrs = [...data.predict];
                 // 定义actor
                 const actor = vtkActor.newInstance();
@@ -592,7 +590,7 @@ export default class csvViewXy extends Component {
             }
             case "2d": {
                 let xAxis = [], yAxis = [], arrs = [];
-                if (appName === "接收函数反演 (ReceiverFunc Inversion)" || appName === "ERPS USTC") {
+                if (["接收函数反演 (ReceiverFunc Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演", "模糊C回归聚类", "大地电磁面波 (MT-Surf RealData)", "Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)", "超分辨率地震成像 (Super Resolution Seismic Imaging)"].includes(appName)) {
                     for (let i = 0; i < data.length; i++) {
                         arrs.push(Number(data[i][2]));
                         xAxis.push(Number(data[i][0]));
@@ -605,6 +603,7 @@ export default class csvViewXy extends Component {
                         yAxis.push(Number(data[i][0]));
                     }
                 }
+
                 yLength = Array.from(new Set(yAxis)).length > 1 ? Array.from(new Set(yAxis)).length : 2;
 
                 xLength = Array.from(new Set(xAxis)).length;
@@ -614,6 +613,7 @@ export default class csvViewXy extends Component {
                 const preset = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
                 lookupTable.applyColorMap(preset);  //应用ColorMap
 
+                model.lookupTable = lookupTable;
                 // 定义映射器
                 const mapper = vtkMapper.newInstance({
                     useLookupTableScalarRange: true,
@@ -623,6 +623,8 @@ export default class csvViewXy extends Component {
 
                 model.renderer.resetCamera();
                 model.renderWindow.render();
+                model.renderer.addActor(actor);
+                model.interactorStyle.setCenterOfRotation(mapper.getCenter());
                 model.actor = actor;
                 model.mapper = mapper;
                 model.lookupTable = lookupTable;

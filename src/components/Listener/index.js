@@ -41,7 +41,9 @@ export default class Listener extends React.Component {
             maxLineData: 100,
             ip: props.ip ? props.ip : props.uri && props.uri.split("://")[1].split(":")[0],
             memoryUsed: undefined,
-            cpuUsed: undefined
+            cpuUsed: undefined,
+            gotPie: true,
+            gotLine: true
         };
     };
     pieTimer = undefined;
@@ -53,42 +55,58 @@ export default class Listener extends React.Component {
     }
     // 获取内存饼图数据
     getPieData = () => {
-        if (this.state.ip) {
-            this.pieTimer = window.setTimeout(() => {
-                axios.get("http://" + this.state.ip + ':8666/monitor/memory')
-                    .then(response => {
+        let { gotPie, ip } = this.state;
+        let times = 0;
+        if (ip) {
+            this.pieTimer = setInterval(() => {
+                if (gotPie) {
+                    this.setState({ gotPie: false });
+                    axios.get("http://" + ip + ':8666/monitor/memory'
+                    ).then(response => {
                         this.setState({
+                            gotPie: true,
                             pieData: response.data,
                             memoryUsed: Number(response.data[0].value.toFixed(2))
-                        }, () => {
-                            this.getPieData();
                         });
-                    })
-                    .catch(error => {
-                        message.error("服务器无响应", 2);
+                    }).catch(error => {
+                        this.setState({ gotLine: true });
+                        times += 1;
+                        if (times > 3) {
+                            message.error("服务器无响应", 2);
+                            clearInterval(this.pieTimer);
+                        }
                     });
+                }
             }, 3000);
         }
     };
     // 获取CPU折线图数据
     getLineData = () => {
-        if (this.state.ip) {
+        let { gotLine, ip } = this.state;
+        let times = 0;
+        if (ip) {
             this.requestRef = requestAnimationFrame(() => {
-                this.lineTimer = window.setTimeout(() => {
-                    axios.get("http://" + this.state.ip + ':8666/monitor/cpu')
-                        .then(response => {
-                            let lineData = response.data.map(item => ({ time: item.time, value: Number((100 - item.value).toFixed(2)) }));
-                            let lineValue = response.data.map(item => Number((100 - item.value).toFixed(2)));
-                            let minLineData = Math.floor(Number(getMin(lineValue).toFixed(0)) / 10) * 10;
-                            let maxLineData = Math.ceil(Number(getMax(lineValue).toFixed(0)) / 10) * 10;
-                            this.setState({
-                                lineData, minLineData, maxLineData, cpuUsed: lineValue.pop()
-                            }, () => {
-                                this.getLineData();
-                            })
-                        }).catch(error => {
-                            message.error("服务器无响应", 2);
-                        });
+                this.lineTimer = setInterval(() => {
+                    if (gotLine) {
+                        this.setState({ gotLine: false });
+                        axios.get("http://" + ip + ':8666/monitor/cpu')
+                            .then(response => {
+                                let lineData = response.data.map(item => ({ time: item.time, value: Number((100 - item.value).toFixed(2)) }));
+                                let lineValue = response.data.map(item => Number((100 - item.value).toFixed(2)));
+                                let minLineData = Math.floor(Number(getMin(lineValue).toFixed(0)) / 10) * 10;
+                                let maxLineData = Math.ceil(Number(getMax(lineValue).toFixed(0)) / 10) * 10;
+                                this.setState({
+                                    lineData, minLineData, maxLineData, cpuUsed: lineValue.pop(), gotLine: true
+                                })
+                            }).catch(error => {
+                                this.setState({ gotLine: true });
+                                times += 1;
+                                if (times > 3) {
+                                    message.error("服务器无响应", 2);
+                                    clearInterval(this.lineTimer);
+                                }
+                            });
+                    }
                 }, 2000);
             });
         }

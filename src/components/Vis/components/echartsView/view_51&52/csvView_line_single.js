@@ -25,13 +25,14 @@ let getMin = arr => {
 export default class csvView_1d extends Component {
     componentDidMount() {
         this.chart = echarts.init(document.getElementById('chart'));
-        let { data, appName } = this.props;
-        let data_new = data[0].map((col, i) => data.map(row => row[i]));
+        let { data } = this.props;
         if (data[0].length === 1) {
             data.map((item, index) =>
                 item.unshift(index)
             )
         }
+        let data_new = data[0].map((col, i) => data.map(row => row[i]));
+        let max = getMax(data_new[1]), min = getMin(data_new[1]), range = max - min;
         let option = {
             xAxis: {
                 name: "x",
@@ -46,20 +47,20 @@ export default class csvView_1d extends Component {
                     fontSize: 16,
                     fontWeight: "bold"
                 },
-                max: appName === "线性求解器(实/复) (Linear Solver)" ? getMax(data_new[0]) * 10 : undefined,
-                min: appName === "线性求解器(实/复) (Linear Solver)" ? getMin(data_new[0]) * 10 : undefined
+                max: range === 0 ? max + 10 : range > 10 ? Number((max + range).toFixed(0)) : max + range,
+                min: range === 0 ? min - 10 : range > 10 ? Number((min - range).toFixed(0)) : min - range
             },
             tooltip: {
                 show: true,
-                formatter: params => 'x: ' + params.data[0] + '<br>y: ' + params.data[1]
+                trigger: 'axis',
+                formatter: params => 'x: ' + params[0].data[0] + '<br>y: ' + params[0].data[1]
             },
             series: [{
-                symbolSize: 8,
+                name: "a",
+                showSymbol: false,
                 data,
                 type: 'line',
-                itemStyle: {
-                    color: "#1890ff"
-                }
+                smooth: true,
             }]
         };
         this.chart.setOption(option);
@@ -70,7 +71,7 @@ export default class csvView_1d extends Component {
     }
     render() {
         return (
-            <div id="chart" style={{ width: "100%", height: "100%" }}/>
+            <div id="chart" style={{ width: "100%", height: "100%" }} />
         )
     }
 }

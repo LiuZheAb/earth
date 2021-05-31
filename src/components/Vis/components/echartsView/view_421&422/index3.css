@@ -1,35 +1,35 @@
-#chart-container {
+#chart-container-3 {
     padding: 80px 90px 80px 80px;
     position: relative;
-    width: 860px;
+    width: 660px;
     font-size: 14px;
 }
 
-#matrix_chart {
+#chart-container-3 #matrix_chart {
     box-sizing: unset;
     border: 1px solid #000;
-    width: 690px;
-    height: 460px;
+    width: 470px;
+    height: 470px;
 }
 
-#chart-container #legend {
+#chart-container-3 #legend {
     position: absolute;
     right: 0;
     top: 80px;
     width: 75px;
     display: flex;
-    height: 460px;
+    height: 470px;
 }
 
-#chart-container #legend .color-bar {
+#chart-container-3 #legend .color-bar {
     box-sizing: unset;
     height: 100%;
     width: 30px;
     border: 1px solid #000;
-    background: linear-gradient(#f5ff13, #ffc23a, #c2bc5f, #64bf85, #0dafbc, #118ad1, #0662e1, #362f86);
+    background: linear-gradient(#0000fa, #006eff, #00cfff, #00ffb0, #00ff09, #9bff00, #ffd000, #ff6f00, #ff0f00, #ff0077, #fb00fa);
 }
 
-#chart-container #legend .color-num {
+#chart-container-3 #legend .color-num {
     box-sizing: unset;
     height: 100%;
     width: 40px;
@@ -40,46 +40,45 @@
     margin-left: 5px;
 }
 
-#chart-container #legend .color-num span {
+#chart-container-3 #legend .color-num span {
     height: 0;
     display: flex;
     align-items: center;
 }
 
-#chart-container #x-axis {
+#chart-container-3 #x-axis {
     position: absolute;
     left: 80px;
     bottom: 55px;
     height: 20px;
-    width: 690px;
+    width: 470px;
 }
 
-#chart-container #x-axis span {
+#chart-container-3 #x-axis span {
     width: 0;
     display: flex;
     justify-content: center;
     position: absolute;
 }
 
-#chart-container #x-axis::before {
-    content: "X";
+#chart-container-3 #x-axis::before {
     position: absolute;
     top: 1em;
-    width: 690px;
+    width: 470px;
     text-align: center;
     font-weight: bold;
 }
 
-#chart-container #y-axis {
+#chart-container-3 #y-axis {
     position: absolute;
     left: 35px;
     top: 80px;
-    height: 460px;
+    height: 470px;
     width: 40px;
     line-height: 1em;
 }
 
-#chart-container #y-axis span {
+#chart-container-3 #y-axis span {
     height: 0;
     display: flex;
     align-items: center;
@@ -88,10 +87,9 @@
     right: 0;
 }
 
-#chart-container #y-axis::before {
-    content: "Y";
+#chart-container-3 #y-axis::before {
     position: absolute;
-    height: 460px;
+    height: 470px;
     writing-mode: vertical-lr;
     text-align: center;
     transform: rotate(180deg);

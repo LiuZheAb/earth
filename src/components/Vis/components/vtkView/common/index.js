@@ -605,7 +605,7 @@ export const showBounds = (bounds, model, container, polydata, theme) => {
 }
 
 // 显示坐标刻度
-export const showBoundRuler = (ruler, model, container, polydata, props, dimensional, theme, xAxis, yAxis, className) => {
+export const showBoundRuler = (ruler, model, container, polydata, props, dimensional, theme, xAxis, yAxis, className, xMin, xMax, yMin, yMax, zMin, zMax) => {
     let actColor;
     if (theme === "#fff") {
         actColor = [1.0, 1.0, 1.0]
@@ -756,7 +756,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.textBaseline = 'middle';
                     if (["坐标投影", "重力异常计算", "重力数据求偏导", "重力数据延拓", "三维断层模型正演", "边缘识别", "曲化平", "数据扩边", "最小曲率补空白",
                         "六面体模型重力异常正演", "六面体复杂模型构建及重力异常正演", "球型棱柱体模型重力异常正演", "球型棱柱体模型构建及重力异常正演", "四面体模型单元正演",
-                        "数据去趋势", "数据网格化","磁场方向导数求取","磁场空间延拓","磁化极","磁场模型正演"].includes(props.datatype)) {
+                        "数据去趋势", "数据网格化", "磁场方向导数求取", "磁场空间延拓", "磁化极", "磁场模型正演"].includes(props.datatype)) {
                         if (idx < num) {
                             textCtx.fillText(`${xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         } else {
@@ -804,6 +804,9 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
         let linewX = Math.abs(bound[3] - bound[0]);
         let linewY = Math.abs(bound[7] - bound[1]);
         let linewZ = Math.abs(bound[14] - bound[2]);
+        let xMulti = xMax && xMin ? (xMax - xMin) / linewX : undefined;
+        let yMulti = yMax && yMin ? (yMax - yMin) / linewY : undefined;
+        let zMulti = zMax && zMin ? (zMax - zMin) / linewZ : undefined;
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (model.axis1x === undefined) {
             const cubeSourceXL1 = vtkCubeSource.newInstance({
@@ -2387,12 +2390,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx < 22) {
-                        textCtx.fillText(`${model.ruler1X[idx].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 && idx >= 22) {
-                        textCtx.fillText(`${model.ruler1Y[idx - 22].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 && idx < 26 + 2 * ratioz + 2 * ratioy) {
-                        textCtx.fillText(`${model.ruler1Z[idx - 2 * ratioy - 24].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx < 22) {
+                            textCtx.fillText(`${(model.ruler1X[idx].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 && idx >= 22) {
+                            textCtx.fillText(`${(model.ruler1Y[idx - 22].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 && idx < 26 + 2 * ratioz + 2 * ratioy) {
+                            textCtx.fillText(`${(model.ruler1Z[idx - 2 * ratioy - 24].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx < 22) {
+                            textCtx.fillText(`${model.ruler1X[idx].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 && idx >= 22) {
+                            textCtx.fillText(`${model.ruler1Y[idx - 22].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 && idx < 26 + 2 * ratioz + 2 * ratioy) {
+                            textCtx.fillText(`${model.ruler1Z[idx - 2 * ratioy - 24].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2408,12 +2421,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 26 + 2 * ratioz + 2 * ratioy && idx < 48 + 2 * ratioz + 2 * ratioy) {
-                        textCtx.fillText(`${model.ruler2X[idx - (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 26 + 2 * ratioz + 2 * ratioy && idx >= 48 + 2 * ratioz + 2 * ratioy) {
-                        textCtx.fillText(`${model.ruler2Y[idx - 22 - (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler2Z[idx - 2 * ratioy - 24 - (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 26 + 2 * ratioz + 2 * ratioy && idx < 48 + 2 * ratioz + 2 * ratioy) {
+                            textCtx.fillText(`${(model.ruler2X[idx - (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 26 + 2 * ratioz + 2 * ratioy && idx >= 48 + 2 * ratioz + 2 * ratioy) {
+                            textCtx.fillText(`${(model.ruler2Y[idx - 22 - (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler2Z[idx - 2 * ratioy - 24 - (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 26 + 2 * ratioz + 2 * ratioy && idx < 48 + 2 * ratioz + 2 * ratioy) {
+                            textCtx.fillText(`${model.ruler2X[idx - (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 26 + 2 * ratioz + 2 * ratioy && idx >= 48 + 2 * ratioz + 2 * ratioy) {
+                            textCtx.fillText(`${model.ruler2Y[idx - 22 - (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler2Z[idx - 2 * ratioy - 24 - (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2429,12 +2452,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 5 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler6X[idx - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 5 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler6Y[idx - 22 - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + 5 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler6Z[idx - 2 * ratioy - 24 - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 5 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler6X[idx - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 5 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler6Y[idx - 22 - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 5 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler6Z[idx - 2 * ratioy - 24 - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 5 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler6X[idx - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 5 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler6Y[idx - 22 - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 5 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 5 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler6Z[idx - 2 * ratioy - 24 - 5 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2450,12 +2483,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 4 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler5X[idx - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 4 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler5Y[idx - 22 - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + 4 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler5Z[idx - 2 * ratioy - 24 - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 4 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler5X[idx - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 4 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler5Y[idx - 22 - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 4 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler5Z[idx - 2 * ratioy - 24 - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 4 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler5X[idx - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 4 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler5Y[idx - 22 - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 4 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 4 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler5Z[idx - 2 * ratioy - 24 - 4 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2471,12 +2514,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 3 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler4X[idx - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 3 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler4Y[idx - 22 - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + 3 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler4Z[idx - 2 * ratioy - 24 - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 3 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler4X[idx - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 3 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler4Y[idx - 22 - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 3 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler4Z[idx - 2 * ratioy - 24 - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 3 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler4X[idx - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 3 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler4Y[idx - 22 - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 3 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 3 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler4Z[idx - 2 * ratioy - 24 - 3 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2492,12 +2545,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 2 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler3X[idx - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 2 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler3Y[idx - 22 - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + 2 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler3Z[idx - 2 * ratioy - 24 - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 2 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler3X[idx - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 2 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler3Y[idx - 22 - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 2 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler3Z[idx - 2 * ratioy - 24 - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 2 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler3X[idx - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 2 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler3Y[idx - 22 - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 2 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 2 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler3Z[idx - 2 * ratioy - 24 - 2 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2513,12 +2576,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 6 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler7X[idx - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 6 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler7Y[idx - 22 - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + 6 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler7Z[idx - 2 * ratioy - 24 - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 6 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler7X[idx - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 6 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler7Y[idx - 22 - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 6 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler7Z[idx - 2 * ratioy - 24 - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 6 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler7X[idx - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 6 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler7Y[idx - 22 - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 6 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 6 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler7Z[idx - 2 * ratioy - 24 - 6 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2534,12 +2607,22 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
-                    if (idx >= 7 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler8X[idx - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx < 2 * ratioy + 24 + 7 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler8Y[idx - 22 - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                    } else if (idx >= 2 * ratioy + 24 + 7 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
-                        textCtx.fillText(`${model.ruler8Z[idx - 2 * ratioy - 24 - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                    if (xMulti && yMulti && zMulti) {
+                        if (idx >= 7 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler8X[idx - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[0] * xMulti + Number(xMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 7 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler8Y[idx - 22 - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[1] * yMulti + Number(yMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 7 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${(model.ruler8Z[idx - 2 * ratioy - 24 - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[2] * zMulti + Number(zMin)).toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
+                    } else {
+                        if (idx >= 7 * (26 + 2 * ratioz + 2 * ratioy) && idx < 22 + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler8X[idx - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[0].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx < 2 * ratioy + 24 + 7 * (26 + 2 * ratioz + 2 * ratioy) && idx >= 22 + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler8Y[idx - 22 - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[1].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        } else if (idx >= 2 * ratioy + 24 + 7 * (26 + 2 * ratioz + 2 * ratioy) && idx < 26 + 2 * ratioz + 2 * ratioy + 7 * (26 + 2 * ratioz + 2 * ratioy)) {
+                            textCtx.fillText(`${model.ruler8Z[idx - 2 * ratioy - 24 - 7 * (26 + 2 * ratioz + 2 * ratioy)].center[2].toFixed(1)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        }
                     }
                 });
             }
@@ -2691,7 +2774,6 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
             })
             break;
         case "重力异常计算":
-        case "ERPS USTC":
         case "四面体模型单元正演":
         case "重磁2D数据模糊聚类联合反演":
         case "重磁3D数据模糊聚类联合反演":
@@ -2764,37 +2846,89 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
             });
             break;
         default:
-            for (let i = 0; i < xLength; i++) {
-                array1[i] = arrs.splice(0, yLength)
-            }
-            for (let i = 0; i < yLength; i++) {
-                array[i] = []
-                for (let j = 0; j < xLength; j++) {
-                    array[i][j] = array1[j][i]
-                }
-            }
-            simpleFilter.setFormula({
-                getArrays: (inputDataSets) => ({
-                    input: [
-                        { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
-                    output: [
-                        {
-                            location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
-                            name: 'z',                // ... 有了名字。。。
-                            dataType: 'Float64Array',         // ... 这种类型的。。。
-                            attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
-                        },
-                    ]
-                }),
-                evaluate: (arraysIn, arraysOut) => {
-                    const [z] = arraysOut.map(d => d.getData());
-                    for (let i = 0; i < data.length; i++) {
-                        let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
-                        z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+            if (datatype === "2d" && ["大地电磁面波 (MT-Surf RealData)", "接收函数反演 (ReceiverFunc Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演","模糊C回归聚类"].includes(appName)) {
+                simpleFilter.setFormula({
+                    getArrays: (inputDataSets) => ({
+                        input: [
+                            { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                        output: [
+                            {
+                                location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                                name: 'z',                // ... 有了名字。。。
+                                dataType: 'Float64Array',         // ... 这种类型的。。。
+                                attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                            },
+                        ]
+                    }),
+                    evaluate: (arraysIn, arraysOut) => {
+                        const [z] = arraysOut.map(d => d.getData());
+                        for (let i = 0; i < data.length; i++) {
+                            let index = yR.indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                            z[index] = data[i];
+                        }
+                        arraysOut.forEach(x => x.modified());
                     }
-                    arraysOut.forEach(x => x.modified());
+                })
+            } else if (datatype === "2d" && ["Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)", "超分辨率地震成像 (Super Resolution Seismic Imaging)"].includes(appName)) {
+                arrs = arrs.reverse();
+                for (let i = 0; i < yLength; i++) {
+                    array1[i] = arrs.splice(0, xLength)
                 }
-            });
+                simpleFilter.setFormula({
+                    getArrays: (inputDataSets) => ({
+                        input: [
+                            { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                        output: [
+                            {
+                                location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                                name: 'z',                // ... 有了名字。。。
+                                dataType: 'Float64Array',         // ... 这种类型的。。。
+                                attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                            },
+                        ]
+                    }),
+                    evaluate: (arraysIn, arraysOut) => {
+                        const [z] = arraysOut.map(d => d.getData());
+                        for (let i = 0; i < data.length; i++) {
+                            let index = yR.indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                            z[index] = array1[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+                        }
+                        arraysOut.forEach(x => x.modified());
+                    }
+                })
+            } else {
+                for (let i = 0; i < xLength; i++) {
+                    array1[i] = arrs.splice(0, yLength)
+                }
+                for (let i = 0; i < yLength; i++) {
+                    array[i] = []
+                    for (let j = 0; j < xLength; j++) {
+                        array[i][j] = array1[j][i]
+                    }
+                }
+                simpleFilter.setFormula({
+                    getArrays: (inputDataSets) => ({
+                        input: [
+                            { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                        output: [
+                            {
+                                location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                                name: 'z',                // ... 有了名字。。。
+                                dataType: 'Float64Array',         // ... 这种类型的。。。
+                                attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                            },
+                        ]
+                    }),
+                    evaluate: (arraysIn, arraysOut) => {
+                        const [z] = arraysOut.map(d => d.getData());
+                        for (let i = 0; i < data.length; i++) {
+                            let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                            z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+                        }
+                        arraysOut.forEach(x => x.modified());
+                    }
+                });
+            }
             break;
     }
     mapper.setInputConnection(simpleFilter.getOutputPort());
@@ -2847,6 +2981,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
     let ScalPointData = [];
     let rulerScal = [];
     const rulers = [];
+    console.log(datatype);  
     switch (datatype) {
         case "数据网格化":
         case "重力数据求偏导":
@@ -3007,6 +3142,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
             }
             break;
     }
+    console.log(ScalPoint);
     // lookupTable.setHueRange(-1, 1);
     // lookupTable.setSaturationRange(0, 0);
     // lookupTable.setSaturationRange(1, 1);

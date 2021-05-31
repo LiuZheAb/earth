@@ -2677,7 +2677,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
                 arraysOut.forEach(x => x.modified());
             }
         })
-    }else if(appName ==="ERPS USTC"){
+    } else if (appName === "ERPS USTC" || appName === "地震背景噪声成像(ERPS USTC)") {
         simpleFilter.setFormula({
             getArrays: (inputDataSets) => ({
                 input: [
@@ -2744,7 +2744,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
     planeSource.set({ "Point2": [cen[0], -yLength + cen[1], cen[2]] });
     // let cen = planeSource.getCenter();
     actor.setMapper(mapper);
-    
+
     let pointDatas = [...data];
     pointDatas.sort(function (a, b) {
         return a - b;

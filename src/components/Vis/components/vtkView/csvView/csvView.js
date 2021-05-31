@@ -75,6 +75,8 @@ export default class csvView extends Component {
     //渲染方法
     result = () => {
         let { data, state, appName } = this.props;
+        let data_c = JSON.parse(JSON.stringify(data));
+        console.log(this.props);
 
         // let name = fileName;
         // let file = fileName.split('.')[0];
@@ -84,19 +86,19 @@ export default class csvView extends Component {
             vtkBox.innerHTML = null;
         }
         if (appName === "最小二乘逆时偏移 (LSRTM)") {
-            for (let i = 0; i < data.length; i++) {
-                xAxis.push(...data[i].splice(0, 1))
-                yAxis.push(...data[i].splice(0, 1))
+            for (let i = 0; i < data_c.length; i++) {
+                xAxis.push(...data_c[i].splice(0, 1))
+                yAxis.push(...data_c[i].splice(0, 1))
             }
         }
-        if (appName === "Super Resolution ITSMF") {
+        if (["Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)"].includes(appName)) {
             dimensional = 2;
-            for (let i = 0; i < data.length; i++) {
-                xAxis.push(...data[i].splice(0, 1))
-                yAxis.push(...data[i].splice(0, 1))
+            for (let i = 0; i < data_c.length; i++) {
+                xAxis.push(...data_c[i].splice(0, 1))
+                yAxis.push(...data_c[i].splice(0, 1))
             }
-            let yLength = data.length;
-            let xLength = data[0].length;
+            let yLength = data_c.length;
+            let xLength = data_c[0].length;
             // let zLength = xLength;
 
             let arr = data;
@@ -229,7 +231,6 @@ export default class csvView extends Component {
             let yLength = data.length;
             let xLength = data[0].length;
             // let zLength = xLength;
-
             let arr = data;
             let array = [];
             for (let i = 0; i < arr.length - 1; i++) {
@@ -546,7 +547,7 @@ export default class csvView extends Component {
 
     componentDidMount() {
         let { appName } = this.props;
-        if (appName === "Super Resolution ITSMF") {
+        if (appName === "Super Resolution ITSMF" || appName === "超分辨率反演" || appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
             this.props.dispatch(actions.setMoveStyle(actions.moveType.PAN));
             this.setState({
                 mode: "X Ray"
@@ -633,19 +634,18 @@ export default class csvView extends Component {
             }
         }
         if (model.renderWindow) {
-            console.log(mode, min, max);
-
             const lut1 = vtkColorTransferFunction.newInstance();
             const preset1 = vtkColorMaps.getPresetByName(mode);
-            //应用ColorMap
             lut1.applyColorMap(preset1);
             lut1.setMappingRange(min, max);
             lut1.updateRange();
             model.mapper.setLookupTable(lut1);
             let OpenGlRW = model.fullScreenRenderer.getOpenGLRenderWindow();
             gl(OpenGlRW);
-            activeScalar = [(unique[unique.length - 1]), (unique[unique.length - 1 - num]), (unique[num]), (unique[0])];
-            scales = [(unique.length * 100) / unique.length + "%", ((unique.length - num) * 100) / unique.length + "%", (num * 100) / unique.length + "%", 0 + "%"];
+            let r = max - min, p = String(r).length > 2 ? 0 : 2;
+            // activeScalar = [(unique[unique.length - 1]), (unique[unique.length - 1 - num]), (unique[num]), (unique[0])];
+            activeScalar = [Number(max.toFixed(p)), Number((r / 3 * 2 + min).toFixed(p)), Number((r / 3 + min).toFixed(p)), Number(min.toFixed(p))];
+            scales = ["100%", ((unique.length - num) * 100) / unique.length + "%", (num * 100) / unique.length + "%", "0%"];
             if (document.querySelector(".scalarMax")) document.querySelector(".scalarMax").innerHTML = max;
             if (document.querySelector(".scalarMin")) document.querySelector(".scalarMin").innerHTML = min;
             if (document.querySelector(".vtk-container1")) {
@@ -664,8 +664,10 @@ export default class csvView extends Component {
             if (dimensional === 2) {
                 console.log(model);
                 showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis, yAxis, 'text1'); //刻度标尺
+                // showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis, yAxis, 'text1', xMin, xMax, yMin, yMax, zMin, zMax); //刻度标尺
             } else {
                 showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, show); //刻度标尺
+                // showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, show, undefined, undefined, xMin, xMax, yMin, yMax, zMin, zMax); //刻度标尺
 
             }
         }

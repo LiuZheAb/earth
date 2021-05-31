@@ -33,7 +33,8 @@ export default class ModuleList extends React.Component {
         currentMenu2: null,
         pdfModalVisible: false,
         numPages: null,
-        pageNumber: 1
+        pageNumber: 1,
+        currentPdfMenu: null
     };
     componentDidMount() {
         let { data, loading, api } = this.props;
@@ -85,7 +86,7 @@ export default class ModuleList extends React.Component {
     showPdfModal = menuName => {
         this.setState({
             pdfModalVisible: true,
-            currentMenu: menuName,
+            currentPdfMenu: menuName,
             pageNumber: 1
         })
     }
@@ -133,7 +134,7 @@ export default class ModuleList extends React.Component {
     handlePdfCancel = e => {
         this.setState({
             pdfModalVisible: false,
-            currentMenu: null
+            currentPdfMenu: null
         });
     };
     // 点击三级菜单确认按钮
@@ -244,7 +245,7 @@ export default class ModuleList extends React.Component {
         return null;
     }
     render() {
-        const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2, pdfModalVisible, pageNumber, numPages } = this.state;
+        const { modules, subModules, loading, modalVisible, drawerVisible, currentMenu, currentPdfMenu, docTitle, docContent, secondModules, thirdModules, modalVisible2, currentMenu2, pdfModalVisible, pageNumber, numPages } = this.state;
         function type(index) {
             switch (index) {
                 case 0:
@@ -299,11 +300,11 @@ export default class ModuleList extends React.Component {
                                                                             <span onClick={this.showModal.bind(this, menuName, module)}>{menuName}</span>
                                                                         </>
                                                                         :
-                                                                        menuName.indexOf("参数库") === -1
+                                                                        menuName.indexOf("数据标准") === -1
                                                                             ?
                                                                             <>
                                                                                 <IconFont type="earthjinru1" />
-                                                                                <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
+                                                                                <Link to={menuName.indexOf("数据库") === -1 ? "/calculate" : "bdcenter"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                                             </>
                                                                             :
                                                                             <>
@@ -327,16 +328,16 @@ export default class ModuleList extends React.Component {
                 }
                 <Modal
                     className="pdf-modal"
-                    title={currentMenu}
+                    title={currentPdfMenu}
                     visible={pdfModalVisible}
                     onOk={this.handlePdfOk}
                     onCancel={this.handlePdfCancel}
                     footer={null}
                 >
-                    {currentMenu ?
+                    {currentPdfMenu ?
                         <>
                             <Document
-                                file={currentMenu.indexOf("地质参数库") === -1 ? "./static/pdf/Geophysics.pdf" : "./static/pdf/Geology.pdf"}
+                                file={currentPdfMenu.indexOf("地质数据标准") === -1 ? "./static/pdf/Geophysics.pdf" : "./static/pdf/Geology.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
                                 loading="正在努力加载中"
                                 externalLinkTarget="_blank"
@@ -356,7 +357,7 @@ export default class ModuleList extends React.Component {
                     onCancel={this.handleCancel}
                     footer={null}
                 >
-                    {currentMenu ?
+                    {currentMenu &&
                         <ul>
                             {secondModules.map(({ menuName, url, hasSub, hasParam, idenMod, stepNum }, index) =>
                                 <li key={index} title={menuName}>
@@ -371,15 +372,21 @@ export default class ModuleList extends React.Component {
                                                 <span onClick={this.showSecondModal.bind(this, menuName)}>{menuName}</span>
                                             </>
                                             :
-                                            <>
-                                                <IconFont type="earthjinru1" />
-                                                <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
-                                            </>
+                                            menuName.indexOf("数据标准") === -1
+                                                ?
+                                                <>
+                                                    <IconFont type="earthjinru1" />
+                                                    <Link to={menuName.indexOf("数据库") === -1 ? "/calculate" : "bdcenter"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
+                                                </>
+                                                :
+                                                <>
+                                                    <IconFont type="earthbookresource" />
+                                                    <span onClick={this.showPdfModal.bind(this, menuName)}>{menuName}</span>
+                                                </>
                                     }
                                 </li>
                             )}
-                        </ul>
-                        : null}
+                        </ul>}
                 </Modal>
                 <Modal
                     className="module-modal"
@@ -390,7 +397,7 @@ export default class ModuleList extends React.Component {
                     footer={null}
                     style={{ top: 150, left: 50 }}
                 >
-                    {currentMenu2 ?
+                    {currentMenu2 &&
                         thirdModules.map(({ menuName, url, hasParam, idenMod, stepNum }, index) =>
                             <li key={index} title={menuName}>
                                 {url ?
@@ -405,8 +412,7 @@ export default class ModuleList extends React.Component {
                                     </>
                                 }
                             </li>
-                        )
-                        : null}
+                        )}
                 </Modal>
                 <Drawer
                     className="doc"

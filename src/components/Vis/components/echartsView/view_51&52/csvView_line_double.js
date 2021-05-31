@@ -60,13 +60,15 @@ export default class csvView_malti_line extends Component {
             },
             tooltip: {
                 show: true,
-                formatter: params => 'x: ' + params.data[0] + '<br>y: ' + params.data[1]
+                trigger: "axis",
+                formatter: params => 'x: ' + params[0].data[0] + '<br>y: ' + params[0].data[1]
             },
             series: data.length === 1 ?
                 [{
                     name: '实部',
                     symbolSize: 4,
                     data: dataSource[0],
+                    smooth: true,
                     type: 'line',
                     itemStyle: {
                         color: "#5c7bd9"
@@ -78,6 +80,7 @@ export default class csvView_malti_line extends Component {
                     name: '实部',
                     symbolSize: 4,
                     data: dataSource[0],
+                    smooth: true,
                     type: 'line',
                     itemStyle: {
                         color: "#5c7bd9"
@@ -87,6 +90,7 @@ export default class csvView_malti_line extends Component {
                     name: '虚部',
                     symbolSize: 4,
                     data: dataSource[1],
+                    smooth: true,
                     type: 'line',
                     itemStyle: {
                         color: "#ffdc60"

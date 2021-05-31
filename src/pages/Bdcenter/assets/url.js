@@ -1,6 +1,6 @@
 export let baseUrl = "http://192.168.0.101:8080";
 //hdfs上传文件地址
-export let hdfsUploadUrl = baseUrl + "/Bigdata/service/hdfs/upload_local";
+export let hdfsUploadUrl = baseUrl + "/Bigdata/service/ipig/addDataEntity";
 export let hbaseUploadUrl = baseUrl + "/Bigdata/service/ipig/upload_csv";
 export let importUrl = baseUrl + "/Bigdata/service/ipig/import";
 export let selectUrl = baseUrl + "/Bigdata/service/ipig/select";

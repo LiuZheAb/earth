@@ -17,19 +17,22 @@ import vtkPlaneSource from 'vtk.js/Sources/Filters/Sources/PlaneSource';
 import vtkAppendPolyData from 'vtk.js/Sources/Filters/General/AppendPolyData';
 import vtkPointPicker from 'vtk.js/Sources/Rendering/Core/PointPicker';
 // import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
-import { Slider, 
+import {
+    Slider,
     // InputNumber, 
     Input, Col, Row, Select,
     //  Checkbox 
-    } from "antd";
+} from "antd";
 // import { FieldAssociations } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 // import vtkOpenGLHardwareSelector from 'vtk.js/Sources/Rendering/OpenGL/HardwareSelector';
 import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
 import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
-import { Rendering, Screen, reassignManipulators, 
+import {
+    Rendering, Screen, reassignManipulators,
     // changeManipulators, 
-    showBoundRuler, scalarBar, gl } from "../common/index"
+    showBoundRuler, scalarBar, gl
+} from "../common/index"
 // import { Rendering, Screen, gl, scalarBar, Axis, reassignManipulators, changeManipulators, showBounds, showVector } from "../common/index";
 
 const InputGroup = Input.Group;
@@ -116,7 +119,7 @@ export default class csvView extends Component {
 
     //渲染方法
     result = () => {
-        let { data, 
+        let { data,
             // state 
         } = this.props;
         let { model } = this.state;
@@ -130,13 +133,12 @@ export default class csvView extends Component {
         let zLength = yLength;
 
         let arr = data;
-        console.log(data)
-        let 
-        // array = [],
-         xAxis = [], yAxis = [], zAxis = [], xAxis1 = [], yAxis1 = [], zAxis1 = [], arrs = [], _this = this;
-        let 
-        // pointData = [], 
-        pointData1 = [], pointData2 = [], pointData3 = [], pointData4 = [], pointData5 = [], pointData6 = [];
+        let
+            // array = [],
+            xAxis = [], yAxis = [], zAxis = [], xAxis1 = [], yAxis1 = [], zAxis1 = [], arrs = [], _this = this;
+        let
+            // pointData = [], 
+            pointData1 = [], pointData2 = [], pointData3 = [], pointData4 = [], pointData5 = [], pointData6 = [];
         new Promise(
             function (resolve, reject) {
                 for (let i = 0; i < arr.length; i++) {
@@ -145,6 +147,26 @@ export default class csvView extends Component {
                     yAxis.push(arr[i][1]);
                     zAxis.push(arr[i][0]);
                 }
+                let xSort = Array.from(new Set(JSON.parse(JSON.stringify(xAxis))));
+                let ySort = Array.from(new Set(JSON.parse(JSON.stringify(yAxis))));
+                let zSort = Array.from(new Set(JSON.parse(JSON.stringify(zAxis))));
+                xSort.sort((a, b) => {
+                    return (a - b)
+                });
+                ySort.sort((a, b) => {
+                    return (a - b)
+                });
+                zSort.sort((a, b) => {
+                    return (a - b)
+                });
+                _this.setState({
+                    xMin: xSort[0],
+                    xMax: xSort[xSort.length - 1],
+                    yMin: ySort[0],
+                    yMax: ySort[ySort.length - 1],
+                    zMin: zSort[0],
+                    zMax: zSort[zSort.length - 1],
+                })
                 yLength = Array.from(new Set(yAxis)).length;
                 yAxis1 = Array.from(new Set(yAxis))
                 xLength = Array.from(new Set(xAxis)).length;
@@ -244,7 +266,6 @@ export default class csvView extends Component {
                         },
                     }],
                 }
-
                 const polydata2 = planeSource2.getOutputData().getState();
                 polydata2.pointData = {
                     vtkClass: 'vtkDataSetAttributes',
@@ -366,11 +387,14 @@ export default class csvView extends Component {
                     max: max,
                     unique: unique,
                     model,
+                    xAxis1,
+                    yAxis1,
+                    zAxis1
                     // OpenGlRW: OpenGlRW,
                 })
             },  // 成功
             (err) => { console.log(err) } // 失败
-        ).catch( (err) => { console.log(err) } )
+        ).catch((err) => { console.log(err) })
         // Array.from(new Set(array))
     };
 
@@ -401,14 +425,14 @@ export default class csvView extends Component {
 
     render() {
         let {
-            boxBgColor, model, activeScalar, mode, unique, inputValue, min, max,
+            boxBgColor, model, activeScalar, mode, unique, inputValue, min, max, xAxis1, yAxis1, xMin, xMax, yMin, yMax, zMin, zMax
         } = this.state;
-        let { show, state,data } = this.props;
-        let { 
+        let { show, state, data } = this.props;
+        let {
             // moveStyle,
-             screen, ruler, attribute, ranging, theme, scalar, fontSize,
+            screen, ruler, attribute, ranging, theme, scalar, fontSize,
             //   modelStyle
-             } = state;
+        } = state;
 
         let scales = [];
         let fontColor, bgColor;
@@ -519,7 +543,7 @@ export default class csvView extends Component {
             model.fullScreenRenderer.setBackground(bgColor);
             let dimensional = 3;
             if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
-            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, show); //刻度标尺
+            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis1, yAxis1, undefined, xMin, xMax, yMin, yMax, zMin, zMax); //刻度标尺
         }
 
         return (
@@ -613,7 +637,7 @@ export default class csvView extends Component {
                 <div className="vtk-container" ref={this.container} style={{ "minHeight": "100px", "minWidth": "100px", "width": "100%", "height": show }} onMouseDown={(e) => this.onMouseMove}></div>
                 <div style={{ width: "8%", height: "20%", position: "absolute", right: "5%", bottom: "5%", opacity: scalar }}>
                     <div ref={this.container1} className="vtk-container1" style={{ width: "15%", height: "calc(100% - 18px)", position: "relative", opacity: scalar, overflow: "hidden", margin: "10px 0 10px", float: "left", borderRight: "0.5px solid " + fontColor }}></div>
-                    <div style={{ width: "8%",height: "calc(100% - 19px)", marginTop: "10px", float: "left" }}>
+                    <div style={{ width: "8%", height: "calc(100% - 19px)", marginTop: "10px", float: "left" }}>
                         <div style={{ height: "100%", position: "relative", listStyle: "none" }}>
                             {scales.map((item, index) =>
                                 <div key={index} style={{ position: "absolute", bottom: item, height: 0 }}>

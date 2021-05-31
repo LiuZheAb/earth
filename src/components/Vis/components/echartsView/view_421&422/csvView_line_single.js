@@ -15,7 +15,6 @@ export default class csvView_1d extends Component {
     componentDidMount() {
         this.chart = echarts.init(document.getElementById('chart'));
         let { data } = this.props;
-        console.log(data);
         let yDataMap = {}, xData = [];
         data = data[0].map((col, i) => data.map(row => row[i]));
         for (let i = 0, len = data.length; i < len; i++) {
@@ -37,6 +36,7 @@ export default class csvView_1d extends Component {
         let option = {
             tooltip: {
                 trigger: 'axis',
+                formatter: params => 'x: ' + params[0].axisValue + '<br>y: ' + params[0].data
             },
             grid: {
                 left: '3%',
@@ -47,7 +47,6 @@ export default class csvView_1d extends Component {
             xAxis: {
                 type: 'category',
                 name: "x",
-                boundaryGap: false,
                 data: xData,
             },
             yAxis: {

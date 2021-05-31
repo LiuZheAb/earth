@@ -134,6 +134,9 @@ class index extends Component {
         username: getCookie("userName") || "",
         resData: [],
         hasGotList: false,
+        pollingErrTimes: 0,
+        hasGotInfo: false,
+        pollingInfoErrTimes: 0,
         dataSource: undefined,
         resDrawerVisible: false,
         resFileListData: [],
@@ -148,7 +151,6 @@ class index extends Component {
         calcResData: [],
         dataType: "",
         dataLoading: false,
-        pollingErrTimes: 0,
         currentItemInfo: {},
         visDrawerVisible: false,
         calcDrawerVisible: false
@@ -272,7 +274,10 @@ class index extends Component {
                 }
             }).catch(error => {
                 pollingErrTimes += 1;
-                this.setState({ pollingErrTimes })
+                this.setState({
+                    pollingErrTimes,
+                    hasGotList: true
+                });
                 if (pollingErrTimes > 3) {
                     message.error("服务器无响应");
                     clearInterval(this.checkTimer);
@@ -280,133 +285,148 @@ class index extends Component {
             });
         }
     }
-    handleView = info => {
-        let { api } = this.state;
-        let { dockerID, dockerIP, vport, status, modelIndex, idenMod, nowStep, stepNum, hasUrl, appName, funcName, moduleName } = info;
-        this.setState({ currentItemInfo: info });
-        let getLogInfo = () => {
-            this.setState({
-                logModalVisible: true,
-                logInfoArray: []
-            });
-            let times = 0;
-            this.logTimer = setInterval(() => {
-                axios({
-                    method: 'post',
-                    url: api + 'logInfo',
-                    data: {
-                        dockerID,
-                        dockerIP,
-                    },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(res => {
-                    let data = res.data.data.split("Calculation begins...");
-                    // eslint-disable-next-line
-                    data = data.pop().replace(/\u0008/g, "").split("\r\n");
-                    for (let i = 0; i < data.length; i++) {
-                        let p = data[i];
-                        if (p.toLowerCase().replace(/ +/g, "").indexOf("matlab") > -1 || data[i].indexOf("r:/status") > -1 || data[i].indexOf(".go:") > -1) {
-                            data.splice(i, 1);
-                            i -= 1;
-                        }
-                    }
-                    this.setState({ logInfoArray: data });
-                }).catch(() => {
-                    times += 1;
-                    if (times > 4) {
-                        message.error("服务器无响应");
-                        clearInterval(this.logTimer);
-                    }
-                });
-            }, 1000)
-        }
-        let getFileList = () => {
-            this.setState({
-                resDrawerVisible: true,
-                fileListLoading: true,
-                uri: "http://" + dockerIP + ":" + vport,
-                resFileListData: []
-            });
-            axios.get("http://" + dockerIP + ":" + vport + "/fileList", {
-                params: {
-                    index: modelIndex,
-                    idenMod,
-                    tData: 0
+    getLogInfo = () => {
+        this.setState({
+            logModalVisible: true,
+            logInfoArray: [],
+            hasGotInfo: true
+        });
+        this.logTimer = setInterval(this.pollingInfo, 1000)
+    }
+    pollingInfo = () => {
+        let { api, hasGotInfo, pollingInfoErrTimes } = this.state;
+        let { dockerID, dockerIP } = this.state.currentItemInfo;
+        if (hasGotInfo) {
+            this.setState({ hasGotInfo: false });
+            axios({
+                method: 'post',
+                url: api + 'logInfo',
+                data: {
+                    dockerID,
+                    dockerIP,
+                },
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             }).then(res => {
-                let { data } = res.data;
-                let resFileList = [];
-                for (let key in data) {
-                    resFileList.push({
-                        name: key,
-                        suffix: key.split(".").pop(),
-                        absolutePath: data[key][0],
-                        staticPath: data[key][1],
-                        size: data[key][2] ? +data[key][2] : "",
-                    });
+                this.setState({ hasGotInfo: true });
+                let data = res.data.data.split("Calculation begins...");
+                // eslint-disable-next-line
+                data = data.pop().replace(/[\u0000-\u0008]|[\u0010-\u001f]/g, "");
+                if (data.indexOf("\r\n") > -1) {
+                    data = data.split("\r\n");
+                } else if (data.indexOf("\n") > -1) {
+                    data = data.split("\n");
                 }
-                Object.keys(data).map((item, index) => resFileList[index].key = index);
-                this.setState({
-                    fileListLoading: false,
-                    resFileListData: resFileList,
-                })
-            }).catch(err => {
-                message.error("获取结果失败");
-                this.setState({
-                    fileListLoading: false,
-                    resFileListData: [],
-                })
-            })
-        }
-        switch (status) {
-            case "0":
-                if (idenMod === 731) {
-                    this.setState({ calcDrawerVisible: true });
-                    this.getLogInfo = getLogInfo;
-                    this.getFileList = getFileList;
-                } else {
-                    getLogInfo();
-                }
-                break;
-            case "1":
-                if (hasUrl === "0") {
-                    if (nowStep < stepNum) {
-                        message.info("当前步骤无可查询结果，请点击下一步运行")
-                    } else {
-                        getFileList();
+                for (let i = 0; i < data.length; i++) {
+                    let p = data[i];
+                    if (p.toLowerCase().replace(/ +/g, "").indexOf("matlab") > -1 || data[i].indexOf("r:/status") > -1 || data[i].indexOf(".go:") > -1) {
+                        data.splice(i, 1);
+                        i -= 1;
                     }
-                } else if (hasUrl === "1") {
-                    this.setState({
-                        visDrawerVisible: true
-                    });
                 }
-                break;
-            case "2":
-                message.error("运行错误");
-                break;
-            case "3":
-                sessionStorage.setItem("appName", appName);
-                sessionStorage.setItem("funcName", funcName);
-                sessionStorage.setItem("moduleName", moduleName);
-                sessionStorage.setItem("dockerType", 5);
-                sessionStorage.setItem("idenMod", idenMod / Math.pow(10, nowStep - 1));
-                sessionStorage.setItem("nowStep", nowStep + 1);
-                sessionStorage.setItem("stepNum", stepNum);
-                sessionStorage.setItem("dockerID", dockerID);
-                sessionStorage.setItem("dockerIP", dockerIP);
-                sessionStorage.setItem("baseUrl", "http://" + dockerIP + ":" + vport);
-                sessionStorage.setItem("vport", vport);
-                sessionStorage.setItem("modelIndex", modelIndex);
-                this.props.history.push("/calculate");
-                break;
-            case "fail":
-                message.error("异常");
-                break;
-            default:
-                break;
+                this.setState({ logInfoArray: data });
+            }).catch(error => {
+                pollingInfoErrTimes += 1;
+                this.setState({
+                    pollingInfoErrTimes,
+                    hasGotInfo: true
+                });
+                if (pollingInfoErrTimes > 3) {
+                    message.error("服务器无响应");
+                    clearInterval(this.logTimer);
+                }
+            });
         }
+    }
+    getFileList = () => {
+        let { dockerIP, vport, modelIndex, idenMod } = this.state.currentItemInfo;
+        this.setState({
+            resDrawerVisible: true,
+            fileListLoading: true,
+            uri: "http://" + dockerIP + ":" + vport,
+            resFileListData: []
+        });
+        axios.get("http://" + dockerIP + ":" + vport + "/fileList", {
+            params: {
+                index: modelIndex,
+                idenMod,
+                tData: 0
+            }
+        }).then(res => {
+            let { data } = res.data;
+            let resFileList = [];
+            for (let key in data) {
+                resFileList.push({
+                    name: key,
+                    suffix: key.split(".").pop(),
+                    absolutePath: data[key][0],
+                    staticPath: data[key][1],
+                    size: data[key][2] ? +data[key][2] : "",
+                });
+            }
+            Object.keys(data).map((item, index) => resFileList[index].key = index);
+            this.setState({
+                fileListLoading: false,
+                resFileListData: resFileList,
+            })
+        }).catch(err => {
+            message.error("获取结果失败");
+            this.setState({
+                fileListLoading: false,
+                resFileListData: [],
+            })
+        })
+    }
+    handleView = info => {
+        let { dockerID, dockerIP, vport, status, modelIndex, idenMod, nowStep, stepNum, hasUrl, appName, funcName, moduleName } = info;
+        this.setState({ currentItemInfo: info }, () => {
+            switch (status) {
+                case "0":
+                    if (idenMod === 731) {
+                        this.setState({ calcDrawerVisible: true });
+                    } else {
+                        this.getLogInfo();
+                    }
+                    break;
+                case "1":
+                    if (hasUrl === "0") {
+                        if (nowStep < stepNum) {
+                            message.info("当前步骤无可查询结果，请点击下一步运行")
+                        } else {
+                            this.getFileList();
+                        }
+                    } else if (hasUrl === "1") {
+                        this.setState({
+                            visDrawerVisible: true
+                        });
+                    }
+                    break;
+                case "2":
+                    message.error("运行错误");
+                    break;
+                case "3":
+                    sessionStorage.setItem("appName", appName);
+                    sessionStorage.setItem("funcName", funcName);
+                    sessionStorage.setItem("moduleName", moduleName);
+                    sessionStorage.setItem("dockerType", 5);
+                    sessionStorage.setItem("idenMod", idenMod / Math.pow(10, nowStep - 1));
+                    sessionStorage.setItem("nowStep", nowStep + 1);
+                    sessionStorage.setItem("stepNum", stepNum);
+                    sessionStorage.setItem("dockerID", dockerID);
+                    sessionStorage.setItem("dockerIP", dockerIP);
+                    sessionStorage.setItem("baseUrl", "http://" + dockerIP + ":" + vport);
+                    sessionStorage.setItem("vport", vport);
+                    sessionStorage.setItem("modelIndex", modelIndex);
+                    this.props.history.push("/calculate");
+                    break;
+                case "fail":
+                    message.error("异常");
+                    break;
+                default:
+                    break;
+            }
+        });
     }
     openNewWindow = () => {
         let { dockerIP, vport } = this.state.currentItemInfo;
@@ -430,7 +450,7 @@ class index extends Component {
         sessionStorage.setItem("dockerIP", dockerIP);
         sessionStorage.setItem("vport", vport);
         sessionStorage.setItem("modelIndex", modelIndex);
-        if (nowStep === 2 && appName === "ERPS USTC") {
+        if (nowStep === 2 && (appName === "ERPS USTC" || appName === "地震背景噪声成像(ERPS USTC)")) {
             this.props.history.push("/operateData");
         } else {
             this.props.history.push("/calculate");
@@ -473,10 +493,18 @@ class index extends Component {
     handleOpenVisModal = info => {
         let { absolutePath, name } = info;
         let { currentItemInfo, resFileListData, dataSource } = this.state;
-        let { dockerIP, vport, idenMod } = currentItemInfo;
+        let { dockerIP, vport, idenMod, funcName } = currentItemInfo;
         switch (idenMod) {
             case 421:
                 clearInterval(this.checkTimer);
+                let calcResData = {}, sameName = false;
+                for (let i = 0; i < resFileListData.length; i++) {
+                    if (name.indexOf("25D_s") > -1 && name.replace("25D", "3D").replace(/_s[0-9]/, "_s1") === resFileListData[i].name) {
+                        sameName = true;
+                    } else if (name.indexOf("3D_s") > -1 && name.replace("3D", "25D").replace(/_s[0-9]/, "_s1") === resFileListData[i].name) {
+                        sameName = true;
+                    }
+                }
                 this.setState({ dataLoading: true });
                 if (name.indexOf("xoy") > -1 || name.indexOf("xoz") > -1) {
                     axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
@@ -485,10 +513,13 @@ class index extends Component {
                         let { data } = res.data;
                         if (Array.isArray(data) && data.length > 0) {
                             this.setState({
-                                visVisible: true,
-                                dataLoading: false,
                                 calcResData: data,
-                                dataType: "2d"
+                                dataType: "2d_1"
+                            }, () => {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false,
+                                })
                             })
                         } else {
                             this.checkTimer = setInterval(this.pollingData, 5000);
@@ -503,7 +534,112 @@ class index extends Component {
                             dataLoading: false
                         })
                     });
-                } else {
+                } else if (name.indexOf("_s") > -1 && sameName) {
+                    let num = 0;
+                    for (let i = 0; i < resFileListData.length; i++) {
+                        if ((/25D_s1_[1-9]/).test(resFileListData[i].name)) {
+                            num++;
+                        }
+                    }
+                    let path = absolutePath.replace("3D", "25D").replace(/_s[0-9]/, "_s1");
+                    let time1 = 0, time2 = 0, yDataMap_25D = {}, xData = [], nameObj = {}, fileData = {};
+                    for (let i = 1; i <= num; i++) {
+                        nameObj["file" + i] = path.replace("s1", "s" + i);
+                        fileData["file" + i] = {};
+                    }
+                    for (let file in nameObj) {
+                        axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                            params: { path: nameObj[file] }
+                            // eslint-disable-next-line
+                        }).then(res => {
+                            let { data } = res.data;
+                            if (Array.isArray(data) && data.length > 0) {
+                                data = data[0].map((col, i) => data.map(row => row[i]));
+                                for (let i = 0, len = data.length; i < len; i++) {
+                                    let key = data[i][0].replace(/%| /g, "");
+                                    data[i].shift();
+                                    if (!["x", "y", "z"].includes(key)) {
+                                        fileData[file][key] = data[i].map(item => Number(item));
+                                    }
+                                }
+                                time1 += 1;
+                                if (time1 === num) {
+                                    let dataOptions = Object.keys(fileData[file]);
+                                    for (let i = 0; i < dataOptions.length; i++) {
+                                        for (let j = 1; j < num + 1; j++) {
+                                            yDataMap_25D[dataOptions[i]] = yDataMap_25D[dataOptions[i]] ? yDataMap_25D[dataOptions[i]].concat(fileData["file" + j][dataOptions[i]]) : [...fileData["file" + j][dataOptions[i]]];
+                                        }
+                                    }
+                                    calcResData.dataOptions = dataOptions;
+                                    calcResData.yDataMap_25D = yDataMap_25D;
+                                }
+                            } else {
+                                this.checkTimer = setInterval(this.pollingData, 5000);
+                                message.warn("无数据");
+                                time1 += 1;
+                                this.setState({
+                                    dataLoading: false
+                                })
+                            }
+                            if (time1 === num && time2 === 1) {
+                                this.setState({
+                                    calcResData,
+                                    dataType: "line_2"
+                                }, () => {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false,
+                                    })
+                                })
+                            }
+                        }).catch(err => {
+                            this.checkTimer = setInterval(this.pollingData, 5000);
+                            this.setState({
+                                dataLoading: false
+                            })
+                        });
+                    }
+
+                    let yDataMap_3D = [];
+                    axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                        params: { path: absolutePath.replace("25D", "3D") }
+                    }).then(res => {
+                        let { data } = res.data;
+                        if (Array.isArray(data) && data.length > 0) {
+                            data = data[0].map((col, i) => data.map(row => row[i]));
+                            for (let i = 0, len = data.length; i < len; i++) {
+                                let key = data[i][0].replace(/%| /g, "");
+                                data[i].shift();
+                                if (key === "x") {
+                                    xData = data[i].map(item => Number(item));
+                                }
+                                if (!["x", "y", "z"].includes(key)) {
+                                    yDataMap_3D[key] = data[i].map(item => Number(item));
+                                }
+                            }
+                            calcResData.yDataMap_3D = yDataMap_3D;
+                            calcResData.xData = xData;
+                            time2 += 1;
+                        } else {
+                            message.warn("无数据");
+                            this.setState({
+                                dataLoading: false
+                            })
+                            time2 += 1;
+                        }
+                        if (time1 === num && time2 === 1) {
+                            this.setState({
+                                calcResData,
+                                dataType: "line_2"
+                            }, () => {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false,
+                                })
+                            })
+                        }
+                    })
+                } else if ((name.indexOf("_f") > -1 && name.indexOf("_o") > -1 && (name.indexOf("25D") > -1 || name.indexOf("3D") > -1)) || (name.indexOf("_s") > -1 && !sameName && (name.indexOf("25D") > -1 || name.indexOf("3D") > -1))) {
                     let path_25D = "", path_3D = "";
                     if (name.indexOf("25D") > -1) {
                         path_25D = absolutePath;
@@ -539,10 +675,13 @@ class index extends Component {
                                 }
                                 if (resTime === 2) {
                                     this.setState({
-                                        visVisible: true,
-                                        dataLoading: false,
                                         calcResData,
-                                        dataType: "line"
+                                        dataType: "line_1"
+                                    }, () => {
+                                        this.setState({
+                                            visVisible: true,
+                                            dataLoading: false,
+                                        })
                                     })
                                 }
                             }).catch(err => {
@@ -555,16 +694,47 @@ class index extends Component {
                             resTime += 1;
                             if (resTime === 2) {
                                 this.setState({
-                                    visVisible: true,
-                                    dataLoading: false,
                                     calcResData,
-                                    dataType: "line"
+                                    dataType: "line_1"
+                                }, () => {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false,
+                                    })
                                 })
                             }
                         }
                     }
                     getData(path_25D, "data_25D");
                     getData(path_3D, "data_3D");
+                } else {
+                    axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                        params: { path: absolutePath }
+                    }).then(res => {
+                        let { data } = res.data;
+                        if (Array.isArray(data) && data.length > 0) {
+                            this.setState({
+                                calcResData: data,
+                                dataType: data.length > 1000 ? "2d_1" : "single"
+                            }, () => {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false
+                                })
+                            });
+                        } else {
+                            this.checkTimer = setInterval(this.pollingData, 5000);
+                            message.warn("无数据");
+                            this.setState({
+                                dataLoading: false
+                            })
+                        }
+                    }).catch(err => {
+                        this.checkTimer = setInterval(this.pollingData, 5000);
+                        this.setState({
+                            dataLoading: false
+                        })
+                    });
                 }
                 break;
             case 422:
@@ -577,7 +747,7 @@ class index extends Component {
                     if (Array.isArray(data) && data.length > 0) {
                         this.setState({
                             calcResData: data,
-                            dataType: "single"
+                            dataType: "2d_2"
                         }, () => {
                             this.setState({
                                 visVisible: true,
@@ -616,7 +786,7 @@ class index extends Component {
                             setTimeout(() => {
                                 let tempwindow = window.open(window.location.origin + '/#/loading');
                                 setTimeout(() => {
-                                    if (tempwindow) tempwindow.location = "http://" + hostip + ":" + hostport.split("|")[0]; // 后更改页面地址
+                                    if (tempwindow) tempwindow.location = "http://" + hostip + ":" + hostport.split("|")[0]; // 2s后更改页面地址
                                 }, 2000)
                             }, 1)
                         } else {
@@ -639,8 +809,45 @@ class index extends Component {
                     }).then(res => {
                         let { data } = res.data;
                         if (Array.isArray(data) && data.length > 0) {
+                            if (idenMod === 325) {
+                                if ((funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) || name.indexOf("residuals") > -1) {
+                                    data = data.map(item => {
+                                        item = item[0].trim().replace(/\s+/g, " ").split(" ");
+                                        return item
+                                    });
+                                }
+                            }
+                            if ([321, 322, 323, 324].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) {
+                                data.map(item => item.splice(1, 1));
+                            }
+                            if ([322].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_anomaly") > -1) {
+                                data.map(item => item.splice(1, 1));
+                            }
+                            if (idenMod === 7214) {
+                                data = data.map(item => {
+                                    item = item[0].trim().replace(/\s+/g, " ").split(" ");
+                                    return item
+                                });
+                            }
                             if (idenMod !== 51) {
                                 data = data.map(item => item.map(item2 => Number(item2)));
+                            }
+                            if (idenMod === 2131 || idenMod === 7213) {
+                                let new_data = data[0].map((col, i) => data.map(row => row[i]));
+                                let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
+                                let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
+                                if (xData.length === 1) {
+                                    data = data.map(item => {
+                                        item.splice(0, 1)
+                                        return item;
+                                    })
+                                }
+                                if (yData.length === 1) {
+                                    data = data.map(item => {
+                                        item.splice(1, 1)
+                                        return item;
+                                    })
+                                }
                             }
                             let dataType = "";
                             if (info.suffix === "csv") {
@@ -653,14 +860,17 @@ class index extends Component {
                                         dataType = "3d";
                                     } else if (data[0].length > 4) {
                                         dataType = "matrix";
-                                    } else {
-                                        dataType = undefined;
                                     }
+                                } else {
+                                    dataType = undefined;
                                 }
                             } else if (info.suffix === "msh") {
                                 dataType = "msh";
                             } else if (info.suffix === "txt") {
                                 dataType = "txt";
+                            }
+                            if ((idenMod === 2131 || idenMod === 7213) && funcName.indexOf("Real") > -1 && dataType === "2d") {
+                                dataType = "2d_heatmap";
                             }
                             this.setState({
                                 calcResData: data,
@@ -708,9 +918,10 @@ class index extends Component {
     }
     handleKill = info => {
         let { dockerID, dockerIP } = info;
-        let { api, dataSource, username } = this.state;
+        let { api, dataSource } = this.state;
         dataSource[info.key].loading = true;
         this.setState({ dataSource });
+        clearInterval(this.checkTimer);
         axios({
             method: 'post',
             url: api + 'killcontain',
@@ -721,20 +932,14 @@ class index extends Component {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(() => {
-            axios({
-                method: 'post',
-                url: api + 'dockercenter',
-                data: {
-                    username
-                },
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => {
-                this.updateDataSource(res.data.data);
-            }).catch(err => {
-            });
+        }).then((res) => {
+            if (res.data.status === 1) {
+                message.success("应用已停止");
+            } else if (res.data.status === 0) {
+                message.error("应用停止失败");
+            }
+            this.getDockerList();
+            this.checkTimer = setInterval(this.pollingData, 5000);
         }).catch(() => {
             message.error("服务器无响应");
         });
@@ -761,7 +966,7 @@ class index extends Component {
                         title={() => <span style={{ fontWeight: "bold" }}>控制台</span>}
                         dataSource={dataSource || []}
                         columns={createColumns(this)}
-                        loading={!Array.isArray(dataSource)}
+                        loading={{ size: "large", tip: "数据加载中...", spinning: !Array.isArray(dataSource) }}
                         pagination={{
                             showQuickJumper: Array.isArray(dataSource) && dataSource.length > 50 && true,
                             showLessItems: true,
@@ -773,7 +978,7 @@ class index extends Component {
                     />
                 </ConfigProvider>
                 {currentItemInfo && currentItemInfo.idenMod === 7321 &&
-                    <Drawer title={currentItemInfo.appName} placement="left" visible={visDrawerVisible} onClose={() => { this.setState({ visDrawerVisible: false }) }} width={550}>
+                    <Drawer style={{ zIndex: 100 }} title={currentItemInfo.appName} placement="left" visible={visDrawerVisible} onClose={() => { this.setState({ visDrawerVisible: false }) }} width={550}>
                         <div style={{ paddingTop: 35, display: "flex", justifyContent: "space-around" }}>
                             <Upload
                                 name="uploadFile"
@@ -794,7 +999,7 @@ class index extends Component {
                     </Drawer>
                 }
                 {currentItemInfo && currentItemInfo.idenMod === 731 &&
-                    <Drawer title={currentItemInfo.appName} placement="left" visible={calcDrawerVisible} onClose={() => { this.setState({ calcDrawerVisible: false }) }} width={550}>
+                    <Drawer style={{ zIndex: 100 }} title={currentItemInfo.appName} placement="left" visible={calcDrawerVisible} onClose={() => { this.setState({ calcDrawerVisible: false }) }} width={550}>
                         <div style={{ paddingTop: 35, display: "flex", justifyContent: "space-around" }}>
                             <Button type="primary" onClick={this.getLogInfo}>查看运行日志</Button>
                             <Button type="primary" onClick={this.getFileList}>查看计算输出</Button>
@@ -834,7 +1039,14 @@ class index extends Component {
                     </Modal>
                 </Drawer >
                 <Modal className="log-modal" visible={logModalVisible} onCancel={this.handleCancleLogModal} footer={null}>
-                    {logInfoArray.map((item, index) => <p key={index} style={{ marginBottom: 5 }}>{item}</p>)}
+                    <div style={{ textAlign: "center" }}>
+                        <Spin spinning={Array.isArray(logInfoArray) && logInfoArray.length === 0} tip={"日志获取中..."} size="large"></Spin>
+                    </div>
+                    {Array.isArray(logInfoArray) ?
+                        logInfoArray.map((item, index) => <p key={index} style={{ marginBottom: 5 }}>{item}</p>)
+                        :
+                        <p style={{ marginBottom: 5 }}>{logInfoArray}</p>
+                    }
                 </Modal>
             </div >
         )

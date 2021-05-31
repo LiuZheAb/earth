@@ -1,3 +1,9 @@
+#bdcenter .site-layout-background {
+  padding: 20px;
+  margin: 0;
+  min-height: 280px;
+}
+
 #bdcenter .ant-upload-drag-icon span {
   visibility: hidden;
 }
@@ -45,24 +51,6 @@
   overflow: hidden;
 }
 
-#bdcenter .ant-table {
-  max-height: 500px !important;
-  overflow-y: scroll;
-}
-
-#bdcenter .ant-empty-normal {
-  margin: 800px 0 !important;
-}
-
-#bdcenter .ant-table-content {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-#bdcenter .ant-table-content table {
-  display: inline-block;
-}
-
 #bdcenter p img {
   max-width: 950px;
   height: auto;
@@ -71,4 +59,51 @@
 #bdcenter .ant-input {
   min-width: 100px;
   min-height: 20px
+}
+
+#bdcenter .selectKey .ant-form-item-label, #bdcenter .selectKey .ant-form-item-control {
+  line-height: 32px;
+}
+
+#bdcenter .selectKey .ant-form-item {
+  width: 100%;
+}
+
+#bdcenter .selectKey .ant-form-item-label {
+  width: 120px;
+  text-align: right;
+}
+
+#bdcenter .selectKey .ant-form-item-control-wrapper {
+  width: calc(100% - 120px);
+}
+
+#bdcenter .ant-table .ellipsis-column {
+  max-width: 150px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
+}
+
+#bdcenter .ant-table .ellipsis-column2 {
+  max-width: 150px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
+}
+
+#bdcenter .ant-table .ellipsis-column3 {
+  max-width: 300px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
 }

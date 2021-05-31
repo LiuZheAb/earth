@@ -37,7 +37,6 @@ export default class csvView_matrix extends Component {
     }
     componentDidMount() {
         let { data } = this.props;
-        console.log(data);
         let yData = [], xData = [], dataMap = {};
         data = data[0].map((col, i) => data.map(row => row[i]));
         for (let i = 0, len = data.length; i < len; i++) {
