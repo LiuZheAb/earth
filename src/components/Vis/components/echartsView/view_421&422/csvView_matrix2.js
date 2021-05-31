@@ -36,13 +36,6 @@ export default class csvView_matrix extends Component {
         }
     }
     componentDidMount() {
-        // axios.get("./static/data/temp/Sigma_INV.csv").then(res => {
-        // let data = res.data.split("\r\n").map(item => item.split(","));
-        // for (let i = 0; i < data.length; i++) {
-        //     if (!data[i][0]) {
-        //         data.splice(i, 1)
-        //     }
-        // }
         let { data } = this.props;
         let yData = [], xData = [], dataMap = [];
         data = data[0].map((col, i) => data.map(row => row[i]));
@@ -140,7 +133,6 @@ export default class csvView_matrix extends Component {
             dataSource,
             legendMap: legendDataSource,
         });
-        // })
     }
     render() {
         let { legendMap, xAxisData, yAxisData } = this.state;
