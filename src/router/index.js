@@ -23,7 +23,7 @@ export default class EarthRouter extends React.Component {
         return (
             <Router>
                 <Switch>
-                    <Route path={["/home", "/console", "/console/:p", "/newapp", "/personal"]}>
+                    <Route path={["/home", "/console", "/console/:p", "/newapp", "/personal", "/demos"]}>
                         <Homepage />
                     </Route>
                     <Route exact path="/calculate">

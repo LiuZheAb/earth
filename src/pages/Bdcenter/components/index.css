@@ -61,6 +61,14 @@
   min-height: 20px
 }
 
+#bdcenter .ant-calendar-picker {
+  width: 100%;
+}
+
+#bdcenter .ant-calendar {
+  top: 3px;
+}
+
 #bdcenter .selectKey .ant-form-item-label, #bdcenter .selectKey .ant-form-item-control {
   line-height: 32px;
 }
@@ -106,4 +114,10 @@
   overflow: hidden;
   margin: 0;
   text-overflow: ellipsis;
+}
+
+@media(max-width:576px) {
+  #bdcenter .site-layout-background {
+    padding: 0;
+  }
 }

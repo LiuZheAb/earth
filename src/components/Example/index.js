@@ -339,7 +339,7 @@ class index extends Component {
                                                     <span onClick={menuName === "地质模型 (Geological models)" ? this.showGeoModal.bind(this, menuName) : this.showModal.bind(this, menuName, undefined)}>{menuName}</span>
                                                 </>
                                                 :
-                                                menuName.indexOf("参数库") === -1
+                                                menuName.indexOf("应用示范图例") === -1
                                                     ?
                                                     <>
                                                         <IconFont type="earthjinru1" />
@@ -347,8 +347,8 @@ class index extends Component {
                                                     </>
                                                     :
                                                     <>
-                                                        <IconFont type="earthbookresource" />
-                                                        <span onClick={this.showPdfModal.bind(this, menuName)}>{menuName}</span>
+                                                        <IconFont type="earthtupian" />
+                                                        <Link to="/demos" onClick={this.setApp.bind(this, menuName, undefined, idenMod, stepNum)}>{menuName}</Link>
                                                     </>
                                         }
                                     </li>

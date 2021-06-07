@@ -134,6 +134,25 @@
     line-height: 20px;
 }
 
+#multiFile .file-icon {
+    width: 76px;
+    margin-left: 90px;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+#multiFile .file-icon:hover {
+    color: #1890ff;
+}
+
+#multiFile .file-icon .anticon {
+    margin-right: 4px;
+}
+
+#multiFile .file-icon .file-name {
+    white-space: nowrap;
+}
+
 @media(max-width:998px) {
     #chart-container {
         padding: 40px 70px 40px 40px;

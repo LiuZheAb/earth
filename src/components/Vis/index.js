@@ -9,13 +9,12 @@ import CsvViewLineContainer2 from './components/echartsView/view_421&422/csvView
 import CsvViewSingleLineContainer from './components/echartsView/view_421&422/csvView_line_single';
 import CsvViewMatrixContainer from './components/echartsView/view_421&422/csvView_matrix';
 import CsvViewMatrixContainer2 from './components/echartsView/view_421&422/csvView_matrix2';
-import CsvViewMatrixContainer3 from './components/echartsView/view_421&422/csvView_matrix3';
+import CsvViewMatrixContainer3 from './components/echartsView/view_2131&7213/csvView_matrix';
 import "./index.css";
 
 export default class vis extends Component {
     render() {
         let { data, appName, datatype } = this.props;
-
         let visComponent = null;
         if (["混合谱元法 (SEM)", "混合谱元法 (MSEM)", "混合谱元法电磁正演 (MSEM)", "频域电磁联合反演", "极限学习机电磁联合反演"].includes(appName)) {
             if (datatype === "line_1") {
@@ -29,7 +28,7 @@ export default class vis extends Component {
             } else if (datatype === "single") {
                 visComponent = <CsvViewSingleLineContainer data={data} datatype={datatype} appName={appName} />;
             }
-        } else if (["Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)", "超分辨率地震成像 (Super Resolution Seismic Imaging)"].includes(appName)) {
+        } else if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
             visComponent = datatype === "2d_heatmap" ?
                 <CsvViewMatrixContainer3 data={data} datatype={datatype} appName={appName} />
                 :

@@ -67,12 +67,12 @@
     margin: 0 auto;
 }
 
-.ant-upload-list-item-card-actions a[title="Download file"] {
+.newapp .ant-upload-list-item-card-actions a[title="Download file"] {
     display: none !important;
 }
 
 @media (max-width: 575px) {
-    .ant-form-item-label {
+    .newapp .ant-form-item-label {
         display: inline-block;
         overflow: hidden;
         line-height: 39.9999px;

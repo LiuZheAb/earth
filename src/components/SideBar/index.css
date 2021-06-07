@@ -7,7 +7,7 @@
     z-index: 1000;
 }
 
-.ant-layout-sider-collapsed {
+.home-sidebar .ant-layout-sider-collapsed {
     min-width: 50px !important;
     width: 50px !important;
 }

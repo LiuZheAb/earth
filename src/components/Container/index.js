@@ -15,6 +15,7 @@ const Home = loadable(() => import('../Home'));
 const Console = loadable(() => import('../Console'));
 const NewApp = loadable(() => import('../NewApp'));
 const Personal = loadable(() => import('../Personal'));
+const Demos = loadable(() => import('../Demos'));
 const { Content } = Layout;
 
 export default class Container extends React.Component {
@@ -25,6 +26,7 @@ export default class Container extends React.Component {
                 <Route exact path={["/console", "/console/:p"]}><Console /></Route>
                 <Route exact path="/newapp"><NewApp /></Route>
                 <Route exact path="/personal"><Personal /></Route>
+                <Route exact path="/demos"><Demos /></Route>
             </Content>
         );
     };

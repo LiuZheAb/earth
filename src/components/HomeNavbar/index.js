@@ -74,7 +74,7 @@ class HomeNavbar extends React.Component {
                     {userName ?
                         <div className="icon-area">
                             <IconFont type="earthconsole" title="控制台" onClick={() => this.props.match.path !== "/console" && this.props.history.push("/console")} />
-                            <IconFont type="earthdashuju1" title="大数据" style={{ transform: "scale(1.1)" }} onClick={() => this.props.location.pathname !== "/bdcenter" && this.props.history.push("/bdcenter")} />
+                            <IconFont type="earthdashuju1" title="分布式文件管理系统及数据库" style={{ transform: "scale(1.1)" }} onClick={() => this.props.location.pathname !== "/bdcenter" && this.props.history.push("/bdcenter")} />
                             <Link to="/personal" onClick={() => { sessionStorage.setItem("personalSiderKey", "1") }}>
                                 <IconFont type="earthtouxiang" title="个人中心" />
                             </Link>

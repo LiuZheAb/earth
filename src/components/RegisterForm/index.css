@@ -31,7 +31,7 @@
     margin-bottom: 1px;
 }
 
-.ant-input-affix-wrapper input {
+.register-form .ant-input-affix-wrapper input {
     height: 44px;
     font-size: 16px;
     line-height: 44px;

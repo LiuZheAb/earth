@@ -6,7 +6,7 @@
     margin-bottom: 5px;
 }
 
-.ant-input-affix-wrapper input {
+.login-modal .ant-input-affix-wrapper input {
     height: 44px;
     line-height: 44px;
 }

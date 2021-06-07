@@ -101,7 +101,7 @@
     text-align: center;
 }
 
-.ant-modal-body, .ant-modal-title {
+.pdf-modal .ant-modal-body, .module-modal .ant-modal-body, .pdf-modal .ant-modal-title, .module-modal .ant-modal-title {
     font-size: 20px;
 }
 
@@ -147,10 +147,10 @@
 }
 
 @media(max-width:768px) {
-    .ant-modal-body {
+    .pdf-modal .ant-modal-body, .module-modal .ant-modal-body {
         font-size: 14px;
     }
-    .ant-modal-title {
+    .pdf-modal .ant-modal-title, .module-modal .ant-modal-title {
         font-size: 16px;
     }
 }

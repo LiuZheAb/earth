@@ -300,16 +300,16 @@ export default class ModuleList extends React.Component {
                                                                             <span onClick={this.showModal.bind(this, menuName, module)}>{menuName}</span>
                                                                         </>
                                                                         :
-                                                                        menuName.indexOf("数据标准") === -1
+                                                                        menuName.indexOf("数据库") === -1
                                                                             ?
                                                                             <>
                                                                                 <IconFont type="earthjinru1" />
-                                                                                <Link to={menuName.indexOf("数据库") === -1 ? "/calculate" : "bdcenter"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
+                                                                                <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                                             </>
                                                                             :
                                                                             <>
-                                                                                <IconFont type="earthbookresource" />
-                                                                                <span onClick={this.showPdfModal.bind(this, menuName)}>{menuName}</span>
+                                                                                <IconFont type="earthdashuju1" />
+                                                                                <Link to={"/bdcenter"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                                             </>
                                                                 }
                                                             </li>
@@ -376,7 +376,7 @@ export default class ModuleList extends React.Component {
                                                 ?
                                                 <>
                                                     <IconFont type="earthjinru1" />
-                                                    <Link to={menuName.indexOf("数据库") === -1 ? "/calculate" : "bdcenter"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
+                                                    <Link to={"/calculate"} onClick={this.setApp.bind(this, menuName, module, idenMod, stepNum)}>{menuName}</Link>
                                                 </>
                                                 :
                                                 <>

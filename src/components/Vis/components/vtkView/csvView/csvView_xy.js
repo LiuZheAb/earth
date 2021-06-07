@@ -44,7 +44,7 @@ export default class csvViewXy extends Component {
             zLength: 0,
             cells: [],
             value: 0,
-            mode: "rainbow",
+            mode: this.props.appName === "保幅超分辨率反演(Super Resolution ITSMF)" ? "Rainbow Desaturated" : "rainbow",
             xAxis: [],
             yAxis: [],
             activeScalar: [],
@@ -590,7 +590,7 @@ export default class csvViewXy extends Component {
             }
             case "2d": {
                 let xAxis = [], yAxis = [], arrs = [];
-                if (["接收函数反演 (ReceiverFunc Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演", "模糊C回归聚类", "大地电磁面波 (MT-Surf RealData)", "Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)", "超分辨率地震成像 (Super Resolution Seismic Imaging)"].includes(appName)) {
+                if (["接收函数反演 (ReceiverFunc Inversion)", "接收函数-面波联合反演 (ReceiverFunc-Surf Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演", "模糊C回归聚类", "大地电磁面波 (MT-Surf RealData)", "保幅超分辨率反演(Super Resolution ITSMF)"].includes(appName)) {
                     for (let i = 0; i < data.length; i++) {
                         arrs.push(Number(data[i][2]));
                         xAxis.push(Number(data[i][0]));
@@ -607,6 +607,17 @@ export default class csvViewXy extends Component {
                 yLength = Array.from(new Set(yAxis)).length > 1 ? Array.from(new Set(yAxis)).length : 2;
 
                 xLength = Array.from(new Set(xAxis)).length;
+                //左右颠倒
+                if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
+                    let newArr = [];
+                    for (let i = 0; i < yLength; i++) {
+                        for (let j = 0; j < xLength; j++) {
+                            newArr.push(arrs[(i + 1) * xLength - j - 1])
+                        }
+                    }
+                    arrs = newArr;
+                }
+                console.log(arrs);
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();

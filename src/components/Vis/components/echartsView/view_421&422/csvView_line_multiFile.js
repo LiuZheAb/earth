@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select } from "antd";
+import { Select, Icon } from "antd";
 import * as echarts from 'echarts';
 import "./index.css";
 
@@ -13,7 +13,7 @@ export default class csvView_1d extends Component {
             yDataMap_LGMF: {},
             dataOptions: [],
             dataKey: "",
-            fileName: ""
+            fileNameList: []
         }
     }
     componentDidMount() {
@@ -182,48 +182,71 @@ export default class csvView_1d extends Component {
         this.setState({ dataKey: value });
     }
     handleChange = event => {
-        if (event.target.files.length > 0) {
-            this.setState({
-                fileName: event.target.files[0].name
-            });
-            let reader = new FileReader();
-            reader.readAsText(event.target.files[0]);
-            reader.onload = e => {
-                let { dataOptions, dataKey, yDataMap_LGMF } = this.state;
-                let data = e.target.result.split("\r\n");
-                data = data.map(item => item.trim().replace(/\s+/g, " ").split(" "))
-                data = data[0].map((col, i) => data.map(row => row[i]));
-                if (this.state.fileName.indexOf("E") > -1) {
-                    for (let i = 0; i < dataOptions.length / 2; i++) {
-                        yDataMap_LGMF[dataOptions[i]] = data[i]
+        let files = event.target.files, len = files.length;
+        let { dataOptions, dataKey, yDataMap_LGMF, fileNameList } = this.state;
+        if (len > 0) {
+            for (let j = 0; j < len; j++) {
+                let reader = new FileReader();
+                reader.readAsText(files[j]);
+                let fileName = files[j].name;
+                fileNameList.push(fileName);
+                // eslint-disable-next-line
+                reader.onload = e => {
+                    let data = e.target.result.split("\r\n");
+                    data = data.map(item => item.trim().replace(/\s+/g, " ").split(" "))
+                    data = data[0].map((col, i) => data.map(row => row[i]));
+                    if (fileName.indexOf("E_") > -1) {
+                        for (let i = 0; i < dataOptions.length; i++) {
+                            if (dataOptions[i].indexOf("E") > -1) {
+                                yDataMap_LGMF[dataOptions[i]] = data[i]
+                            }
+                        }
+                    } else if (fileName.indexOf("H_") > -1) {
+                        for (let i = 0; i < dataOptions.length; i++) {
+                            if (dataOptions[i].indexOf("H") > -1) {
+                                yDataMap_LGMF[dataOptions[i]] = data[i - 6]
+                            }
+                        }
                     }
-                } else if (this.state.fileName.indexOf("H") > -1) {
-                    for (let i = dataOptions.length / 2; i < dataOptions.length; i++) {
-                        yDataMap_LGMF[dataOptions[i]] = data[i - dataOptions.length / 2]
+                    if (j === len - 1) {
+                        this.setState({
+                            yDataMap_LGMF,
+                            fileNameList: Array.from(new Set(fileNameList))
+                        });
+                        let legendData = this.chart.getOption().legend[0].data;
+                        legendData.push("LGMF");
+                        this.chart.setOption({
+                            legend: {
+                                data: Array.from(new Set(legendData))
+                            },
+                            series: [{
+                                name: "LGMF",
+                                data: yDataMap_LGMF[dataKey]
+                            }]
+                        })
                     }
                 }
-                this.setState({
-                    yDataMap_LGMF,
-                });
-                let legendData = this.chart.getOption().legend[0].data;
-                legendData.push("LGMF")
-                this.chart.setOption({
-                    legend: {
-                        data: legendData
-                    },
-                    series: [{
-                        name: "LGMF",
-                        data: yDataMap_LGMF[dataKey]
-                    }]
-                })
             }
         }
         event.target.value = "";
     }
+    getExampleFile = () => {
+        let fileList = ["E_field.txt", "H_field.txt"];
+        for (let i = 0; i < fileList.length; i++) {
+            var elementA = document.createElement('a');
+            elementA.download = fileList[i];//文件名
+            //隐藏dom点不显示
+            elementA.style.display = 'none';
+            elementA.href = "./static/data/" + fileList[i];
+            document.body.appendChild(elementA);
+            elementA.click();
+            document.body.removeChild(elementA);
+        }
+    }
     render() {
-        let { dataOptions, dataKey, fileName } = this.state;
+        let { dataOptions, dataKey, fileNameList } = this.state;
         return (
-            <div style={{ padding: 20, width: "100%", height: "100vh" }}>
+            <div style={{ padding: 20, width: "100%", height: "100vh" }} id="multiFile">
                 <div>
                     <span>请选择数据：</span>
                     <Select onChange={this.handleKeyChange} style={{ width: 200 }} placeholder="请选择数据" value={dataKey}>
@@ -232,16 +255,20 @@ export default class csvView_1d extends Component {
                         )}
                     </Select>
                 </div>
-                <div className="lgmf-file" style={{ display: "flex", marginTop: 16 }}>
+                <div className="lgmf-file" style={{ display: "flex", marginTop: 16, lineHeight: "32px" }}>
                     <span>解析解数据：</span>
                     <div className="input-file-wrapper">
                         <span className="ant-btn ant-btn-default input-file">
-                            点击上传<input type="file" id="file" onChange={this.handleChange} />
+                            点击上传<input type="file" id="file" onChange={this.handleChange} multiple={true} title="请上传文件名为E_field或H_field的文件" />
                         </span>
-                        <span className="file-name" title={fileName}>{fileName}</span>
+                        <span className="file-name" title={fileNameList.join(" ; ")}>{fileNameList.join(" ; ")}</span>
                     </div>
                 </div>
-                <div id="chart" style={{ width: "100%", height: "calc(100% - 68px)" }}></div>
+                <div className="file-icon" onClick={this.getExampleFile}>
+                    <Icon type="download" title="获取示例文件" />
+                    <span className="file-name">示例文件</span>
+                </div>
+                <div id="chart" style={{ width: "100%", height: "calc(100% - 100px)" }}></div>
             </div>
         )
     }

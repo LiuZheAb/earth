@@ -12,11 +12,9 @@ import zhCN from 'antd/es/locale/zh_CN';
 import axios from 'axios';
 import IconFont from '../../components/IconFont';
 import Listener from "../../components/Listener";
-import checkNullvalue from "../../utils/checkNullvalue";
 import apiPromise from '../../assets/url.js';
 import { getCookie } from '../../utils/cookies';
 import GMDataSource from "./G&Mdata.json";
-// import GMIDataSource from "./G&MinversionData.json";
 import Vis from "../../components/Vis";
 import './index.css';
 
@@ -93,7 +91,6 @@ class Calculate extends React.Component {
             modalVisible: false,
             dockerType: Number(sessionStorage.getItem("dockerType")) || undefined,
             computed: false,
-            disabled: false,
             proList: [],
             modelIndex: Number(sessionStorage.getItem("modelIndex")) || undefined,
             baseUrl: sessionStorage.getItem("baseUrl") || "",
@@ -241,7 +238,7 @@ class Calculate extends React.Component {
                     });
                     break;
                 case 2:
-                    if (stepNum === 1) {
+                    if (stepNum === 1 && ![51, 52, 222, 7221, 321, 322, 323, 324, 325, 7322].includes(idenMod)) {
                         proList.unshift("用户自定义计算");
                     }
                     //常规docker返回结果
@@ -371,11 +368,8 @@ class Calculate extends React.Component {
         let { texts, selects, radios, checkBoxs, textAreas, inputFiles, idenMod, uploadBoxs, dockerID, dockerIP, vport, currentStep, moduleName, currentStep2, nowStep, modelIndex, dockerType, baseUrl, calcApi, requestMethod, apiName } = this.state;
         if (dockerType === 5) {
             if (calcApi) {
-                // if (checkNullvalue(texts) && checkNullvalue(selects) && checkNullvalue(radios) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
                 this.props.form.validateFields({ force: true }, (err, values) => {
                     if (!err) {
-                        // baseUrl = "http://139.217.82.132:5050";
-                        // baseUrl = "http://192.168.0.161:9999";
                         if (requestMethod === "get") {
                             let params = {};
                             for (let i = 0, len = texts.length; i < len; i++) {
@@ -487,59 +481,57 @@ class Calculate extends React.Component {
             }
         } else {
             if (modelIndex >= 0) {
-                if (checkNullvalue(texts) && checkNullvalue(selects) && checkNullvalue(radios) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
-                    this.props.form.validateFields({ force: true }, (err, values) => {
-                        if (!err) {
-                            this.setState({
-                                loading: true,
-                            });
-                            if (Array.isArray(texts)) {
-                                for (let i = 0, len = texts.length; i < len; i++) {
-                                    if (texts[i].paramName === "iter_max" || texts[i].paramName === "time_after_earthquake") {
-                                        texts[i].currentValue = "+" + texts[i].currentValue;
-                                    }
+                this.props.form.validateFields({ force: true }, (err, values) => {
+                    if (!err) {
+                        this.setState({
+                            loading: true,
+                        });
+                        if (Array.isArray(texts)) {
+                            for (let i = 0, len = texts.length; i < len; i++) {
+                                if (texts[i].paramName === "iter_max" || texts[i].paramName === "time_after_earthquake") {
+                                    texts[i].currentValue = "+" + texts[i].currentValue;
                                 }
                             }
-                            let makeJson = `{ "texts" :${JSON.stringify(texts)},"selects" :${JSON.stringify(selects)},"radios" :${JSON.stringify(radios)},"checkBoxs" :${JSON.stringify(checkBoxs)},"textAreas" :${JSON.stringify(textAreas)},"uploadBoxs" :${JSON.stringify(uploadBoxs)}}`;
-                            axios({
-                                method: 'post',
-                                url: api + 'createPFile',
-                                data: {
-                                    idenMod: idenMod * Math.pow(10, nowStep - 1),
-                                    params: makeJson,
-                                    dockerID,
-                                    dockerIP,
-                                    vport,
-                                    moduleName,
-                                    index: modelIndex
-                                },
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
-                            }).then(response => {
-                                let { data, status } = response.data;
-                                this.setState({ loading: false });
-                                if (status === "success") {
-                                    message.success(data, 2);
-                                    if (nowStep > 1) {
-                                        this.setState({
-                                            currentStep2: currentStep2 + 1
-                                        });
-                                    } else {
-                                        this.setState({
-                                            currentStep: currentStep + 1
-                                        });
-                                    }
-                                } else if (status === "fail") {
-                                    message.error(data, 2);
-                                }
-                            }).catch(error => {
-                                this.setState({ loading: false });
-                                message.error("服务器无响应");
-                            });
                         }
-                    })
-                }
+                        let makeJson = `{ "texts" :${JSON.stringify(texts)},"selects" :${JSON.stringify(selects)},"radios" :${JSON.stringify(radios)},"checkBoxs" :${JSON.stringify(checkBoxs)},"textAreas" :${JSON.stringify(textAreas)},"uploadBoxs" :${JSON.stringify(uploadBoxs)}}`;
+                        axios({
+                            method: 'post',
+                            url: api + 'createPFile',
+                            data: {
+                                idenMod: idenMod * Math.pow(10, nowStep - 1),
+                                params: makeJson,
+                                dockerID,
+                                dockerIP,
+                                vport,
+                                moduleName,
+                                index: modelIndex
+                            },
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => {
+                            let { data, status } = response.data;
+                            this.setState({ loading: false });
+                            if (status === "success") {
+                                message.success(data, 2);
+                                if (nowStep > 1) {
+                                    this.setState({
+                                        currentStep2: currentStep2 + 1
+                                    });
+                                } else {
+                                    this.setState({
+                                        currentStep: currentStep + 1
+                                    });
+                                }
+                            } else if (status === "fail") {
+                                message.error(data, 2);
+                            }
+                        }).catch(error => {
+                            this.setState({ loading: false });
+                            message.error("服务器无响应");
+                        });
+                    }
+                })
             } else {
                 message.error("请选择模型获取参数列表", 2)
             }
@@ -573,7 +565,6 @@ class Calculate extends React.Component {
                 loading: false,
                 computed: true,
                 isComputing: false,
-                disabled: nowStep === stepNum ? true : false,
                 modalVisible: false,
                 resType: status
             });
@@ -583,7 +574,9 @@ class Calculate extends React.Component {
                     message.error(data);
                     break;
                 case 1:
-                    message.error(data);
+                    if (data !== "计算异常") {
+                        message.error(data);
+                    }
                     break;
                 //成功
                 case 2:
@@ -770,8 +763,6 @@ class Calculate extends React.Component {
     }
     downloadData = file => {
         let { calcResData, apiName, baseUrl } = this.state;
-        // baseUrl = "http://139.217.82.132:5050";
-        // baseUrl = "http://192.168.0.161:9999";
         if (apiName === "计算完全布格异常") {
             let elementA = document.createElement('a');
             elementA.style.display = 'none';
@@ -812,20 +803,18 @@ class Calculate extends React.Component {
         }
     }
     componentWillUnmount() {
-        if (this.props.history.location.pathname !== "/operateData") {
-            sessionStorage.removeItem("appName",);
-            sessionStorage.removeItem("moduleName");
-            sessionStorage.removeItem("dockerType");
-            sessionStorage.removeItem("idenMod");
-            sessionStorage.removeItem("nowStep");
-            sessionStorage.removeItem("stepNum");
-            sessionStorage.removeItem("dockerID");
-            sessionStorage.removeItem("dockerIP");
-            sessionStorage.removeItem("vport");
-            sessionStorage.removeItem("modelIndex");
-            sessionStorage.removeItem("baseUrl");
-            sessionStorage.removeItem("funcName");
-        }
+        sessionStorage.removeItem("appName",);
+        sessionStorage.removeItem("moduleName");
+        sessionStorage.removeItem("dockerType");
+        sessionStorage.removeItem("idenMod");
+        sessionStorage.removeItem("nowStep");
+        sessionStorage.removeItem("stepNum");
+        sessionStorage.removeItem("dockerID");
+        sessionStorage.removeItem("dockerIP");
+        sessionStorage.removeItem("vport");
+        sessionStorage.removeItem("modelIndex");
+        sessionStorage.removeItem("baseUrl");
+        sessionStorage.removeItem("funcName");
         this.setState = () => {
             return;
         }
@@ -871,18 +860,31 @@ class Calculate extends React.Component {
         if ((idenMod === 411 || idenMod === 412) && absolutePath.split("/").pop() === "mod.csv") {
             message.warn("数据错误，无法可视化");
         } else if (idenMod === 421) {
+            let calcResData = {}, sameName = false;
+            for (let i = 0; i < resFileListData.length; i++) {
+                if (name.indexOf("25D_s") > -1 && (name.replace(/25D_s[0-9]/, "3D_s") === resFileListData[i].name)) {
+                    sameName = true;
+                } else if (/3D_s_[0-9]/.test(name) && (name === resFileListData[i].name.replace(/25D_s[0-9]/, "3D_s"))) {
+                    sameName = true;
+                }
+            }
             this.setState({ dataLoading: true });
-            if (name.indexOf("xoy") > -1 || name.indexOf("xoz") > -1) {
+            if (name.indexOf("xoy") !== -1 || name.indexOf("xoz") > -1) {
                 axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
                     params: { path: absolutePath }
                 }).then(res => {
                     let { data } = res.data;
                     if (Array.isArray(data) && data.length > 0) {
                         this.setState({
-                            visVisible: true,
-                            dataLoading: false,
                             calcResData: data,
                             dataType: "2d_1"
+                        }, () => {
+                            if (this.state.dataLoading) {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false,
+                                })
+                            }
                         })
                     } else {
                         message.warn("无数据");
@@ -895,7 +897,114 @@ class Calculate extends React.Component {
                         dataLoading: false
                     })
                 });
-            } else {
+            } else if (name.indexOf("_s") > -1 && sameName) {
+                let num = 0;
+                for (let i = 0; i < resFileListData.length; i++) {
+                    if ((/25D_s[1-9]_/).test(resFileListData[i].name)) {
+                        num++;
+                    }
+                }
+                let path = absolutePath.replace(/3D_s_|25D_s[0-9]_/, "25D_s1_");
+                let time1 = 0, time2 = 0, yDataMap_25D = {}, xData = [], nameObj = {}, fileData = {};
+                for (let i = 1; i <= num; i++) {
+                    nameObj["file" + i] = path.replace("s1", "s" + i);
+                    fileData["file" + i] = {};
+                }
+                for (let file in nameObj) {
+                    axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                        params: { path: nameObj[file] }
+                        // eslint-disable-next-line
+                    }).then(res => {
+                        let { data } = res.data;
+                        if (Array.isArray(data) && data.length > 0) {
+                            data = data[0].map((col, i) => data.map(row => row[i]));
+                            for (let i = 0, len = data.length; i < len; i++) {
+                                let key = data[i][0].replace(/%| /g, "");
+                                data[i].shift();
+                                if (!["x", "y", "z"].includes(key)) {
+                                    fileData[file][key] = data[i].map(item => Number(item));
+                                }
+                            }
+                            time1 += 1;
+                            if (time1 === num) {
+                                let dataOptions = Object.keys(fileData[file]);
+                                for (let i = 0; i < dataOptions.length; i++) {
+                                    for (let j = 1; j < num + 1; j++) {
+                                        yDataMap_25D[dataOptions[i]] = yDataMap_25D[dataOptions[i]] ? yDataMap_25D[dataOptions[i]].concat(fileData["file" + j][dataOptions[i]]) : [...fileData["file" + j][dataOptions[i]]];
+                                    }
+                                }
+                                calcResData.dataOptions = dataOptions;
+                                calcResData.yDataMap_25D = yDataMap_25D;
+                            }
+                        } else {
+                            message.warn("无数据");
+                            time1 += 1;
+                            this.setState({
+                                dataLoading: false
+                            })
+                        }
+                        if (time1 === num && time2 === 1) {
+                            this.setState({
+                                calcResData,
+                                dataType: "line_2"
+                            }, () => {
+                                if (this.state.dataLoading) {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false,
+                                    })
+                                }
+                            })
+                        }
+                    }).catch(err => {
+                        this.setState({
+                            dataLoading: false
+                        })
+                    });
+                }
+
+                let yDataMap_3D = [];
+                axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                    params: { path: absolutePath.replace(/25D_s[0-9]_/, "3D_s_") }
+                }).then(res => {
+                    let { data } = res.data;
+                    if (Array.isArray(data) && data.length > 0) {
+                        data = data[0].map((col, i) => data.map(row => row[i]));
+                        for (let i = 0, len = data.length; i < len; i++) {
+                            let key = data[i][0].replace(/%| /g, "");
+                            data[i].shift();
+                            if (key === "x") {
+                                xData = data[i].map(item => Number(item));
+                            }
+                            if (!["x", "y", "z"].includes(key)) {
+                                yDataMap_3D[key] = data[i].map(item => Number(item));
+                            }
+                        }
+                        calcResData.yDataMap_3D = yDataMap_3D;
+                        calcResData.xData = xData;
+                        time2 += 1;
+                    } else {
+                        message.warn("无数据");
+                        this.setState({
+                            dataLoading: false
+                        })
+                        time2 += 1;
+                    }
+                    if (time1 === num && time2 === 1) {
+                        this.setState({
+                            calcResData,
+                            dataType: "line_2"
+                        }, () => {
+                            if (this.state.dataLoading) {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false,
+                                })
+                            }
+                        })
+                    }
+                })
+            } else if ((name.indexOf("_f") > -1 && name.indexOf("_o") > -1 && (name.indexOf("25D") > -1 || name.indexOf("3D") > -1)) || (name.indexOf("_s") > -1 && !sameName && (name.indexOf("25D") > -1 || name.indexOf("3D") > -1))) {
                 let path_25D = "", path_3D = "";
                 if (name.indexOf("25D") > -1) {
                     path_25D = absolutePath;
@@ -930,10 +1039,15 @@ class Calculate extends React.Component {
                             }
                             if (resTime === 2) {
                                 this.setState({
-                                    visVisible: true,
-                                    dataLoading: false,
                                     calcResData,
                                     dataType: "line_1"
+                                }, () => {
+                                    if (this.state.dataLoading) {
+                                        this.setState({
+                                            visVisible: true,
+                                            dataLoading: false,
+                                        })
+                                    }
                                 })
                             }
                         }).catch(err => {
@@ -945,16 +1059,49 @@ class Calculate extends React.Component {
                         resTime += 1;
                         if (resTime === 2) {
                             this.setState({
-                                visVisible: true,
-                                dataLoading: false,
                                 calcResData,
                                 dataType: "line_1"
+                            }, () => {
+                                if (this.state.dataLoading) {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false,
+                                    })
+                                }
                             })
                         }
                     }
                 }
                 getData(path_25D, "data_25D");
                 getData(path_3D, "data_3D");
+            } else {
+                axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
+                    params: { path: absolutePath }
+                }).then(res => {
+                    let { data } = res.data;
+                    if (Array.isArray(data) && data.length > 0) {
+                        this.setState({
+                            calcResData: data,
+                            dataType: data.length > 1000 ? "2d_1" : "single"
+                        }, () => {
+                            if (this.state.dataLoading) {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false
+                                })
+                            }
+                        });
+                    } else {
+                        message.warn("无数据");
+                        this.setState({
+                            dataLoading: false
+                        })
+                    }
+                }).catch(err => {
+                    this.setState({
+                        dataLoading: false
+                    })
+                });
             }
         } else if (idenMod === 422) {
             this.setState({ dataLoading: true });
@@ -967,10 +1114,12 @@ class Calculate extends React.Component {
                         calcResData: data,
                         dataType: "2d_2"
                     }, () => {
-                        this.setState({
-                            visVisible: true,
-                            dataLoading: false
-                        })
+                        if (this.state.dataLoading) {
+                            this.setState({
+                                visVisible: true,
+                                dataLoading: false
+                            })
+                        }
                     });
                 } else {
                     message.warn("无数据");
@@ -1013,26 +1162,65 @@ class Calculate extends React.Component {
                     if (idenMod !== 51) {
                         data = data.map(item => item.map(item2 => Number(item2)));
                     }
+                    let expand = false;
                     if (idenMod === 2131 || idenMod === 7213) {
-                        let new_data = data[0].map((col, i) => data.map(row => row[i]));
-                        let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
-                        let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
-                        if (xData.length === 1) {
-                            data = data.map(item => {
-                                item.splice(0, 1)
-                                return item;
-                            })
-                        }
-                        if (yData.length === 1) {
-                            data = data.map(item => {
-                                item.splice(1, 1)
-                                return item;
-                            })
+                        if (data[0].length === 3) {
+                            let new_data = data[0].map((col, i) => data.map(row => row[i]));
+                            let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
+                            let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
+                            let xLen = xData.length, yLen = yData.length;
+                            if (xLen === 1) {
+                                data = data.map(item => {
+                                    item.splice(0, 1);
+                                    return item;
+                                })
+                            }
+                            if (yLen === 1) {
+                                data = data.map(item => {
+                                    item.splice(1, 1);
+                                    return item;
+                                })
+                            }
+                            if (data[0].length === 3) {
+                                let newArr = [];
+                                let m = parseInt(yLen / xLen);
+                                if (m > 1) {
+                                    for (let i = 0; i < yLen; i++) {
+                                        newArr[i] = [];
+                                        for (let j = 0; j < xLen - 1; j++) {
+                                            let range = data[i * xLen + j + 1][2] - data[i * xLen + j][2];
+                                            for (let k = 0; k < m; k++) {
+                                                newArr[i].push(data[i * xLen + j][2] + range / m * k)
+                                            }
+                                        }
+                                    }
+                                    data = newArr;
+                                }
+                            }
+                            // if (yLen / xLen >= 3) {
+                            //     expand = true;
+                            // }
+                        } else {
+                            let xLen = data[0].length, yLen = data.length;
+                            let m = parseInt(yLen / xLen);
+                            let newArr = [];
+                            if (m > 1) {
+                                for (let i = 0; i < yLen; i++) {
+                                    newArr[i] = [];
+                                    for (let j = 0; j < xLen - 1; j++) {
+                                        let range = data[i][j + 1] - data[i][j];
+                                        for (let k = 0; k < m; k++) {
+                                            newArr[i].push(data[i][j] + range / m * k)
+                                        }
+                                    }
+                                }
+                                data = newArr;
+                            }
                         }
                     }
                     let dataType = "";
-                    if (info.suffix === "csv") {
-                        if (Array.isArray(data[0])) {
+                    if (Array.isArray(data[0])) {
+                        if (info.suffix === "csv") {
                             if (data[0].length === 1 || data[0].length === 2) {
                                 dataType = "1d";
                             } else if (data[0].length === 3) {
@@ -1041,24 +1229,25 @@ class Calculate extends React.Component {
                                 dataType = "3d";
                             } else if (data[0].length > 4) {
                                 dataType = "matrix";
-                            } else {
-                                dataType = undefined;
                             }
+                            if ((idenMod === 2131 || idenMod === 7213) && dataType === "2d" && expand) {
+                                dataType = "2d_heatmap";
+                            }
+                        } else if (info.suffix === "msh") {
+                            dataType = "msh";
+                        } else if (info.suffix === "txt") {
+                            dataType = "txt";
                         }
-                    } else if (info.suffix === "msh") {
-                        dataType = "msh";
-                    } else if (info.suffix === "txt") {
-                        dataType = "txt";
-                    }
-                    if ((idenMod === 2131 || idenMod === 7213) && funcName.indexOf("Real") > -1 && dataType === "2d") {
-                        dataType = "2d_heatmap";
+                    } else {
+                        dataType = undefined;
                     }
                     this.setState({
                         calcResData: data,
                         dataType
                     }, () => {
+                        if (!dataType) message.error("数据错误,无法可视化");
                         this.setState({
-                            visVisible: true,
+                            visVisible: dataType && true,
                             dataLoading: false
                         })
                     });
@@ -1078,7 +1267,6 @@ class Calculate extends React.Component {
     handleCloseTdataDrawer = () => {
         this.setState({
             tdataDrawerVisible: false,
-            customElements: {}
         })
     }
     handleCancleFileModal = () => {
@@ -1113,11 +1301,6 @@ class Calculate extends React.Component {
                 break;
             case 311:
             case 312:
-                // case 321:
-                // case 322:
-                // case 323:
-                // case 324:
-                // case 325:
                 var elementA = document.createElement('a');
                 elementA.download = paramName;//文件名
                 //隐藏dom点不显示
@@ -1144,7 +1327,7 @@ class Calculate extends React.Component {
         };
         let { apiData, username, appName, texts, selects, radios, checkBoxs, textAreas, uploadBoxs, inputFiles, uploadFileList, loading, listener, currentStep,
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
-            computed, nowStep, stepNum, currentStep2, disabled, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
+            computed, nowStep, stepNum, currentStep2, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener
         } = this.state;
         const { getFieldDecorator } = this.props.form;
@@ -1270,9 +1453,7 @@ class Calculate extends React.Component {
                                                                         </Tooltip>
                                                                         <div className="file-name" title={currentValue && currentValue.name}>{currentValue && currentValue.name}</div>
                                                                     </Form.Item>
-                                                                    {(idenMod === 311 || idenMod === 312
-                                                                        // || idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325
-                                                                    ) && apiName !== "上传文件" && defaultValue &&
+                                                                    {(idenMod === 311 || idenMod === 312) && apiName !== "上传文件" && defaultValue &&
                                                                         <div className="file-icon file-icon-2" onClick={this.getExampleFile.bind(this, defaultValue.split(",")[0])}>
                                                                             <Icon type="download" title="获取示例文件" />
                                                                             <span className="file-name">示例文件</span>
@@ -1393,7 +1574,20 @@ class Calculate extends React.Component {
                                                             {textAreas === null ? null : textAreas.map(({ paramName, paramNameCN, tip, currentValue }, index) =>
                                                                 <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <Tooltip title={tip || paramNameCN}>
-                                                                        <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} value={currentValue} onChange={this.changeTextarea.bind(this, index)} />
+                                                                        {getFieldDecorator(paramName, {
+                                                                            rules: [{
+                                                                                validator: (rule, value, callback) => {
+                                                                                    if (!value) {
+                                                                                        callback(`${paramName}的值不能为空!`);
+                                                                                    } else {
+                                                                                        callback();
+                                                                                    };
+                                                                                }
+                                                                            }],
+                                                                            initialValue: currentValue
+                                                                        })(
+                                                                            <TextArea autoSize={{ minRows: 4, maxRows: 2000 }} cols={10} onChange={this.changeTextarea.bind(this, index)} />
+                                                                        )}
                                                                     </Tooltip>
                                                                 </Form.Item>
                                                             )}
@@ -1481,9 +1675,9 @@ class Calculate extends React.Component {
                                             {nowStep < stepNum && computed ?
                                                 <Button type="primary" onClick={this.nextStep} style={{ marginBottom: 20 }}>下一步</Button>
                                                 :
-                                                <Button type="primary" loading={loading} onClick={this.runDocker} style={{ marginBottom: 20 }} disabled={disabled && computed}>应用服务计算</Button>
+                                                <Button type="primary" loading={loading} onClick={this.runDocker} style={{ marginBottom: 20 }} disabled={computed}>应用服务计算</Button>
                                             }
-                                            {isComputing &&
+                                            {(isComputing || computed) &&
                                                 <div className="btn-area">
                                                     <Button type="default" style={{ marginBottom: 16 }} onClick={this.handleViewInfo}>查看运行日志</Button>
                                                     <Modal className="loginfo-modal" visible={modalVisible} onCancel={this.handleCancleModal} footer={null}>
@@ -1495,7 +1689,7 @@ class Calculate extends React.Component {
                                                     </Modal>
                                                     <Button type="default" style={{ marginBottom: 16 }} onClick={this.handleViewTdata}>查看模板结果</Button>
                                                     <Button type="default" style={{ marginBottom: 16, width: 128 }} onClick={() => { this.props.history.push("/console") }}>前往控制台</Button>
-                                                    <Popconfirm placement="top" title={<div style={{ maxWidth: 160 }}>停止后将清空该程序所有数据,请确认是否停止？</div>} onConfirm={this.handleKillContain} okText="确认" cancelText="取消">
+                                                    <Popconfirm placement="top" title={<div style={{ maxWidth: 160 }}>停止后将删除该程序并清空所有数据,请确认是否停止？</div>} onConfirm={this.handleKillContain} okText="确认" cancelText="取消">
                                                         <Button type="danger" style={{ width: 128 }}>停止</Button>
                                                     </Popconfirm>
                                                 </div>
@@ -1574,14 +1768,7 @@ class Calculate extends React.Component {
                                             <Button type="default"><Icon type="upload" />上传数据文件</Button>
                                         </Upload>
                                         <Button type="primary" onClick={this.openNewWindow}>查看可视化</Button>
-                                        {/* <p>请在新窗口中查看</p> */}
-                                        {/* <p>如未弹出新窗口，请点击此<a href={uri.split("|")[0]} target="_blank" rel="noopener noreferrer">链接</a></p> */}
                                     </div>
-                                }
-                                {dockerType === 2 &&
-                                    <Modal className="vis-modal" visible={visVisible} onCancel={() => { this.setState({ visVisible: false }) }} footer={null} destroyOnClose>
-                                        <Vis data={calcResData} appName={appName} datatype={dataType} />
-                                    </Modal>
                                 }
                                 {dockerType === 2 && !isComputing ?
                                     (resType === 2 ? (
@@ -1612,46 +1799,41 @@ class Calculate extends React.Component {
                                 {dockerType === 5 && !isComputing ?
                                     calcStatus ?
                                         Object.keys(calcResData).length > 0 &&
-                                        <>
-                                            {apiName === "计算完全布格异常" ?
-                                                <Table className="filelist-table"
-                                                    title={() => <span style={{ fontWeight: "bold" }}>计算结果文件</span>}
-                                                    dataSource={Object.values(calcResData).map(item => ({ fileName: item.split("/").pop(), path: item }))}
-                                                    columns={[{
-                                                        title: '文件名',
-                                                        dataIndex: 'fileName',
-                                                        align: "center",
-                                                        render: text => <p className="table-item-name" title={text}>{text}</p>
-                                                    }, {
-                                                        title: '下载',
-                                                        dataIndex: 'path',
-                                                        align: "center",
-                                                        render: text => <Button type="primary" onClick={this.downloadData.bind(this, text)}>下载</Button>
-                                                    }]}
-                                                    footer={null}
-                                                    pagination={{
-                                                        hideOnSinglePage: true,
-                                                        showLessItems: true,
-                                                    }}
-                                                />
-                                                :
-                                                <>
-                                                    {Object.keys(calcResData).map((item, index) =>
-                                                        <div key={index}>
-                                                            {(item === "message" ? "" : item + "：\r\n")}
-                                                            <p className="resdata-p">{String(calcResData[item])}</p>
-                                                        </div>
-                                                    )}
-                                                    <div style={{ display: "flex", justifyContent: "space-around" }}>
-                                                        <Button type="primary" onClick={this.downloadData}>下载数据</Button>
-                                                        {needVis && <Button type="primary" onClick={() => { this.setState({ visVisible: true }) }}>可视化</Button>}
+                                        (apiName === "计算完全布格异常" ?
+                                            <Table className="filelist-table"
+                                                title={() => <span style={{ fontWeight: "bold" }}>计算结果文件</span>}
+                                                dataSource={Object.values(calcResData).map(item => ({ fileName: item.split("/").pop(), path: item }))}
+                                                columns={[{
+                                                    title: '文件名',
+                                                    dataIndex: 'fileName',
+                                                    align: "center",
+                                                    render: text => <p className="table-item-name" title={text}>{text}</p>
+                                                }, {
+                                                    title: '下载',
+                                                    dataIndex: 'path',
+                                                    align: "center",
+                                                    render: text => <Button type="primary" onClick={this.downloadData.bind(this, text)}>下载</Button>
+                                                }]}
+                                                footer={null}
+                                                pagination={{
+                                                    hideOnSinglePage: true,
+                                                    showLessItems: true,
+                                                }}
+                                            />
+                                            :
+                                            <>
+                                                {Object.keys(calcResData).map((item, index) =>
+                                                    <div key={index}>
+                                                        {(item === "message" ? "" : item + "：\r\n")}
+                                                        <p className="resdata-p">{String(calcResData[item])}</p>
                                                     </div>
-                                                </>
-                                            }
-                                            <Modal className="vis-modal" visible={visVisible} onCancel={() => { this.setState({ visVisible: false }) }} footer={null} destroyOnClose>
-                                                <Vis data={calcResData} datatype={apiName} />
-                                            </Modal>
-                                        </>
+                                                )}
+                                                <div style={{ display: "flex", justifyContent: "space-around" }}>
+                                                    <Button type="primary" onClick={this.downloadData}>下载数据</Button>
+                                                    {needVis && <Button type="primary" onClick={() => { this.setState({ visVisible: true }) }}>可视化</Button>}
+                                                </div>
+                                            </>
+                                        )
                                         : <Result status="error" title="计算错误" />
                                     : null
                                 }
@@ -1665,7 +1847,6 @@ class Calculate extends React.Component {
                                 columns={fileTableColumns(this)}
                                 loading={fileListLoading}
                                 sticky
-                                scroll={{ x: "max-content" }}
                                 pagination={{
                                     showQuickJumper: tdataFileListData.length > 50 && true,
                                     hideOnSinglePage: true,
@@ -1673,19 +1854,25 @@ class Calculate extends React.Component {
                                 }}
                             />
                         </ConfigProvider>
-                        <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>
-                            <iframe id="file_iframe"
-                                src={uri + "/output/" + filePath}
-                                title={filePath}
-                                scrolling="auto"
-                            />
-                        </Modal>
-                        <Modal className="img-modal" visible={imgModalVisible} onCancel={this.handleCancleImgModal} footer={null}>
-                            <img src={uri + "/output/" + filePath} alt={filePath} />
-                        </Modal>
                     </Drawer >
+                    <Modal className="vis-modal" visible={visVisible} onCancel={() => { this.setState({ visVisible: false }) }} footer={null} destroyOnClose>
+                        <Vis data={calcResData} appName={appName} datatype={dockerType === 2 ? dataType : apiName} />
+                    </Modal>
+                    <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>
+                        <iframe id="file_iframe"
+                            src={"http://" + dockerIP + ":" + vport + "/output/" + filePath}
+                            title={filePath}
+                            scrolling="auto"
+                        />
+                    </Modal>
+                    <Modal className="img-modal" visible={imgModalVisible} onCancel={this.handleCancleImgModal} footer={null}>
+                        <img src={"http://" + dockerIP + ":" + vport + "/output/" + filePath} alt={filePath} />
+                    </Modal>
                     <div className="data-loading-mask" style={{ display: dataLoading ? "flex" : "none" }}>
-                        <Spin spinning={dataLoading} tip={"数据读取中..."} size="large"></Spin>
+                        <div className="close-icon" onClick={() => { this.setState({ dataLoading: false }) }}>
+                            <Icon type="close" />
+                        </div>
+                        <Spin wrapperClassName="data-loading-spin" spinning={dataLoading} tip={"正在获取数据并处理..."} size="large"></Spin>
                     </div>
                 </Content >
             </div >

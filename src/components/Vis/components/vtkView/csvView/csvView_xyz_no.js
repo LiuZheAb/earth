@@ -95,14 +95,14 @@ export default class csvView_xyz_no extends Component {
 
         let xLength = data[0].length;
         let zLength = 101;
-        let yLength = data.length / zLength;
-        let arr = data;
+        let yLength = parseInt(data.length / zLength);
+        console.log(xLength, yLength, zLength);
         let array = [];
-        for (let i = 0; i < zLength; i++) {
-            array[i] = arr.splice(0, zLength);
+        for (let i = 0; i < yLength; i++) {
+            array[i] = data.splice(0, zLength);
         }
         let resData = array;
-        for (let i = 0; i < zLength; i++) {
+        for (let i = 0; i < yLength; i++) {
             resData[i].reverse()
         }
         console.log(resData)
@@ -156,8 +156,8 @@ export default class csvView_xyz_no extends Component {
             point2: [xLength, 0, zLength],
         });
         let pointData = [];
-        for (let i = 0; i < zLength; i++) {
-            for (let j = 0; j < yLength; j++) {
+        for (let i = 0; i < yLength; i++) {
+            for (let j = 0; j < zLength; j++) {
                 for (let k = 0; k < xLength; k++) {
                     let index = i * yLength * xLength + j * xLength + k;
                     pointData[index] = resData[i][j][k];
@@ -165,22 +165,22 @@ export default class csvView_xyz_no extends Component {
             }
         }
         let pointData1 = [], pointData2 = [], pointData3 = [], pointData4 = [], pointData5 = [], pointData6 = [];
-        for (let j = 0; j < yLength; j++) {
+        for (let j = 0; j < zLength; j++) {
             for (let k = 0; k < xLength; k++) {
                 let index = j * xLength + k;
                 pointData1[index] = resData[0][j][k];
                 pointData2[index] = resData[zLength - 1][j][k];
             }
         }
-        for (let j = 0; j < zLength; j++) {
+        for (let j = 0; j < yLength; j++) {
             for (let k = 0; k < xLength; k++) {
                 let index = j * xLength + k;
                 pointData3[index] = resData[j][0][k];
-                pointData4[index] = resData[j][yLength - 1][k];
+                pointData4[index] = resData[j][zLength - 1][k];
             }
         }
-        for (let j = 0; j < zLength; j++) {
-            for (let k = 0; k < yLength; k++) {
+        for (let j = 0; j < yLength; j++) {
+            for (let k = 0; k < zLength; k++) {
                 let index = j * yLength + k;
                 pointData5[index] = resData[j][k][0];
                 pointData6[index] = resData[j][k][xLength - 1];

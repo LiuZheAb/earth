@@ -808,6 +808,18 @@ class index extends Component {
         this.chart4.clear();
         window.removeEventListener("resize", this.handleResize);
         window.removeEventListener("keypress", this.handleKeyPress);
+        sessionStorage.removeItem("appName",);
+        sessionStorage.removeItem("moduleName");
+        sessionStorage.removeItem("dockerType");
+        sessionStorage.removeItem("idenMod");
+        sessionStorage.removeItem("nowStep");
+        sessionStorage.removeItem("stepNum");
+        sessionStorage.removeItem("dockerID");
+        sessionStorage.removeItem("dockerIP");
+        sessionStorage.removeItem("vport");
+        sessionStorage.removeItem("modelIndex");
+        sessionStorage.removeItem("baseUrl");
+        sessionStorage.removeItem("funcName");
     }
     render() {
         const { treeData, fmin, fmax, Tout_min, dTout, Tout_max, dataType, visible, fileName, helpMaskVisible, opacity, appName, stepNum, nowStep } = this.state;

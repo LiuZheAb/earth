@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ConfigProvider, Table, Button, Tag, Drawer, message, Modal, notification, Spin, Popconfirm, Tooltip, Icon, Upload } from "antd";
+import { ConfigProvider, Table, Button, Tag, Drawer, message, Modal, notification, Spin, Popconfirm, Tooltip, Icon, Upload, Menu, Dropdown } from "antd";
 import zhCN from 'antd/es/locale/zh_CN';
 import apiPromise from '../../assets/url.js';
 import axios from "axios";
@@ -17,15 +17,20 @@ const createColumns = _this =>
             fixed: 'left',
             width: 70
         }, {
-            title: '程序名',
+            title: '程序名称',
             dataIndex: 'appName',
             align: "center",
             fixed: 'left',
             width: 232,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
-        },
-        {
-            title: '测试模型',
+        }, {
+            title: 'ip',
+            dataIndex: 'dockerIP',
+            align: "center",
+            fixed: 'left',
+            render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
+        }, {
+            title: '模型名称',
             dataIndex: 'funcName',
             align: "center",
             width: 200,
@@ -42,6 +47,17 @@ const createColumns = _this =>
             align: "center",
             width: 200,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+        }, {
+            title: '运行结束时间',
+            dataIndex: 'endTime',
+            align: "center",
+            width: 200,
+            render: (text, info) => info.status === "1" ?
+                <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p> :
+                info.status === "3" ?
+                    <p className="ellipsis-column">无</p>
+                    :
+                    <p className="ellipsis-column">计算未完成</p>
         }, {
             title: '当前步骤',
             dataIndex: 'step',
@@ -64,7 +80,20 @@ const createColumns = _this =>
             dataIndex: 'view',
             align: "center",
             width: 130,
-            render: (text, info) => <Button type="primary" onClick={() => _this.handleView(info)} disabled={info.status === "2" || info.status === "fail"}>查看</Button>
+            render: (text, info) => (info.status === "1" && info.hasUrl === "1") || info.status === "3" ?
+                <Button type="primary" onClick={() => _this.handleView(info)} disabled={info.status === "2" || info.status === "fail"}>查看</Button>
+                :
+                <Dropdown overlay={<Menu onClick={item => { _this.handleClickMenu(item, info) }}>
+                    {(info.status === "1" || info.idenMod === 731) && <Menu.Item key="1">运行结果</Menu.Item>}
+                    <Menu.Item key="2">模板结果</Menu.Item>
+                    <Menu.Item key="3">运行日志</Menu.Item>
+                </Menu>
+                } >
+                    <Button type="primary" disabled={info.status === "2" || info.status === "fail"}>
+                        查看 <Icon type="down" />
+                    </Button>
+                </Dropdown >
+
         }, {
             title: '下一步',
             align: "center",
@@ -92,7 +121,9 @@ const createColumns = _this =>
             align: "center",
             width: 125,
             render: (text, info) =>
-                <Popconfirm placement="top" title={<div style={{ maxWidth: 120 }}>停止后将清空该程序所有数据,请确认是否停止？</div>} onConfirm={() => _this.handleKill(info)} okText="确认" cancelText="取消">
+                <Popconfirm placement="top"
+                    title={<div style={{ maxWidth: 120 }}>停止后将删除该程序并清空所有数据,请确认是否停止？</div>}
+                    onConfirm={() => _this.handleKill(info)} okText="确认" cancelText="取消">
                     <Button type="danger" loading={info.loading}>停止</Button>
                 </Popconfirm>
         }
@@ -105,7 +136,7 @@ const fileTableColumns = _this => [{
     title: '文件名',
     dataIndex: 'name',
     align: "center",
-    render: text => <p className="table-item-name" title={text}>{text}</p>
+    render: text => <Tooltip title={text}><p className="table-item-name">{text}</p></Tooltip>
 }, {
     title: '查看或下载',
     align: "center",
@@ -117,7 +148,7 @@ const fileTableColumns = _this => [{
     align: "center",
     className: "file-desc",
     render: (text, info) => ["csv", "msh"].includes(info.suffix) || (info.suffix === "txt" && _this.state.currentItemInfo.idenMod === 51) || _this.state.currentItemInfo.idenMod === 7322 ?
-        (info.size < 100 ? <Button type="primary" onClick={_this.handleOpenVisModal.bind(_this, info)}>可视化</Button> : "文件过大，请下载后使用专业软件进行可视化")
+        (info.size < 500 ? <Button type="primary" onClick={_this.handleOpenVisModal.bind(_this, info)}>可视化</Button> : "文件过大，请下载后使用专业软件进行可视化")
         : "暂不支持此格式"
 }];
 const noticeContent = item => <ul className="notice-content">
@@ -135,7 +166,7 @@ class index extends Component {
         resData: [],
         hasGotList: false,
         pollingErrTimes: 0,
-        hasGotInfo: false,
+        hasGotInfo: true,
         pollingInfoErrTimes: 0,
         dataSource: undefined,
         resDrawerVisible: false,
@@ -153,7 +184,9 @@ class index extends Component {
         dataLoading: false,
         currentItemInfo: {},
         visDrawerVisible: false,
-        calcDrawerVisible: false
+        calcDrawerVisible: false,
+        tdataDrawerVisible: false,
+        tdataFileListData: [],
     }
     componentDidMount() {
         let { username } = this.state;
@@ -172,13 +205,14 @@ class index extends Component {
         if (data !== null) {
             let dataSource = [];
             dataSource = data.map((info, i) => {
-                let { appname, modname, starttime, status, docid, hostip, hostport, index, funcname, idenMod, nowStep, stepNum, hasUrl, runStatus } = info;
+                let { appname, modname, starttime, endtime, status, docid, hostip, hostport, index, funcname, idenMod, nowStep, stepNum, hasUrl, runStatus } = info;
                 return {
                     key: i,
                     appName: appname,
                     funcName: funcname ? funcname : "无",
                     moduleName: modname,
                     startTime: starttime,
+                    endTime: endtime,
                     status: runStatus === 1 ? String(runStatus) : status,
                     dockerID: docid,
                     dockerIP: hostip,
@@ -243,10 +277,10 @@ class index extends Component {
                         });
                     }
                 }
-                for (let i = 0, len = resData.length; i < len; i++) {
-                    if (JSON.stringify(resData[i]) !== JSON.stringify(data[i])) {
+                if (JSON.stringify(resData) !== JSON.stringify(data)) {
+                    for (let i = 0, len = resData.length; i < len; i++) {
                         this.updateDataSource(data);
-                        if (resData[i].status === "0" && data[i].status === "1") {
+                        if (resData[i].docid === data[i].docid && resData[i].status === "0" && data[i].status === "1") {
                             notification.success({
                                 message: `程序 ${i} 运行成功`,
                                 description:
@@ -258,13 +292,13 @@ class index extends Component {
                                     </>
                             });
                         }
-                        if (resData[i].status === "0" && data[i].status === "2") {
+                        if (resData[i].docid === data[i].docid && resData[i].status === "0" && data[i].status === "2") {
                             notification.error({
                                 message: `程序 ${i} 运行失败`,
                                 description: noticeContent(data[i])
                             });
                         }
-                        if (resData[i].status === "1" && data[i].status === "0") {
+                        if (resData[i].docid === data[i].docid && resData[i].status === "1" && data[i].status === "0") {
                             notification.info({
                                 message: '有新程序开始运行',
                                 description: noticeContent(data[i])
@@ -285,13 +319,17 @@ class index extends Component {
             });
         }
     }
-    getLogInfo = () => {
+    getLogInfo = status => {
         this.setState({
             logModalVisible: true,
             logInfoArray: [],
             hasGotInfo: true
         });
-        this.logTimer = setInterval(this.pollingInfo, 1000)
+        if (status === "0") {
+            this.logTimer = setInterval(this.pollingInfo, 1000);
+        } else {
+            this.pollingInfo();
+        }
     }
     pollingInfo = () => {
         let { api, hasGotInfo, pollingInfoErrTimes } = this.state;
@@ -324,6 +362,9 @@ class index extends Component {
                         data.splice(i, 1);
                         i -= 1;
                     }
+                }
+                if (data.length === 0 || (Array.from(new Set(data)).length === 1 && Array.from(new Set(data))[0] === "")) {
+                    data.push("暂无日志");
                 }
                 this.setState({ logInfoArray: data });
             }).catch(error => {
@@ -386,13 +427,13 @@ class index extends Component {
                     if (idenMod === 731) {
                         this.setState({ calcDrawerVisible: true });
                     } else {
-                        this.getLogInfo();
+                        this.getLogInfo(info.status);
                     }
                     break;
                 case "1":
                     if (hasUrl === "0") {
                         if (nowStep < stepNum) {
-                            message.info("当前步骤无可查询结果，请点击下一步运行")
+                            message.info("当前步骤无可查询结果，请点击下一步运行");
                         } else {
                             this.getFileList();
                         }
@@ -427,6 +468,80 @@ class index extends Component {
                     break;
             }
         });
+    }
+    handleClickMenu = (item, info) => {
+        let { key } = item;
+        let { status, nowStep, stepNum, idenMod } = info;
+        this.setState({ currentItemInfo: info }, () => {
+            if (key === "1") {
+                switch (status) {
+                    case "0":
+                        if (idenMod === 731) {
+                            this.getFileList();
+                        } else {
+                            message.info("运行未完成，无法查看结果")
+                        }
+                        break;
+                    case "1":
+                        if (nowStep < stepNum) {
+                            message.info("当前步骤无可查询结果，请点击下一步运行")
+                        } else {
+                            this.getFileList();
+                        }
+                        break;
+                    case "2":
+                        message.error("运行错误");
+                        break;
+                    case "fail":
+                        message.error("异常");
+                        break;
+                    default:
+                        break;
+                }
+            } else if (key === "2") {
+                this.handleViewTdata(info);
+            } else if (key === "3") {
+                this.getLogInfo(info.status);
+            }
+        });
+    }
+    handleViewTdata = info => {
+        let { dockerIP, vport, modelIndex, idenMod, status } = info;
+        this.setState({
+            tdataDrawerVisible: true,
+            fileListLoading: true,
+            tdataFileListData: [],
+            currentItemInfo: info
+        })
+        if (status !== "3") {
+            axios.get("http://" + dockerIP + ":" + vport + "/fileList",
+                {
+                    params: {
+                        index: modelIndex,
+                        idenMod,
+                        tData: 1
+                    }
+                }).then(res => {
+                    let { data } = res.data;
+                    let resFileList = [];
+                    for (let key in data) {
+                        resFileList.push({
+                            name: key,
+                            suffix: key.split(".").pop(),
+                            absolutePath: data[key][0],
+                            staticPath: data[key][1],
+                            size: data[key][2] ? +data[key][2] : "",
+                        })
+                    }
+                    Object.keys(data).map((item, index) => resFileList[index].key = index)
+                    this.setState({
+                        fileListLoading: false,
+                        tdataFileListData: resFileList,
+                    })
+                }).catch(err => {
+                    message.error("获取结果失败");
+                })
+        }
     }
     openNewWindow = () => {
         let { dockerIP, vport } = this.state.currentItemInfo;
@@ -499,9 +614,9 @@ class index extends Component {
                 clearInterval(this.checkTimer);
                 let calcResData = {}, sameName = false;
                 for (let i = 0; i < resFileListData.length; i++) {
-                    if (name.indexOf("25D_s") > -1 && name.replace("25D", "3D").replace(/_s[0-9]/, "_s1") === resFileListData[i].name) {
+                    if (name.indexOf("25D_s") > -1 && (name.replace(/25D_s[0-9]/, "3D_s") === resFileListData[i].name)) {
                         sameName = true;
-                    } else if (name.indexOf("3D_s") > -1 && name.replace("3D", "25D").replace(/_s[0-9]/, "_s1") === resFileListData[i].name) {
+                    } else if (/3D_s_[0-9]/.test(name) && (name === resFileListData[i].name.replace(/25D_s[0-9]/, "3D_s"))) {
                         sameName = true;
                     }
                 }
@@ -516,10 +631,12 @@ class index extends Component {
                                 calcResData: data,
                                 dataType: "2d_1"
                             }, () => {
-                                this.setState({
-                                    visVisible: true,
-                                    dataLoading: false,
-                                })
+                                if (this.state.dataLoading) {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false,
+                                    })
+                                }
                             })
                         } else {
                             this.checkTimer = setInterval(this.pollingData, 5000);
@@ -537,11 +654,11 @@ class index extends Component {
                 } else if (name.indexOf("_s") > -1 && sameName) {
                     let num = 0;
                     for (let i = 0; i < resFileListData.length; i++) {
-                        if ((/25D_s1_[1-9]/).test(resFileListData[i].name)) {
+                        if (/25D_s[1-9]_1/.test(resFileListData[i].name)) {
                             num++;
                         }
                     }
-                    let path = absolutePath.replace("3D", "25D").replace(/_s[0-9]/, "_s1");
+                    let path = absolutePath.replace(/3D_s_|25D_s[0-9]_/, "25D_s1_");
                     let time1 = 0, time2 = 0, yDataMap_25D = {}, xData = [], nameObj = {}, fileData = {};
                     for (let i = 1; i <= num; i++) {
                         nameObj["file" + i] = path.replace("s1", "s" + i);
@@ -586,10 +703,12 @@ class index extends Component {
                                     calcResData,
                                     dataType: "line_2"
                                 }, () => {
-                                    this.setState({
-                                        visVisible: true,
-                                        dataLoading: false,
-                                    })
+                                    if (this.state.dataLoading) {
+                                        this.setState({
+                                            visVisible: true,
+                                            dataLoading: false,
+                                        })
+                                    }
                                 })
                             }
                         }).catch(err => {
@@ -602,7 +721,7 @@ class index extends Component {
 
                     let yDataMap_3D = [];
                     axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
-                        params: { path: absolutePath.replace("25D", "3D") }
+                        params: { path: absolutePath.replace(/25D_s[0-9]_/, "3D_s_") }
                     }).then(res => {
                         let { data } = res.data;
                         if (Array.isArray(data) && data.length > 0) {
@@ -632,10 +751,12 @@ class index extends Component {
                                 calcResData,
                                 dataType: "line_2"
                             }, () => {
-                                this.setState({
-                                    visVisible: true,
-                                    dataLoading: false,
-                                })
+                                if (this.state.dataLoading) {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false,
+                                    })
+                                }
                             })
                         }
                     })
@@ -678,10 +799,12 @@ class index extends Component {
                                         calcResData,
                                         dataType: "line_1"
                                     }, () => {
-                                        this.setState({
-                                            visVisible: true,
-                                            dataLoading: false,
-                                        })
+                                        if (this.state.dataLoading) {
+                                            this.setState({
+                                                visVisible: true,
+                                                dataLoading: false,
+                                            })
+                                        }
                                     })
                                 }
                             }).catch(err => {
@@ -697,10 +820,12 @@ class index extends Component {
                                     calcResData,
                                     dataType: "line_1"
                                 }, () => {
-                                    this.setState({
-                                        visVisible: true,
-                                        dataLoading: false,
-                                    })
+                                    if (this.state.dataLoading) {
+                                        this.setState({
+                                            visVisible: true,
+                                            dataLoading: false,
+                                        })
+                                    }
                                 })
                             }
                         }
@@ -717,10 +842,12 @@ class index extends Component {
                                 calcResData: data,
                                 dataType: data.length > 1000 ? "2d_1" : "single"
                             }, () => {
-                                this.setState({
-                                    visVisible: true,
-                                    dataLoading: false
-                                })
+                                if (this.state.dataLoading) {
+                                    this.setState({
+                                        visVisible: true,
+                                        dataLoading: false
+                                    })
+                                }
                             });
                         } else {
                             this.checkTimer = setInterval(this.pollingData, 5000);
@@ -749,10 +876,12 @@ class index extends Component {
                             calcResData: data,
                             dataType: "2d_2"
                         }, () => {
-                            this.setState({
-                                visVisible: true,
-                                dataLoading: false
-                            })
+                            if (this.state.dataLoading) {
+                                this.setState({
+                                    visVisible: true,
+                                    dataLoading: false
+                                })
+                            }
                         });
                     } else {
                         this.checkTimer = setInterval(this.pollingData, 5000);
@@ -804,17 +933,19 @@ class index extends Component {
                     message.warn("数据错误，无法可视化");
                 } else {
                     this.setState({ dataLoading: true });
+                    // axios.get("./static/data/LC_2D_M1-D2T_tpwt50.csv", {
+                    // axios.get("http://192.168.0.129:8085/csvNew3D?filePath=LC_2D_M1-D2T_tpwt50.csv", {
                     axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
                         params: { path: absolutePath }
                     }).then(res => {
                         let { data } = res.data;
+                        // data.map(i => { i.pop(); return i })
+                        // data = data.split("\n").map(i => i.split(",")).map(i => { i.pop(); return i })
+                        console.log(data);
                         if (Array.isArray(data) && data.length > 0) {
                             if (idenMod === 325) {
                                 if ((funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) || name.indexOf("residuals") > -1) {
-                                    data = data.map(item => {
-                                        item = item[0].trim().replace(/\s+/g, " ").split(" ");
-                                        return item
-                                    });
+                                    data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
                                 }
                             }
                             if ([321, 322, 323, 324].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) {
@@ -824,34 +955,73 @@ class index extends Component {
                                 data.map(item => item.splice(1, 1));
                             }
                             if (idenMod === 7214) {
-                                data = data.map(item => {
-                                    item = item[0].trim().replace(/\s+/g, " ").split(" ");
-                                    return item
-                                });
+                                data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
+                            }
+                            if (idenMod === 631) {
+                                data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
                             }
                             if (idenMod !== 51) {
                                 data = data.map(item => item.map(item2 => Number(item2)));
                             }
+                            let expand = false;
                             if (idenMod === 2131 || idenMod === 7213) {
-                                let new_data = data[0].map((col, i) => data.map(row => row[i]));
-                                let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
-                                let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
-                                if (xData.length === 1) {
-                                    data = data.map(item => {
-                                        item.splice(0, 1)
-                                        return item;
-                                    })
-                                }
-                                if (yData.length === 1) {
-                                    data = data.map(item => {
-                                        item.splice(1, 1)
-                                        return item;
-                                    })
+                                if (data[0].length === 3) {
+                                    let new_data = data[0].map((col, i) => data.map(row => row[i]));
+                                    let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
+                                    let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
+                                    let xLen = xData.length, yLen = yData.length;
+                                    if (xLen === 1) {
+                                        data = data.map(item => {
+                                            item.splice(0, 1);
+                                            return item;
+                                        })
+                                    }
+                                    if (yLen === 1) {
+                                        data = data.map(item => {
+                                            item.splice(1, 1);
+                                            return item;
+                                        })
+                                    }
+                                    if (data[0].length === 3) {
+                                        let newArr = [];
+                                        let m = parseInt(yLen / xLen);
+                                        if (m > 1) {
+                                            for (let i = 0; i < yLen; i++) {
+                                                newArr[i] = [];
+                                                for (let j = 0; j < xLen - 1; j++) {
+                                                    let range = data[i * xLen + j + 1][2] - data[i * xLen + j][2];
+                                                    for (let k = 0; k < m; k++) {
+                                                        newArr[i].push(data[i * xLen + j][2] + range / m * k)
+                                                    }
+                                                }
+                                            }
+                                            data = newArr;
+                                        }
+                                    }
+                                    // if (yLen / xLen >= 3) {
+                                    //     expand = true;
+                                    // }
+                                } else {
+                                    let xLen = data[0].length, yLen = data.length;
+                                    let m = parseInt(yLen / xLen);
+                                    let newArr = [];
+                                    if (m > 1) {
+                                        for (let i = 0; i < yLen; i++) {
+                                            newArr[i] = [];
+                                            for (let j = 0; j < xLen - 1; j++) {
+                                                let range = data[i][j + 1] - data[i][j];
+                                                for (let k = 0; k < m; k++) {
+                                                    newArr[i].push(data[i][j] + range / m * k)
+                                                }
+                                            }
+                                        }
+                                        data = newArr;
+                                    }
                                 }
                             }
                             let dataType = "";
-                            if (info.suffix === "csv") {
-                                if (Array.isArray(data[0])) {
+                            if (Array.isArray(data[0])) {
+                                if (info.suffix === "csv") {
                                     if (data[0].length === 1 || data[0].length === 2) {
                                         dataType = "1d";
                                     } else if (data[0].length === 3) {
@@ -861,25 +1031,30 @@ class index extends Component {
                                     } else if (data[0].length > 4) {
                                         dataType = "matrix";
                                     }
-                                } else {
-                                    dataType = undefined;
+                                    if ((idenMod === 2131 || idenMod === 7213) && dataType === "2d" && expand) {
+                                        dataType = "2d_heatmap";
+                                    }
+                                } else if (info.suffix === "msh") {
+                                    dataType = "msh";
+                                } else if (info.suffix === "txt") {
+                                    dataType = "txt";
                                 }
-                            } else if (info.suffix === "msh") {
-                                dataType = "msh";
-                            } else if (info.suffix === "txt") {
-                                dataType = "txt";
+                            } else {
+                                dataType = undefined;
                             }
-                            if ((idenMod === 2131 || idenMod === 7213) && funcName.indexOf("Real") > -1 && dataType === "2d") {
-                                dataType = "2d_heatmap";
-                            }
+                            console.log(data);
+                            console.log(dataType);
                             this.setState({
                                 calcResData: data,
                                 dataType
                             }, () => {
-                                this.setState({
-                                    visVisible: true,
-                                    dataLoading: false
-                                })
+                                if (!dataType) message.error("数据错误,无法可视化");
+                                if (this.state.dataLoading) {
+                                    this.setState({
+                                        visVisible: dataType && true,
+                                        dataLoading: false
+                                    })
+                                }
                             });
                         } else {
                             this.checkTimer = setInterval(this.pollingData, 5000);
@@ -889,6 +1064,7 @@ class index extends Component {
                             })
                         }
                     }).catch(err => {
+                        console.log(err);
                         this.checkTimer = setInterval(this.pollingData, 5000);
                         this.setState({
                             dataLoading: false
@@ -899,7 +1075,7 @@ class index extends Component {
         }
     }
     handleCancleVisModal = () => {
-        this.setState({ visVisible: false })
+        this.setState({ visVisible: false });
         this.checkTimer = setInterval(this.pollingData, 5000);
         document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
@@ -956,13 +1132,14 @@ class index extends Component {
         }
     }
     render() {
-        const { dataSource, resDrawerVisible, resFileListData, logModalVisible, logInfoArray, fileModalVisible, imgModalVisible, uri,
-            filePath, visVisible, calcResData, dataLoading, fileListLoading, dataType, currentItemInfo, username, visDrawerVisible, calcDrawerVisible
+        const { dataSource, resDrawerVisible, resFileListData, logModalVisible, logInfoArray, fileModalVisible, imgModalVisible, uri, filePath, visVisible,
+            calcResData, dataLoading, fileListLoading, dataType, currentItemInfo, username, visDrawerVisible, calcDrawerVisible, tdataDrawerVisible, tdataFileListData
         } = this.state;
         return (
             <div id="console" className="box-shadow">
                 <ConfigProvider locale={zhCN}>
                     <Table
+                        className="console-table"
                         title={() => <span style={{ fontWeight: "bold" }}>控制台</span>}
                         dataSource={dataSource || []}
                         columns={createColumns(this)}
@@ -1006,10 +1183,26 @@ class index extends Component {
                         </div>
                     </Drawer>
                 }
+                <Drawer title="模板结果" placement="left" visible={tdataDrawerVisible} onClose={() => { this.setState({ tdataDrawerVisible: false }) }} width={550}>
+                    <ConfigProvider locale={zhCN}>
+                        <Table className="filelist-table"
+                            title={() => <span style={{ fontSize: 18, margin: 0 }}>程序名称：{currentItemInfo.appName}{currentItemInfo.funcName !== "无" && <><br />模型名称：{currentItemInfo.funcName}</>}</span>}
+                            dataSource={tdataFileListData}
+                            columns={fileTableColumns(this)}
+                            loading={fileListLoading}
+                            sticky
+                            pagination={{
+                                showQuickJumper: tdataFileListData.length > 50 && true,
+                                hideOnSinglePage: true,
+                                showLessItems: true,
+                            }}
+                        />
+                    </ConfigProvider>
+                </Drawer >
                 <Drawer title="运行结果" placement="left" visible={resDrawerVisible} onClose={this.handleCloseDrawer} width={550}>
                     <ConfigProvider locale={zhCN}>
                         <Table className="filelist-table"
-                            title={() => <span style={{ fontSize: 18, margin: 0 }}>{currentItemInfo.appName}{currentItemInfo.funcName !== "无" && `【${currentItemInfo.funcName}】`}</span>}
+                            title={() => <span style={{ fontSize: 18, margin: 0 }}>程序名称：{currentItemInfo.appName}{currentItemInfo.funcName !== "无" && <><br />模型名称：{currentItemInfo.funcName}</>}</span>}
                             dataSource={resFileListData}
                             columns={fileTableColumns(this)}
                             loading={fileListLoading}
@@ -1021,23 +1214,26 @@ class index extends Component {
                             }}
                         />
                     </ConfigProvider>
-                    <div className="data-loading-mask" style={{ display: dataLoading ? "flex" : "none" }}>
-                        <Spin spinning={dataLoading} tip={"数据读取中..."} size="large"></Spin>
-                    </div>
-                    <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>
-                        <iframe id="file_iframe"
-                            src={uri + "/output/" + filePath}
-                            title={filePath}
-                            scrolling="auto"
-                        />
-                    </Modal>
-                    <Modal className="img-modal" visible={imgModalVisible} onCancel={this.handleCancleImgModal} footer={null}>
-                        <img src={uri + "/output/" + filePath} alt={filePath} />
-                    </Modal>
-                    <Modal className="vis-modal" visible={visVisible} onCancel={this.handleCancleVisModal} footer={null} destroyOnClose>
-                        <Vis data={calcResData} appName={currentItemInfo.appName} datatype={dataType} />
-                    </Modal>
                 </Drawer >
+                <div className="data-loading-mask" style={{ display: dataLoading ? "flex" : "none" }}>
+                    <div className="close-icon" onClick={() => { this.setState({ dataLoading: false }) }}>
+                        <Icon type="close" />
+                    </div>
+                    <Spin wrapperClassName="data-loading-spin" spinning={dataLoading} tip={"正在获取数据并处理..."} size="large"></Spin>
+                </div>
+                <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>
+                    <iframe id="file_iframe"
+                        src={uri + "/output/" + filePath}
+                        title={filePath}
+                        scrolling="auto"
+                    />
+                </Modal>
+                <Modal className="img-modal" visible={imgModalVisible} onCancel={this.handleCancleImgModal} footer={null}>
+                    <img src={uri + "/output/" + filePath} alt={filePath} />
+                </Modal>
+                <Modal className="vis-modal" visible={visVisible} onCancel={this.handleCancleVisModal} footer={null} destroyOnClose>
+                    <Vis data={calcResData} appName={currentItemInfo.appName} datatype={dataType} />
+                </Modal>
                 <Modal className="log-modal" visible={logModalVisible} onCancel={this.handleCancleLogModal} footer={null}>
                     <div style={{ textAlign: "center" }}>
                         <Spin spinning={Array.isArray(logInfoArray) && logInfoArray.length === 0} tip={"日志获取中..."} size="large"></Spin>

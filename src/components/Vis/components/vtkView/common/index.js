@@ -2812,6 +2812,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
             })
             break;
         case "2D-DNN-SeismicInv":
+        case "二维深度神经网络地震反演（2D-DNN-SeismicInv）":
             for (let i = 0; i < xLength; i++) {
                 array1[i] = arrs.splice(0, yLength)
             }
@@ -2846,7 +2847,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
             });
             break;
         default:
-            if (datatype === "2d" && ["大地电磁面波 (MT-Surf RealData)", "接收函数反演 (ReceiverFunc Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演","模糊C回归聚类"].includes(appName)) {
+            if (datatype === "2d" && ["大地电磁面波 (MT-Surf RealData)", "接收函数反演 (ReceiverFunc Inversion)", "接收函数-面波联合反演 (ReceiverFunc-Surf Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演", "模糊C回归聚类"].includes(appName)) {
                 simpleFilter.setFormula({
                     getArrays: (inputDataSets) => ({
                         input: [
@@ -2869,7 +2870,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
                         arraysOut.forEach(x => x.modified());
                     }
                 })
-            } else if (datatype === "2d" && ["Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)", "超分辨率地震成像 (Super Resolution Seismic Imaging)"].includes(appName)) {
+            } else if (datatype === "2d" && appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
                 arrs = arrs.reverse();
                 for (let i = 0; i < yLength; i++) {
                     array1[i] = arrs.splice(0, xLength)
@@ -2981,7 +2982,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
     let ScalPointData = [];
     let rulerScal = [];
     const rulers = [];
-    console.log(datatype);  
+    console.log(datatype);
     switch (datatype) {
         case "数据网格化":
         case "重力数据求偏导":

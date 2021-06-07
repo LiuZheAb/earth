@@ -91,7 +91,7 @@ export default class csvView extends Component {
                 yAxis.push(...data_c[i].splice(0, 1))
             }
         }
-        if (["Super Resolution ITSMF", "超分辨率反演", "保幅超分辨率反演(Super Resolution ITSMF)"].includes(appName)) {
+        if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
             dimensional = 2;
             for (let i = 0; i < data_c.length; i++) {
                 xAxis.push(...data_c[i].splice(0, 1))
@@ -547,7 +547,7 @@ export default class csvView extends Component {
 
     componentDidMount() {
         let { appName } = this.props;
-        if (appName === "Super Resolution ITSMF" || appName === "超分辨率反演" || appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
+        if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
             this.props.dispatch(actions.setMoveStyle(actions.moveType.PAN));
             this.setState({
                 mode: "X Ray"

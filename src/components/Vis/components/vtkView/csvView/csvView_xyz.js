@@ -167,12 +167,12 @@ export default class csvView extends Component {
                     zMin: zSort[0],
                     zMax: zSort[zSort.length - 1],
                 })
-                yLength = Array.from(new Set(yAxis)).length;
                 yAxis1 = Array.from(new Set(yAxis))
-                xLength = Array.from(new Set(xAxis)).length;
+                yLength = yAxis1.length;
                 xAxis1 = Array.from(new Set(xAxis))
-                zLength = Array.from(new Set(zAxis)).length;
+                xLength = xAxis1.length;
                 zAxis1 = Array.from(new Set(zAxis))
+                zLength = zAxis1.length;
                 resolve({
                     xAxis, xAxis1, yAxis, yAxis1, zAxis, zAxis1, xLength, yLength, zLength, arrs
                 }) // 数据处理完成
@@ -383,9 +383,9 @@ export default class csvView extends Component {
                 model.renderer.resetCamera();
                 model.renderWindow.render();
                 _this.setState({
-                    min: min,
-                    max: max,
-                    unique: unique,
+                    min,
+                    max,
+                    unique,
                     model,
                     xAxis1,
                     yAxis1,
@@ -399,7 +399,6 @@ export default class csvView extends Component {
     };
 
     componentDidMount() {
-        console.log("xyz")
         this.props.dispatch(actions.setMoveStyle(actions.moveType.ROTATE));
         this.props.dispatch(actions.toggleShitidanyuanButton("command-disable"));
         this.props.dispatch(actions.toggleWanggeButton("command-disable"));
@@ -480,6 +479,7 @@ export default class csvView extends Component {
         //应用ColorMap
         lut1.applyColorMap(preset);
         lut1.setMappingRange(min, max);
+        console.log({ min, max });
         lut1.updateRange();
         let num = Math.round(unique.length / 3);
         const picker = vtkPointPicker.newInstance();

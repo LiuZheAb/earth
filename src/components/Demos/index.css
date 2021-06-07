@@ -1,0 +1,21 @@
+#demos {
+    background: #fff;
+    min-height: calc(100vh - 90px);
+    padding: 0 20px;
+}
+
+#demos .ant-tabs-tabpane {
+    text-align: center;
+}
+
+#demos img {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+}
+
+#demos p {
+    font-weight: bold;
+    font-size: 20px;
+    color: #000;
+}

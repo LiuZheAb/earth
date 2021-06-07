@@ -5,17 +5,18 @@
  * 文件描述：展示页面主文件
  */
 import React from "react";
-import { Row, Col, Layout, Table, Form, Icon, Button, message, Upload, Input, Radio, Select, Divider, Modal, Tabs, Tooltip } from "antd";
-import "./index.css";
+import { Row, Col, Layout, Table, Form, Icon, Button, message, Upload, Input, Radio, Select, Divider, Modal, Tabs, Tooltip, DatePicker } from "antd";
+import 'moment/locale/zh-cn';
 import Header from "../../../components/HomeNavbar";
 import axios from "axios";
 import { baseUrl, selectByOneUrl, selectByTwoUrl, selectByThreeUrl } from "../assets/url";
+import locale from 'antd/es/date-picker/locale/zh_CN';
 import reqwest from 'reqwest';
+import "./index.css";
 
 const { Option } = Select;
 const { Content } = Layout;
 const { TabPane } = Tabs;
-
 const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
@@ -25,11 +26,12 @@ const tailLayout = {
   wrapperCol: { span: 24 },
 };
 //所有信息
-const columns = [{
+const columns = _this => [{
   dataIndex: "dataEntity",
   title: "数据文件",
   width: 182,
-  render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+  render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>,
+  fixed: 'left',
 }, {
   dataIndex: "dataFormat",
   title: "数据格式"
@@ -62,8 +64,18 @@ const columns = [{
 }, {
   dataIndex: "time",
   title: "创建时间"
+}, {
+  dataIndex: "operation",
+  title: "操作",
+  render: (_, { dataEntity, dataSetName, key }) => {
+    let fileSuffix = dataEntity.split(".").pop();
+    return <Button type="primary" onClick={(e) => _this.handleDownload(e, dataSetName, dataEntity, key)} loading={_this.state.btnLoading[dataSetName + "" + key]}>
+      {imgSuffix.includes(fileSuffix) ? "预览" : txtSuffix.includes(fileSuffix) || /i[0-9]/.test(fileSuffix) ? "查看" : "下载"}
+    </Button>
+  }
 }];
-const suffix = ["bmp", "jpg", "png", "tif", "gif", "pcx", "tga", "exif", "fpx", "svg", "psd", "cdr", "pcd", "dxf", "ufo", "eps", "ai", "raw", "WMF", "webp", "avif"]
+const imgSuffix = ["bmp", "jpg", "png", "tif", "gif", "pcx", "tga", "exif", "fpx", "svg", "psd", "cdr", "pcd", "dxf", "ufo", "eps", "ai", "raw", "WMF", "webp", "avif"];
+const txtSuffix = ["cpp", "py", "txt", "stp", "pdf", "pos", "script"];
 class Download extends React.Component {
   constructor(props) {
     super(props);
@@ -108,7 +120,8 @@ class Download extends React.Component {
       open: false,
       name: "",
       searchType: true,
-      selectedCategory: undefined
+      selectedCategory: undefined,
+      time: ""
     };
     this.lock = null;
   };
@@ -147,41 +160,36 @@ class Download extends React.Component {
     }
   };
 
-  handleDownload = (e, dataSetName, fileName) => {
-    this.btnLoadingStatus(dataSetName + "" + fileName, true);
-    let dataSetNameArr = fileName.split(".");
-    if (suffix.indexOf(dataSetNameArr[dataSetNameArr.length - 1]) > -1) {
-      axios({
-        method: 'get',
-        url: baseUrl + "/Bigdata/service/ipig/downDataFile",
-        params: { downDataFileName: fileName, dataSetName: dataSetName }
-      }).then((res) => {
-        if (res.data) {
+  handleDownload = (e, dataSetName, fileName, key) => {
+    this.btnLoadingStatus(dataSetName + "" + key, true);
+    let fileSuffix = fileName.split(".").pop();
+    axios({
+      method: 'get',
+      url: baseUrl + "/Bigdata/service/ipig/downDataFile",
+      params: { downDataFileName: fileName, dataSetName: dataSetName }
+    }).then((res) => {
+      if (res.data) {
+        if (imgSuffix.indexOf(fileSuffix) > -1) {
           this.setState({
             previewUrl: baseUrl + res.data,
             visible: true
           });
-        };
-        this.btnLoadingStatus(dataSetName + "" + fileName, false);
-      }).catch(() => {
-        message.error("文件信息获取错误");
-        this.btnLoadingStatus(dataSetName + "" + fileName, false);
-      })
-    } else {
-      axios({
-        method: 'get',
-        url: baseUrl + "/Bigdata/service/ipig/downDataFile",
-        params: { downDataFileName: fileName, dataSetName: dataSetName }
-      }).then((res) => {
-        if (res.data) {
-          window.open(baseUrl + res.data, "_blank")
-        };
-        this.btnLoadingStatus(dataSetName + "" + fileName, false);
-      }).catch(() => {
-        message.error("下载错误");
-        this.btnLoadingStatus(dataSetName + "" + fileName, false);
-      })
-    }
+        } else if (txtSuffix.indexOf(fileSuffix) > -1 || /i[0-9]/.test(fileSuffix)) {
+          window.open(baseUrl + res.data);
+        } else {
+          let elementA = document.createElement('a');
+          elementA.style.display = 'none';
+          elementA.href = baseUrl + res.data;
+          document.body.appendChild(elementA);
+          elementA.click();
+          document.body.removeChild(elementA);
+        }
+      };
+      this.btnLoadingStatus(dataSetName + "" + key, false);
+    }).catch(() => {
+      message.error("文件信息获取错误");
+      this.btnLoadingStatus(dataSetName + "" + key, false);
+    })
   }
 
   fetch = (params = {}) => {
@@ -200,7 +208,7 @@ class Download extends React.Component {
           allData: res.list
         });
       };
-      let total = parseInt(res.list[0]["num"]);
+      let total = parseInt(res.list[0].num);
       if (total > 0) {
         this.setState({
           loading: false,
@@ -270,11 +278,11 @@ class Download extends React.Component {
     });
     this.btnLoadingStatus("keySelect", true);
     //判断关键字个数
-    let selectKeys = selectKey ? selectKey.split(",") : [];
+    let selectKeys = selectKey ? selectKey.split(" ") : [];
     let keyNum = selectKeys.length;
     let params = {};
     for (let i = 0; i < keyNum; i++) {
-      params["Key" + (i + 1)] = selectKeys[i]
+      params["Key" + (i + 1)] = selectKeys[i];
     }
     if (keyNum >= 1 && keyNum <= 3) {
       this.setState({ keyLoading: true })
@@ -309,15 +317,11 @@ class Download extends React.Component {
     e.preventDefault();
     this.props.form.validateFields({ force: true }, (err, values) => {
       if (!err) {
+        let { fileList, time } = this.state;
+        values.time = time;
         this.btnLoadingStatus("submit", true)
         let newObj = JSON.parse(JSON.stringify(values));
-        let { fileList } = this.state;
-        // let fileListStr = "";
-        // for (let i = 0; i < fileList.length; i++) {
-        //   fileListStr = fileListStr + fileList[i] + ";"
-        // };
-        // fileListStr = fileListStr.substring(0, fileListStr.length - 1);
-        newObj["dataEntity"] = fileList;
+        newObj.dataEntity = fileList;
         axios({
           method: 'post',
           url: baseUrl + "/Bigdata/service/ipig/addMetaData",
@@ -359,13 +363,13 @@ class Download extends React.Component {
   handleCurrentDataSet = () => {
     let { btnLoading, currentDataSetName } = this.state;
     if (currentDataSetName) {
-      btnLoading["dataSetName"] = true;
+      btnLoading.dataSetName = true;
       this.setState({
         dataSetSelect: false,
         btnLoading
       }, () => {
         let { btnLoading } = this.state;
-        btnLoading["dataSetName"] = false;
+        btnLoading.dataSetName = false;
         this.setState({
           btnLoading
         });
@@ -442,7 +446,7 @@ class Download extends React.Component {
           <Content className="site-layout-background">
             <Row>
               <Col md={2} sm={0} xs={0}></Col>
-              <Col md={20} sm={24} xs={24} style={{ background: "#fff", padding: "0 16px", minHeight: "calc(100vh - 90px)" }}>
+              <Col md={20} sm={24} xs={24} className="box-shadow" style={{ background: "#fff", padding: "0 16px", minHeight: "calc(100vh - 90px)" }}>
                 <Tabs defaultActiveKey="1">
                   <TabPane tab="数据文件上传" key="1">
                     <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
@@ -482,7 +486,7 @@ class Download extends React.Component {
                                         onMouseUp={this.lockClose}
                                         placeholder="数据集名称"
                                       />
-                                      <span style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={this.addItem} onMouseDown={this.lockClose} onMouseUp={this.lockClose}>
+                                      <span style={{ flex: 'none', display: 'block', cursor: 'pointer', lineHeight: "32px" }} onClick={this.addItem} onMouseDown={this.lockClose} onMouseUp={this.lockClose}>
                                         <Icon type="plus" /> 新增数据集
                                       </span>
                                     </div>
@@ -495,7 +499,7 @@ class Download extends React.Component {
                               </Select>
                             )}
                           </Form.Item>
-                          <Button onClick={this.handleCurrentDataSet} type="primary" loading={btnLoading["dataSetName"]} style={{ position: "absolute", right: 0, top: 3 }}>确定</Button>
+                          <Button onClick={this.handleCurrentDataSet} type="primary" loading={btnLoading.dataSetName} style={{ position: "absolute", right: 0, top: 3 }}>确定</Button>
                         </Row>
                         <Form.Item label="摘要(50字以内)" >
                           {getFieldDecorator('summary', {
@@ -518,7 +522,7 @@ class Download extends React.Component {
                               },
                             ],
                           })(
-                            <Input></Input>
+                            <Input placeholder="请输入关键字"></Input>
                           )}
                         </Form.Item>
                         <Form.Item label="专业数据类别">
@@ -530,7 +534,7 @@ class Download extends React.Component {
                               },
                             ],
                           })(
-                            <Input></Input>
+                            <Input placeholder="请输入专业数据类别"></Input>
                           )}
                         </Form.Item>
                         <Form.Item label="数据格式">
@@ -542,7 +546,7 @@ class Download extends React.Component {
                               },
                             ],
                           })(
-                            <Input></Input>
+                            <Input placeholder="请输入数据集格式"></Input>
                           )}
                         </Form.Item>
                         <Form.Item label="创建时间">
@@ -554,7 +558,7 @@ class Download extends React.Component {
                               },
                             ],
                           })(
-                            <Input></Input>
+                            <DatePicker locale={locale} onChange={(date, dateString) => { this.setState({ time: dateString }) }} />
                           )}
                         </Form.Item>
                         <Form.Item label="数据来源">
@@ -566,7 +570,7 @@ class Download extends React.Component {
                               },
                             ],
                           })(
-                            <Input></Input>
+                            <Input placeholder="请输入数据来源"></Input>
                           )}
                         </Form.Item>
                         <Form.Item label="数据负责人">
@@ -578,7 +582,7 @@ class Download extends React.Component {
                               },
                             ],
                           })(
-                            <Input></Input>
+                            <Input placeholder="请输入数据负责人"></Input>
                           )}
                         </Form.Item>
                         <Form.Item label="数据文件">
@@ -591,6 +595,7 @@ class Download extends React.Component {
                               return e && e.fileList;
                             },
                             rules: [{
+                              required: true,
                               validator: (rule, value, callback) => {
                                 if (currentDataSetName && !value) {
                                   return callback('请上传数据文件！')
@@ -623,7 +628,7 @@ class Download extends React.Component {
                     </div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
                       {searchType ?
-                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500, marginRight: 20 }}>
+                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500 }}>
                           <label style={{ width: 120, textAlign: "right" }}>数据集名称：</label>
                           <Select onChange={this.dataCategorySelect} value={selectedCategory} placeholder="选择数据集" id="dataSetSelect" style={{ width: "calc(100% - 120px)" }}>
                             {datasetNames.length > 0 && datasetNames.map((item, index) => {
@@ -634,14 +639,14 @@ class Download extends React.Component {
                           </Select>
                         </div>
                         :
-                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500, marginRight: 20 }}>
-                          <Form layout="inline" className="selectKey" style={{ width: "100%" }}>
+                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500 }}>
+                          <Form layout="inline" className="selectKey" style={{ width: "100%", marginRight: 20 }}>
                             <Form.Item label="关键词">
                               {getFieldDecorator('selectKey', {
                                 rules: [
                                   {
                                     validator: (rule, value, callback) => {
-                                      if (value.split(",").length < 4) {
+                                      if (value.split(" ").length < 4) {
                                         return callback()
                                       } else {
                                         return callback('请不要输入三个以上的关键字！')
@@ -650,19 +655,19 @@ class Download extends React.Component {
                                   },
                                 ],
                               })(
-                                <Input placeholder="请输入1~3个关键字，以,分隔" id="keyWord" onChange={this.handleSelectKey}></Input>
+                                <Input placeholder="请输入1~3个关键字，以空格分隔" id="keyWord" onChange={this.handleSelectKey}></Input>
                               )}
                             </Form.Item>
                           </Form>
+                          <Button onClick={this.handleKeySelect} type="primary">查询</Button>
                         </div>
                       }
-                      {!searchType && <Button onClick={this.handleKeySelect} type="primary">查询</Button>}
                     </div>
                     <div style={{ textAlign: "right", marginBottom: 24 }}>
                       <Button disabled={!select} type="primary" onClick={this.handleCancleFilter}>取消筛选</Button>
                     </div>
                     <Table
-                      columns={columns}
+                      columns={columns(this)}
                       dataSource={allData}
                       pagination={{
                         ...pagination,
