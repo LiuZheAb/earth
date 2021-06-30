@@ -104,9 +104,6 @@
 .log-modal .ant-modal-close, .file-modal .ant-modal-close, .img-modal .ant-modal-close {
     width: 100%;
     max-width: 1000px;
-    position: fixed;
-    top: 0;
-    right: unset;
 }
 
 .file-modal {
@@ -220,10 +217,25 @@
     #console .ant-table .ant-table-thead th, #console .ant-table .ant-table-tbody td {
         padding: 8px !important;
     }
+    .ant-drawer-body {
+        padding: 10px;
+    }
+    .filelist-table .table-item-name {
+        max-width: 100px;
+    }
+    .ant-drawer-body .ant-table-title span {
+        font-size: 16px !important;
+    }
 }
 
 @media(max-width:576px) {
     #console .ant-table-scroll colgroup col:nth-child(2), #console .ant-table-fixed-left colgroup col:nth-child(2) {
         width: 120px !important;
+    }
+    #console .ant-table {
+        font-size: 14px !important;
+    }
+    .ant-drawer-body .ant-table-title span {
+        font-size: 14px !important;
     }
 }

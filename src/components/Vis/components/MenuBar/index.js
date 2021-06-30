@@ -35,8 +35,8 @@ export default class MenuBar extends React.Component {
 	}
 
 	keyDownR = () => {
+		this.props.dispatch(actions.setModelStyle(""));
 		this.props.dispatch(actions.setModelStyle(actions.ModelStyle.SHOW_RESET));
-
 	};
 
 	keyDownS = () => {
@@ -53,7 +53,11 @@ export default class MenuBar extends React.Component {
 
 	changeAxis = () => {
 		let axis = store.getState().axis;
-		axis === true ? this.props.dispatch(actions.toggleAxis(false)) : this.props.dispatch(actions.toggleAxis(true));
+		axis === true ? (() => {
+			this.props.dispatch(actions.toggleAxis(false));
+		})() : (() => {
+			this.props.dispatch(actions.toggleAxis(true));
+		})()
 	};
 	// usePointPicker = () => {
 	//   let { usePointPicker } = this.state;
@@ -171,11 +175,11 @@ export default class MenuBar extends React.Component {
 	}
 	render() {
 		let { state } = this.props;
-		let { fuweiButton, dxuanzhuanButton, raogoujianxuanzhuanButton, moveButton, shitidanyuanButton, wanggeButton, pointButton, keduButton, 
+		let { fuweiButton, dxuanzhuanButton, raogoujianxuanzhuanButton, moveButton, shitidanyuanButton, wanggeButton, pointButton, keduButton,
 			// cejuButton, 
-			sebiaoButton, axisButton, boundButton, lightButton, 
+			sebiaoButton, axisButton, boundButton, lightButton,
 			// resultButton, scaleButton
-		 } = state;
+		} = state;
 		return (
 			<Header className="header" role="navigation" style={this.props.style}>
 				<div className={fuweiButton}>
@@ -223,7 +227,7 @@ export default class MenuBar extends React.Component {
 					</Tooltip>
 				</div>
 				<div className='commands'></div>
-				<div className={axisButton} >
+				<div className={axisButton} style={{ display: "none" }} >
 					<Tooltip title='坐标定位' placement="bottom" onClick={axisButton === "command" ? this.changeAxis : () => { return; }}>
 						<i className="iconfont iconsanweizuobiao" type="iconsanweizuobiao" />
 					</Tooltip>
@@ -243,7 +247,7 @@ export default class MenuBar extends React.Component {
 						<i className="iconfont iconceju" type="iconceju" />
 					</Tooltip>
 				</div> */}
-				<div className={boundButton} >
+				<div className={boundButton} style={{ display: "none" }} >
 					<Tooltip title='显示边框' placement="bottom" onClick={boundButton === "command" ? this.setBounds : () => { return; }}>
 						<i className="iconfont iconicon-lifangti" type="iconicon-lifangti" />
 					</Tooltip>
@@ -270,7 +274,7 @@ export default class MenuBar extends React.Component {
 						<i className="iconfont iconshujujieguotongji" type="iconshujujieguotongji" />
 					</Tooltip>
 				</div> */}
-				<div className={lightButton}>
+				<div className={lightButton} style={{ display: "none" }}>
 					<Tooltip title='灯光' placement="bottom" onClick={lightButton === "command" ? this.settingLight : () => { return; }}>
 						<i className="iconfont iconlightbulb-on" type="iconlightbulb-on" />
 					</Tooltip>

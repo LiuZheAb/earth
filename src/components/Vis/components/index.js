@@ -182,6 +182,10 @@ export default class Vtk extends React.Component {
                                     case "重力数据延拓":
                                     case "重力异常计算":
                                     case "重力观测数据反演（多约束反演）":
+                                    case "重力观测数据反演（三维正则，参考模型约束）":
+                                    case "重力观测数据反演（参考模型-全变分约束）":
+                                    case "MCMC反演":
+                                    case "MCMC反演（参考模型约束）":
                                     case "三维断层模型正演":
                                     case "四面体模型单元正演":
                                     case "磁场方向导数求取":
@@ -209,7 +213,7 @@ export default class Vtk extends React.Component {
                                     case "3d":
                                         return <CsvViewXyzContainer data={data} datatype={datatype} show={show} />;
                                     case "matrix":
-                                        if (data[0].length > 4 && (data.length / data[0].length > 10 || data[0].length / data.length > 10)) {
+                                        if (data.length / data[0].length > 10 || data[0].length / data.length > 10) {
                                             return <CsvViewXyzNoContainer data={data} datatype={datatype} appName={appName} show={show} />
                                         } else {
                                             return <CsvViewContainer data={data} datatype={datatype} appName={appName} show={show} />

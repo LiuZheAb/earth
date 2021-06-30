@@ -317,16 +317,17 @@ export default class csvView_xyz_no extends Component {
 
     componentDidMount = () => {
         this.props.dispatch(actions.setMoveStyle(actions.moveType.ROTATE));
-        this.props.dispatch(actions.toggleShitidanyuanButton("command-disable"));
-        this.props.dispatch(actions.toggleWanggeButton("command-disable"));
-        this.props.dispatch(actions.togglePointButton("command-disable"));
-        this.props.dispatch(actions.toggleAxisButton("command-disable"));
-        this.props.dispatch(actions.toggleBoundButton("command-disable"));
-        this.props.dispatch(actions.toggleResultButton("command-disable"));
-        this.props.dispatch(actions.toggleLightButton("command-disable"));
-        this.props.dispatch(actions.toggleSebiaoButton("command-disable"));
-        this.props.dispatch(actions.toggleCejuButton("command-disable"));
-        this.props.dispatch(actions.toggleScaleButton("command-disable"));
+        this.props.dispatch(actions.toggleShitidanyuanButton("command"));
+        this.props.dispatch(actions.toggleWanggeButton("command"));
+        this.props.dispatch(actions.togglePointButton("command"));
+        this.props.dispatch(actions.toggleAxisButton("command"));
+        this.props.dispatch(actions.toggleBoundButton("command"));
+        this.props.dispatch(actions.toggleResultButton("command"));
+        this.props.dispatch(actions.toggleLightButton("command"));
+        this.props.dispatch(actions.toggleKeduButton("command"));
+        this.props.dispatch(actions.toggleSebiaoButton("command"));
+        this.props.dispatch(actions.toggleCejuButton("command"));
+        this.props.dispatch(actions.toggleScaleButton("command"));
         this.result();
         // let url = global.baseUrl.replace('8002', "6001");
     };

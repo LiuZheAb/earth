@@ -25,9 +25,7 @@ let getMin = arr => {
 export default class csvView_malti_line extends Component {
     componentDidMount() {
         this.chart = echarts.init(document.getElementById('chart'));
-        let { data, appName } = this.props;
-        data = data.map(item => String(item).split(" ").map(item => Number(item)));
-        data = data[0].map((col, i) => data.map(row => row[i]));
+        let { data } = this.props;
         let dataSource = data.map(dataArray => dataArray.map((item, index) => [index, item]));
         let yMax = getMax(data[0]), yMin = getMin(data[0]), max = undefined;
         if (yMax > 0 && yMax > Math.abs(yMin)) {
@@ -52,8 +50,8 @@ export default class csvView_malti_line extends Component {
                     fontSize: 16,
                     fontWeight: "bold"
                 },
-                max: appName === "线性求解器(实/复) (Linear Solver)" ? max * 2 : max,
-                min: appName === "线性求解器(实/复) (Linear Solver)" ? -max * 2 : -max
+                max: max * 2,
+                min: -max * 2
             },
             legend: {
                 data: data.length === 1 ? ['实部'] : ['实部', '虚部']

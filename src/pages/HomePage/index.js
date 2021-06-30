@@ -55,9 +55,9 @@ export default class Homepage extends React.Component {
                     style={invisible ? {} : { position: "fixed", top: 0, width: "100%", zIndex: 9 }}
                     banner
                 />}
-                <HomeNavbar style={invisible ? {} : { position: "fixed", top: 37 }} />
+                <HomeNavbar style={invisible ? { top: 0 } : { top: 37 }} />
                 {/* <Sidebar style={invisible ? {} : { position: "fixed", top: "87px" }} /> */}
-                <Container style={{ marginTop: invisible ? 49 : 87 }} />
+                <Container style={{ marginTop: invisible ? 49 : 87, transition: "all 0.3s" }} />
                 <BackTop />
             </Layout>
         );

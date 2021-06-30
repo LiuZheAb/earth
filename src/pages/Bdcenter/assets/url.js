@@ -1,4 +1,5 @@
-export let baseUrl = "http://192.168.0.101:8080";
+// export let baseUrl = "http://192.168.0.101:8080";
+export let baseUrl = "http://12.12.12.30:8080";
 //hdfs上传文件地址
 export let hdfsUploadUrl = baseUrl + "/Bigdata/service/ipig/addDataEntity";
 export let hbaseUploadUrl = baseUrl + "/Bigdata/service/ipig/upload_csv";

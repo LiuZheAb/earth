@@ -45,7 +45,7 @@ const fileTableColumns = (_this, isTData) => [{
     align: "center",
     className: "file-desc",
     render: (text, info) => ["csv", "msh", "txt"].includes(info.suffix) ?
-        (info.size < 100 ?
+        (info.size < 80 ?
             <Button type="primary" onClick={_this.handleOpenVisModal.bind(_this, info, isTData)}>可视化</Button>
             : "文件过大，请下载后使用专业软件进行可视化")
         : "暂不支持此格式"
@@ -87,7 +87,7 @@ class Calculate extends React.Component {
             dockerID: sessionStorage.getItem("dockerID") || "",
             dockerIP: sessionStorage.getItem("dockerIP") || "",
             vport: sessionStorage.getItem("vport") || "",
-            funcName: sessionStorage.getItem("funcName") || "",
+            funcName: sessionStorage.getItem("funcName") || undefined,
             loading: false,
             listener: sessionStorage.getItem("dockerIP") ? true : false,
             currentStep: 0,
@@ -130,7 +130,12 @@ class Calculate extends React.Component {
             materialValue: undefined,
             currentParamIndex: undefined,
             nullParam: undefined,
-            hasGotInfo: true
+            hasGotInfo: true,
+            dimension: false,
+            real: false,
+            dimensionValue: "2D",
+            realValue: "model",
+            hasGotParam: true,
         };
     };
     logTimer = undefined;
@@ -144,6 +149,8 @@ class Calculate extends React.Component {
         });
         if (window.innerWidth > 768) {
             this.setState({ tinyListener: false })
+        } else {
+            this.setState({ tinyListener: true })
         }
         window.addEventListener("resize", () => {
             this.setState({ tinyListener: window.innerWidth > 768 ? false : true })
@@ -239,8 +246,20 @@ class Calculate extends React.Component {
                     message.error(data, 2);
                     break;
                 case 2:
-                    if (stepNum === 1) {
+                    if (stepNum === 1 && proList.length > 1) {
                         proList.unshift("用户自定义计算");
+                    }
+                    let dimension = false, real = false;
+                    for (let i = 0; i < proList.length; i++) {
+                        let name = proList[i];
+                        if (name.toUpperCase().indexOf("3D") > -1) {
+                            dimension = true;
+                            break;
+                        }
+                        if (name.toUpperCase().indexOf("REAL") > -1) {
+                            real = true;
+                            break;
+                        }
                     }
                     //常规docker返回结果
                     if (proList.length === 1) {
@@ -254,7 +273,9 @@ class Calculate extends React.Component {
                         vport: data.vport,
                         currentStep: currentStep + 1,
                         proList,
-                        started: true
+                        started: true,
+                        dimension,
+                        real,
                     });
                     break;
                 case 3:
@@ -278,9 +299,48 @@ class Calculate extends React.Component {
     }
     //选择模型
     handleSelectModel = value => {
+        let { proList, dimension, dimensionValue, real, realValue } = this.state;
+        let modelIndex = value;
+        if (value === 0) {
+            if (dimension) {
+                if (dimensionValue === "2D") {
+                    for (let i = 1; i < proList.length; i++) {
+                        if (proList[i].toUpperCase().indexOf("3D") === -1) {
+                            modelIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    for (let i = 1; i < proList.length; i++) {
+                        if (proList[i].toUpperCase().indexOf("3D") > -1) {
+                            modelIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else if (real) {
+                if (realValue === "model") {
+                    for (let i = 1; i < proList.length; i++) {
+                        if (proList[i].toUpperCase().indexOf("REAL") === -1) {
+                            modelIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    for (let i = 1; i < proList.length; i++) {
+                        if (proList[i].toUpperCase().indexOf("REAL") > -1) {
+                            modelIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                modelIndex = 1;
+            }
+        }
         this.setState({
-            modelIndex: value === 0 ? 1 : value,
-            funcName: this.state.proList[value],
+            modelIndex,
+            funcName: proList[value],
             texts: [],
             selects: [],
             radios: [],
@@ -290,11 +350,12 @@ class Calculate extends React.Component {
             inputFiles: [],
             uploadFileList: []
         });
-        this.getPram(value === 0 ? 1 : value);
+        this.getPram(modelIndex);
     }
     //获取参数
     getPram = index => {
         let { idenMod, nowStep } = this.state;
+        this.setState({ hasGotParam: false });
         axios({
             method: 'post',
             url: api + 'render',
@@ -316,7 +377,8 @@ class Calculate extends React.Component {
                 uploadBoxs: uploadBoxs ? uploadBoxs : [],
                 inputFiles: inputFiles ? inputFiles : [],
                 initialMaterialNum: Number(getObjectValue(texts, "Nblks")),
-                uploadFileList: uploadBoxs ? new Array(uploadBoxs.length) : []
+                uploadFileList: uploadBoxs ? new Array(uploadBoxs.length) : [],
+                hasGotParam: true
             });
         }).catch(error => {
             message.error("服务器无响应");
@@ -326,65 +388,67 @@ class Calculate extends React.Component {
     createPFile = e => {
         e.preventDefault();
         let { selects, radios, checkBoxs, textAreas, idenMod, uploadBoxs, dockerID, dockerIP,
-            vport, currentStep, moduleName, modelIndex, initialMaterialNum } = this.state;
+            vport, currentStep, moduleName, modelIndex, initialMaterialNum, hasGotParam } = this.state;
         let texts = JSON.parse(JSON.stringify(this.state.texts));
         if (modelIndex >= 0) {
             if (checkNullvalue(texts) && checkNullvalue(selects) && checkNullvalue(radios) && checkNullvalue(checkBoxs) && checkNullvalue(textAreas)) {
-                this.props.form.validateFields({ force: true }, (err, values) => {
-                    if (!err) {
-                        this.setState({
-                            loading: true,
-                        });
-                        if (Number(getObjectValue(texts, "Nblks")) < initialMaterialNum) {
-                            for (let i = 0; i < texts.length; i++) {
-                                let paramName = texts[i].paramName;
-                                if (paramName.indexOf("epsilon") === 0 || paramName.indexOf("sigma_e") === 0 || paramName.indexOf("mu") === 0 || paramName.indexOf("sigma_m") === 0) {
-                                    if (Number(paramName.split(" ")[1]) > Number(getObjectValue(texts, "Nblks"))) {
-                                        texts.splice(i, 1);
-                                        i -= 1;
+                if (hasGotParam) {
+                    this.props.form.validateFields({ force: true }, (err, values) => {
+                        if (!err) {
+                            this.setState({
+                                loading: true,
+                            });
+                            if (Number(getObjectValue(texts, "Nblks")) < initialMaterialNum) {
+                                for (let i = 0; i < texts.length; i++) {
+                                    let paramName = texts[i].paramName;
+                                    if (paramName.indexOf("epsilon") === 0 || paramName.indexOf("sigma_e") === 0 || paramName.indexOf("mu") === 0 || paramName.indexOf("sigma_m") === 0) {
+                                        if (Number(paramName.split(" ")[1]) > Number(getObjectValue(texts, "Nblks"))) {
+                                            texts.splice(i, 1);
+                                            i -= 1;
+                                        }
                                     }
                                 }
                             }
-                        }
-                        let BC_type = [], value = getObjectValue(texts, "BC_type");
-                        for (let i = 0; i < Number(getObjectValue(texts, "Nbds")); i++) {
-                            BC_type.push(value)
-                        }
-                        BC_type = BC_type.join(" ");
-                        texts[getObjectIndex(texts, "BC_type")].currentValue = BC_type;
-                        let makeJson = `{ "texts" :${JSON.stringify(texts)},"selects" :${JSON.stringify(selects)},"radios" :${JSON.stringify(radios)},"checkBoxs" :${JSON.stringify(checkBoxs)},"textAreas" :${JSON.stringify(textAreas)},"uploadBoxs" :${JSON.stringify(uploadBoxs)}}`;
-                        axios({
-                            method: 'post',
-                            url: api + 'createPFile',
-                            data: {
-                                idenMod: idenMod,
-                                params: makeJson,
-                                dockerID,
-                                dockerIP,
-                                vport,
-                                moduleName,
-                                index: modelIndex
-                            },
-                            headers: {
-                                'Content-Type': 'application/json'
+                            let BC_type = [], value = getObjectValue(texts, "BC_type");
+                            for (let i = 0; i < Number(getObjectValue(texts, "Nbds")); i++) {
+                                BC_type.push(value)
                             }
-                        }).then(response => {
-                            let { data, status } = response.data;
-                            this.setState({ loading: false });
-                            if (status === "success") {
-                                message.success(data, 2);
-                                this.setState({
-                                    currentStep: currentStep + 1
-                                });
-                            } else if (status === "fail") {
-                                message.error(data, 2);
-                            }
-                        }).catch(error => {
-                            this.setState({ loading: false });
-                            message.error("服务器无响应");
-                        });
-                    }
-                })
+                            BC_type = BC_type.join(" ");
+                            texts[getObjectIndex(texts, "BC_type")].currentValue = BC_type;
+                            let makeJson = `{ "texts" :${JSON.stringify(texts)},"selects" :${JSON.stringify(selects)},"radios" :${JSON.stringify(radios)},"checkBoxs" :${JSON.stringify(checkBoxs)},"textAreas" :${JSON.stringify(textAreas)},"uploadBoxs" :${JSON.stringify(uploadBoxs)}}`;
+                            axios({
+                                method: 'post',
+                                url: api + 'createPFile',
+                                data: {
+                                    idenMod: idenMod,
+                                    params: makeJson,
+                                    dockerID,
+                                    dockerIP,
+                                    vport,
+                                    moduleName,
+                                    index: modelIndex
+                                },
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            }).then(response => {
+                                let { data, status } = response.data;
+                                this.setState({ loading: false });
+                                if (status === "success") {
+                                    message.success(data, 2);
+                                    this.setState({
+                                        currentStep: currentStep + 1
+                                    });
+                                } else if (status === "fail") {
+                                    message.error(data, 2);
+                                }
+                            }).catch(error => {
+                                this.setState({ loading: false });
+                                message.error("服务器无响应");
+                            });
+                        }
+                    })
+                }
             }
         } else {
             message.error("请选择模型获取参数列表", 2);
@@ -978,9 +1042,45 @@ class Calculate extends React.Component {
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, disabled, proList, calcResData, calcStatus, resType, visVisible, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath,
-            sourceParamType, materialIndex, materialModalVisible, materialName, materialValue, dataType, tinyListener
+            sourceParamType, materialIndex, materialModalVisible, materialName, materialValue, dataType, tinyListener,
+            dimension, real, dimensionValue, realValue, funcName
         } = this.state;
         const { getFieldDecorator } = this.props.form;
+        let getClassName = value => {
+            if (value === "用户自定义计算") {
+                return "";
+            }
+            if (dimension) {
+                if (dimensionValue === "2D") {
+                    if (value.toUpperCase().indexOf("3D") > -1) {
+                        return "select-hide";
+                    } else {
+                        return "";
+                    }
+                } else {
+                    if (value.toUpperCase().indexOf("3D") === -1) {
+                        return "select-hide";
+                    } else {
+                        return "";
+                    }
+                }
+            }
+            if (real) {
+                if (realValue === "model") {
+                    if (value.toUpperCase().indexOf("REAL") > -1) {
+                        return "select-hide";
+                    } else {
+                        return "";
+                    }
+                } else {
+                    if (value.toUpperCase().indexOf("REAL") === -1) {
+                        return "select-hide";
+                    } else {
+                        return "";
+                    }
+                }
+            }
+        }
         return (
             <div id="calculate">
                 <Header className="calculate-header">
@@ -1011,15 +1111,71 @@ class Calculate extends React.Component {
                                     }
                                     {(nowStep === 1 && currentStep === 1) ?
                                         <>
+                                            {dimension &&
+                                                <Row style={{ marginTop: 20 }}>
+                                                    <Col xs={24} sm={8} className="ant-form-item-label">
+                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>维度</label>
+                                                    </Col>
+                                                    <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
+                                                        <Radio.Group
+                                                            onChange={e => this.setState({
+                                                                dimensionValue: e.target.value,
+                                                                modelIndex: undefined,
+                                                                funcName: undefined,
+                                                                texts: [],
+                                                                selects: [],
+                                                                radios: [],
+                                                                checkBoxs: [],
+                                                                textAreas: [],
+                                                                uploadBoxs: [],
+                                                                inputFiles: [],
+                                                                uploadFileList: []
+                                                            })}
+                                                            value={dimensionValue}
+                                                        >
+                                                            <Radio value={"2D"}>2D</Radio>
+                                                            <Radio value={"3D"}>3D</Radio>
+                                                        </Radio.Group>
+                                                    </Col>
+                                                </Row>
+                                            }
+                                            {real &&
+                                                <Row style={{ marginTop: 10 }}>
+                                                    <Col xs={24} sm={8} className="ant-form-item-label">
+                                                        <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>数据类型</label>
+                                                    </Col>
+                                                    <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
+                                                        <Radio.Group
+                                                            onChange={e => this.setState({
+                                                                realValue: e.target.value,
+                                                                modelIndex: undefined,
+                                                                funcName: undefined,
+                                                                texts: [],
+                                                                selects: [],
+                                                                radios: [],
+                                                                checkBoxs: [],
+                                                                textAreas: [],
+                                                                uploadBoxs: [],
+                                                                inputFiles: [],
+                                                                uploadFileList: []
+                                                            })}
+                                                            value={realValue}
+                                                        >
+                                                            <Radio value={"model"}>模型数据</Radio>
+                                                            <Radio value={"real"}>真实数据</Radio>
+                                                        </Radio.Group>
+                                                    </Col>
+                                                </Row>
+                                            }
                                             {proList.length > 1 &&
                                                 <Row style={{ marginTop: 20 }}>
                                                     <Col xs={24} sm={8} className="ant-form-item-label">
                                                         <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择测试模型</label>
                                                     </Col>
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
-                                                        <Select onChange={this.handleSelectModel} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
+                                                        <Select onChange={this.handleSelectModel} value={funcName} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
                                                             {proList.map((value, index) =>
-                                                                <Option key={value} value={index}>
+                                                                <Option key={value} value={index} className={getClassName(value)}>
                                                                     {value}
                                                                 </Option>
                                                             )}
@@ -1041,7 +1197,7 @@ class Calculate extends React.Component {
                                                                 <Form.Item className="input-file-wrapper" label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <Tooltip title={tip || paramNameCN}>
                                                                         <span className="ant-btn ant-btn-default input-file">选择文件
-                                                                     <input type="file" id="file" onChange={this.changeInputFile.bind(this, index)} />
+                                                                            <input type="file" id="file" onChange={this.changeInputFile.bind(this, index)} />
                                                                         </span>
                                                                     </Tooltip>
                                                                     <div style={{ marginLeft: 10 }}>{currentValue && currentValue.name}</div>
@@ -1455,6 +1611,7 @@ class Calculate extends React.Component {
                                         <Modal className="listener-modal" visible={!toggle} onCancel={() => { this.setState({ toggle: true }) }} footer={null}>
                                             <Listener
                                                 ip={(dockerType === 2 || dockerType === 4) && dockerIP}
+                                                uri={(dockerType === 1 || dockerType === 5) && uri}
                                                 toggle={false}
                                             />
                                         </Modal>

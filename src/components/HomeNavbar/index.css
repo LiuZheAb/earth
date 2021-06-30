@@ -6,6 +6,7 @@
     height: 50px;
     z-index: 100;
     padding: 0;
+    transition: all .3s;
 }
 
 #home-header .header-content {
@@ -38,15 +39,18 @@
 
 #home-header .icon-area {
     width: 160px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     color: #1890ff;
     font-size: 24px;
 }
-#home-header .icon-area .ant-icon{
+
+#home-header .icon-area .ant-icon {
     color: #1890ff;
 }
+
 #home-header .icon-area .quit-icon {
     transition: color .3s;
 }

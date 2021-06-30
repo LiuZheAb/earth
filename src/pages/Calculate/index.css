@@ -166,7 +166,7 @@
     max-width: 100%;
 }
 
-.loginfo-modal .ant-modal-close-x, .file-modal .ant-modal-close-x, .img-modal .ant-modal-close-x {
+.loginfo-modal .ant-modal-close-x, .file-modal .ant-modal-close-x, .img-modal .ant-modal-close-x, .listener-modal .ant-modal-close-x {
     width: 28px;
     height: 28px;
     line-height: 28px;
@@ -174,12 +174,9 @@
     right: 8px;
 }
 
-.loginfo-modal .ant-modal-close, .file-modal .ant-modal-close, .img-modal .ant-modal-close {
+.loginfo-modal .ant-modal-close, .file-modal .ant-modal-close, .img-modal .ant-modal-close, .listener-modal .ant-modal-close {
     width: 100%;
     max-width: 1000px;
-    position: fixed;
-    top: 0;
-    right: unset;
 }
 
 .loginfo-modal p {
@@ -308,11 +305,6 @@
     color: #40a9ff;
 }
 
-.listener-modal {
-    top: 0;
-    padding: 0;
-}
-
 .mod-help {
     font-size: 16px;
     padding-top: 16px;
@@ -386,6 +378,14 @@
     white-space: nowrap;
 }
 
+.select-hide {
+    display: none;
+}
+
+.calc-time {
+    font-size: 16px;
+}
+
 @media(max-width:970px) and (min-width:768px) {
     #calculate .file-icon:not(.file-icon-2) .file-name {
         display: none;
@@ -399,7 +399,7 @@
 }
 
 @media(max-width:768px) {
-    #calculate .ant-table {
+    #calculate .ant-table, .calc-time {
         font-size: 14px;
     }
     .mod-help {
@@ -440,6 +440,12 @@
     }
     #calculate .btn-area button {
         width: 116px !important;
+    }
+    .ant-drawer-body {
+        padding: 10px;
+    }
+    .calc-filelist-table .table-item-name {
+        max-width: 100px;
     }
 }
 

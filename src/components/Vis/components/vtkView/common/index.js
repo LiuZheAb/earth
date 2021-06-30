@@ -745,6 +745,43 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
         model.rulerXactor.getProperty().setColor(actColor[0], actColor[1], actColor[2]);
         model.rulerYactor.getProperty().setColor(actColor[0], actColor[1], actColor[2]);
         let yAxisRe = JSON.parse(JSON.stringify(yAxis)).reverse();
+        let fixed = (num) => {
+            num = Number(num);
+            let num_c = Math.abs(num);
+            if (String(num).indexOf("e-") > -1) {
+                let d = String(num);
+                let s = d.split("e-");
+                let suffix = s[1];
+                return Number(s[0]).toFixed(1) + "e-" + suffix
+            } else if (String(num).indexOf("e") > -1) {
+                let d = String(num);
+                let s = d.split("e");
+                let suffix = s[1];
+                return Number(s[0]).toFixed(1) + "e" + suffix
+            } else {
+                let str = String(num_c);
+                if (str.indexOf(".") > -1) {
+                    let len = str.split(".")[1].length;
+                    if (len > 6 && num_c < 0.00001) {
+                        return num.toFixed(6)
+                    } else if (len > 5 && num_c >= 0.00001 && num_c < 0.0001) {
+                        return num.toFixed(5)
+                    } else if (len > 4 && num_c >= 0.0001 && num_c < 0.001) {
+                        return num.toFixed(4)
+                    } else if (len > 3 && num_c >= 0.001 && num_c < 0.01) {
+                        return num.toFixed(3)
+                    } else if (len > 2 && num_c >= 0.01 && num_c < 0.1) {
+                        return num.toFixed(2)
+                    } else if (len > 1 && num_c >= 0.1) {
+                        return num.toFixed(1)
+                    } else {
+                        return num
+                    }
+                } else {
+                    return num
+                }
+            }
+        }
         psMapper.setCallback((coordsList) => {
             if (document.querySelector(".vtk-container")) {
                 let dims = document.querySelector(".vtk-container").getBoundingClientRect();
@@ -758,19 +795,17 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                         "六面体模型重力异常正演", "六面体复杂模型构建及重力异常正演", "球型棱柱体模型重力异常正演", "球型棱柱体模型构建及重力异常正演", "四面体模型单元正演",
                         "数据去趋势", "数据网格化", "磁场方向导数求取", "磁场空间延拓", "磁化极", "磁场模型正演"].includes(props.datatype)) {
                         if (idx < num) {
-                            textCtx.fillText(`${xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            textCtx.fillText(`${fixed(xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         } else {
-                            textCtx.fillText(`${yAxis[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            textCtx.fillText(`${fixed(yAxis[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         }
                     } else {
                         if (idx < num) {
-                            textCtx.fillText(`${xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            textCtx.fillText(`${fixed(xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         } else {
-                            textCtx.fillText(`${yAxisRe[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)]}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            textCtx.fillText(`${fixed(yAxisRe[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         }
                     }
-
-
                 });
             }
         });
@@ -2742,6 +2777,10 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
 
     switch (datatype) {
         case "重力观测数据反演（多约束反演）":
+        case "重力观测数据反演（三维正则，参考模型约束）":
+        case "重力观测数据反演（参考模型-全变分约束）":
+        case "MCMC反演":
+        case "MCMC反演（参考模型约束）":
         case "三维断层模型正演":
         case "边缘识别":
         case "曲化平":
@@ -2811,43 +2850,23 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
                 }
             })
             break;
-        case "2D-DNN-SeismicInv":
-        case "二维深度神经网络地震反演（2D-DNN-SeismicInv）":
-            for (let i = 0; i < xLength; i++) {
-                array1[i] = arrs.splice(0, yLength)
-            }
-            for (let i = 0; i < yLength; i++) {
-                array[i] = []
-                for (let j = 0; j < xLength; j++) {
-                    array[i][j] = array1[j][i]
-                }
-            }
-            array.reverse()
-            simpleFilter.setFormula({
-                getArrays: (inputDataSets) => ({
-                    input: [
-                        { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
-                    output: [
-                        {
-                            location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
-                            name: 'z',                // ... 有了名字。。。
-                            dataType: 'Float64Array',         // ... 这种类型的。。。
-                            attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
-                        },
-                    ]
-                }),
-                evaluate: (arraysIn, arraysOut) => {
-                    const [z] = arraysOut.map(d => d.getData());
-                    for (let i = 0; i < data.length; i++) {
-                        let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
-                        z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
-                    }
-                    arraysOut.forEach(x => x.modified());
-                }
-            });
-            break;
         default:
-            if (datatype === "2d" && ["大地电磁面波 (MT-Surf RealData)", "接收函数反演 (ReceiverFunc Inversion)", "接收函数-面波联合反演 (ReceiverFunc-Surf Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演", "模糊C回归聚类"].includes(appName)) {
+            if (datatype === "2d" &&
+                [
+                    "大地电磁面波 (MT-Surf Field)",
+                    "大地电磁面波 (MT-Surf)",
+                    "接收函数反演 (ReceiverFunc Inversion)",
+                    "接收函数-面波联合反演 (ReceiverFunc-Surf Inversion)",
+                    "ERPS USTC",
+                    "地震背景噪声成像(ERPS USTC)",
+                    "相关分析联合反演",
+                    "模糊聚类联合反演",
+                    "基于数据空间的相关分析反演",
+                    "交叉梯度联合反演",
+                    "FCRM联合反演",
+                    "模糊C回归聚类",
+                    "最小二乘逆时偏移 (LSRTM)"].includes(appName)
+            ) {
                 simpleFilter.setFormula({
                     getArrays: (inputDataSets) => ({
                         input: [
@@ -2870,7 +2889,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
                         arraysOut.forEach(x => x.modified());
                     }
                 })
-            } else if (datatype === "2d" && appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
+            } else if (datatype === "2d" && (appName === "保幅超分辨率反演(Super Resolution ITSMF)" || appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)")) {
                 arrs = arrs.reverse();
                 for (let i = 0; i < yLength; i++) {
                     array1[i] = arrs.splice(0, xLength)
@@ -2897,6 +2916,39 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
                         arraysOut.forEach(x => x.modified());
                     }
                 })
+            } else if (datatype === "2d" && (appName === "二维深度神经网络地震反演（2D-DNN-SeismicInv）" || appName === "深度神经网络地震反演(DNN-SeismicInv Field)")) {
+                for (let i = 0; i < xLength; i++) {
+                    array1[i] = arrs.splice(0, yLength)
+                }
+                for (let i = 0; i < yLength; i++) {
+                    array[i] = []
+                    for (let j = 0; j < xLength; j++) {
+                        array[i][j] = array1[j][i]
+                    }
+                }
+                array.reverse()
+                simpleFilter.setFormula({
+                    getArrays: (inputDataSets) => ({
+                        input: [
+                            { location: FieldDataTypes.COORDINATE }], // 需要点坐标作为输入
+                        output: [
+                            {
+                                location: FieldDataTypes.POINT,   // 这个数组将是点数据。。。
+                                name: 'z',                // ... 有了名字。。。
+                                dataType: 'Float64Array',         // ... 这种类型的。。。
+                                attribute: AttributeTypes.SCALARS // ... 将被标记为默认标量。
+                            },
+                        ]
+                    }),
+                    evaluate: (arraysIn, arraysOut) => {
+                        const [z] = arraysOut.map(d => d.getData());
+                        for (let i = 0; i < data.length; i++) {
+                            let index = yR.reverse().indexOf(yAxis[i]) * xLength + xR.indexOf(xAxis[i]);
+                            z[index] = array[yR.reverse().indexOf(yAxis[i])][xR.indexOf(xAxis[i])];
+                        }
+                        arraysOut.forEach(x => x.modified());
+                    }
+                });
             } else {
                 for (let i = 0; i < xLength; i++) {
                     array1[i] = arrs.splice(0, yLength)
@@ -2952,6 +3004,19 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
     });
     let min = Number(unique[0]);
     let max = Number(unique[unique.length - 1]);
+    if (appName === "保幅超分辨率反演(Super Resolution ITSMF)" || appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)") {
+        min = 1e-9;
+        max = 5e-8;
+    }
+    if (appName === "同步挤压") {
+        if (min === 0) {
+            min = 1e-4;
+            max = 5e-4;
+        } else {
+            min = 1e-9;
+            max = 5e-8;
+        }
+    }
     lookupTable.setMappingRange(min, max);
     mapper.setLookupTable(lookupTable);
     let pointLeft = planeSource.getOrigin();
@@ -2960,8 +3025,8 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
     let ylon = pointLeft[1] - planeCenter[1];
     model.renderer.addActor(actor);
     model.actState.push({
-        min: min,
-        max: max,
+        min,
+        max,
         xlon: xlon,
         ylon: ylon,
         planeCenter: planeCenter,
@@ -2976,13 +3041,12 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
 }
 
 // 显示colorBar刻度
-export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, container, theme, datatype, canvasClass) => {
+export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, container, theme, datatype, canvasClass, appName) => {
     let ScalPoint = [];
     let ScalCell = [];
     let ScalPointData = [];
     let rulerScal = [];
     const rulers = [];
-    console.log(datatype);
     switch (datatype) {
         case "数据网格化":
         case "重力数据求偏导":
@@ -2999,6 +3063,8 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
         case "重力数据延拓":
         case "重力异常计算":
         case "重力观测数据反演（多约束反演）":
+        case "重力观测数据反演（三维正则，参考模型约束）":
+        case "重力观测数据反演（参考模型-全变分约束）":
         case "三维断层模型正演":
         case "四面体模型单元正演":
         case "磁场方向导数求取":
@@ -3058,8 +3124,8 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
                 });
                 rulerScal.push(ScalPoint[i * 6 + 3] + 0.05 * xlon, ScalPoint[i * 6 + 4], 0);
             }
-            for (let i = 0; i <= 10; i++) {
-                ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
+            for (let i = 0; i <= 11; i++) {
+                ScalPointData.push(max - (max - min) / 10 * i, max - (max - min) / 10 * i)
             }
             break;
         case "数据去趋势":
@@ -3098,7 +3164,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
                     center: [ScalPoint[i * 6 + 3], ScalPoint[i * 6 + 4], 0],
                 });
                 rulerScal.push(ScalPoint[i * 6 + 3] + 0.05 * xlon, ScalPoint[i * 6 + 4], 0);
-                ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
+                ScalPointData.push(max - (max - min) / 10 * i, max - (max - min) / 10 * i)
             }
             break;
         default:
@@ -3139,11 +3205,10 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
                 rulerScal.push(ScalPoint[i * 6 + 3] + 0.15 * ylon, ScalPoint[i * 6 + 4], 0);
             }
             for (let i = 0; i <= 10; i++) {
-                ScalPointData.push(max - (max - min) / 11 * i, max - (max - min) / 11 * i)
+                ScalPointData.push(max - (max - min) / 10 * i, max - (max - min) / 10 * i)
             }
             break;
     }
-    console.log(ScalPoint);
     // lookupTable.setHueRange(-1, 1);
     // lookupTable.setSaturationRange(0, 0);
     // lookupTable.setSaturationRange(1, 1);
@@ -3230,6 +3295,43 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
     textCanvas.setAttribute('height', dims.height * window.devicePixelRatio);
     let textCtx = textCanvas.getContext('2d');
     model.textCtx = textCtx;
+    let fixed = (num) => {
+        num = Number(num);
+        let num_c = Math.abs(num);
+        if (String(num).indexOf("e-") > -1) {
+            let d = String(num);
+            let s = d.split("e-");
+            let suffix = s[1];
+            return Number(s[0]).toFixed(1) + "e-" + suffix
+        } else if (String(num).indexOf("e") > -1) {
+            let d = String(num);
+            let s = d.split("e");
+            let suffix = s[1];
+            return Number(s[0]).toFixed(1) + "e" + suffix
+        } else {
+            let str = String(num_c);
+            if (str.indexOf(".") > -1) {
+                let len = str.split(".")[1].length;
+                if (len > 6 && num_c < 0.00001) {
+                    return num.toFixed(6)
+                } else if (len > 5 && num_c >= 0.00001 && num_c < 0.0001) {
+                    return num.toFixed(5)
+                } else if (len > 4 && num_c >= 0.0001 && num_c < 0.001) {
+                    return num.toFixed(4)
+                } else if (len > 3 && num_c >= 0.001 && num_c < 0.01) {
+                    return num.toFixed(3)
+                } else if (len > 2 && num_c >= 0.01 && num_c < 0.1) {
+                    return num.toFixed(2)
+                } else if (len > 1 && num_c >= 0.1) {
+                    return num.toFixed(1)
+                } else {
+                    return num
+                }
+            } else {
+                return num
+            }
+        }
+    }
     psMapper.setCallback((coordsList) => {
         let dims = {};
         if (document.querySelector(".vtk-container")) dims = document.querySelector(".vtk-container").getBoundingClientRect();
@@ -3240,13 +3342,8 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
             textCtx.textAlign = 'left';
             textCtx.textBaseline = 'middle';
             if (idx < 11) {
-                if (datatype === "数据去趋势") {
-                    textCtx.fillText(`${ScalPointData[idx * 2].toFixed(0)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                } else {
-                    textCtx.fillText(`${ScalPointData[idx * 2].toFixed(4)}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
-                }
+                textCtx.fillText(`${fixed(ScalPointData[idx * 2])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
             }
-
         });
     });
     const textActor = vtkActor.newInstance();
@@ -3322,7 +3419,6 @@ export const readJson = (filePath, _this, data, fileName, type) => {
             // setCookie('filename', fileName)
             data = JSON.stringify(xhr.response)
             _this.props.dispatch(actions.getData(data));
-            console.log(data)
             // document.getElementsByClassName('views')[0].removeChild(document.getElementById('loading'));
         }
     };

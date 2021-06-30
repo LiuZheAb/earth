@@ -85,17 +85,13 @@ export default class csvView extends Component {
         if (vtkBox) {
             vtkBox.innerHTML = null;
         }
-        if (appName === "最小二乘逆时偏移 (LSRTM)") {
-            for (let i = 0; i < data_c.length; i++) {
-                xAxis.push(...data_c[i].splice(0, 1))
-                yAxis.push(...data_c[i].splice(0, 1))
-            }
-        }
-        if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
+        if (appName === "保幅超分辨率反演(Super Resolution ITSMF)" || appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)" || appName === "长波长地震反演 (Long Wavelength Inversion)") {
             dimensional = 2;
+            for (let i = 0; i < data_c[0].length; i++) {
+                xAxis.push(i)
+            }
             for (let i = 0; i < data_c.length; i++) {
-                xAxis.push(...data_c[i].splice(0, 1))
-                yAxis.push(...data_c[i].splice(0, 1))
+                yAxis.push(i)
             }
             let yLength = data_c.length;
             let xLength = data_c[0].length;
@@ -547,10 +543,10 @@ export default class csvView extends Component {
 
     componentDidMount() {
         let { appName } = this.props;
-        if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
+        if (appName === "保幅超分辨率反演(Super Resolution ITSMF)" || appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)" || appName === "长波长地震反演 (Long Wavelength Inversion)") {
             this.props.dispatch(actions.setMoveStyle(actions.moveType.PAN));
             this.setState({
-                mode: "X Ray"
+                mode: "Rainbow Desaturated"
             })
         } else {
             this.props.dispatch(actions.setMoveStyle(actions.moveType.ROTATE));
@@ -558,16 +554,17 @@ export default class csvView extends Component {
                 mode: "X Ray"
             })
         }
-        this.props.dispatch(actions.toggleShitidanyuanButton("command-disable"));
-        this.props.dispatch(actions.toggleWanggeButton("command-disable"));
-        this.props.dispatch(actions.togglePointButton("command-disable"));
-        this.props.dispatch(actions.toggleAxisButton("command-disable"));
-        this.props.dispatch(actions.toggleBoundButton("command-disable"));
-        this.props.dispatch(actions.toggleResultButton("command-disable"));
-        this.props.dispatch(actions.toggleLightButton("command-disable"));
-        this.props.dispatch(actions.toggleSebiaoButton("command-disable"));
-        this.props.dispatch(actions.toggleCejuButton("command-disable"));
-        this.props.dispatch(actions.toggleScaleButton("command-disable"));
+        this.props.dispatch(actions.toggleShitidanyuanButton("command"));
+        this.props.dispatch(actions.toggleWanggeButton("command"));
+        this.props.dispatch(actions.togglePointButton("command"));
+        this.props.dispatch(actions.toggleAxisButton("command"));
+        this.props.dispatch(actions.toggleBoundButton("command"));
+        this.props.dispatch(actions.toggleResultButton("command"));
+        this.props.dispatch(actions.toggleLightButton("command"));
+        this.props.dispatch(actions.toggleKeduButton("command"));
+        this.props.dispatch(actions.toggleSebiaoButton("command"));
+        this.props.dispatch(actions.toggleCejuButton("command"));
+        this.props.dispatch(actions.toggleScaleButton("command"));
         this.result();
         // let url = global.baseUrl.replace('8002', "6001");
     };
@@ -642,9 +639,46 @@ export default class csvView extends Component {
             model.mapper.setLookupTable(lut1);
             let OpenGlRW = model.fullScreenRenderer.getOpenGLRenderWindow();
             gl(OpenGlRW);
-            let r = max - min, p = String(r).length > 2 ? 0 : 2;
+            let r = max - min;
+            let fixed = (num) => {
+                num = Number(num);
+                let num_c = Math.abs(num);
+                if (String(num).indexOf("e-") > -1) {
+                    let d = String(num);
+                    let s = d.split("e-");
+                    let suffix = s[1];
+                    return Number(s[0]).toFixed(1) + "e-" + suffix
+                } else if (String(num).indexOf("e") > -1) {
+                    let d = String(num);
+                    let s = d.split("e");
+                    let suffix = s[1];
+                    return Number(s[0]).toFixed(1) + "e" + suffix
+                } else {
+                    let str = String(num_c);
+                    if (str.indexOf(".") > -1) {
+                        let len = str.split(".")[1].length;
+                        if (len > 6 && num_c < 0.00001) {
+                            return num.toFixed(6)
+                        } else if (len > 5 && num_c >= 0.00001 && num_c < 0.0001) {
+                            return num.toFixed(5)
+                        } else if (len > 4 && num_c >= 0.0001 && num_c < 0.001) {
+                            return num.toFixed(4)
+                        } else if (len > 3 && num_c >= 0.001 && num_c < 0.01) {
+                            return num.toFixed(3)
+                        } else if (len > 2 && num_c >= 0.01 && num_c < 0.1) {
+                            return num.toFixed(2)
+                        } else if (len > 1 && num_c >= 0.1) {
+                            return num.toFixed(1)
+                        } else {
+                            return num
+                        }
+                    } else {
+                        return num
+                    }
+                }
+            }
             // activeScalar = [(unique[unique.length - 1]), (unique[unique.length - 1 - num]), (unique[num]), (unique[0])];
-            activeScalar = [Number(max.toFixed(p)), Number((r / 3 * 2 + min).toFixed(p)), Number((r / 3 + min).toFixed(p)), Number(min.toFixed(p))];
+            activeScalar = [fixed(Number(max)), fixed(Number((r / 3 * 2 + min))), fixed(Number((r / 3 + min))), fixed(Number(min))];
             scales = ["100%", ((unique.length - num) * 100) / unique.length + "%", (num * 100) / unique.length + "%", "0%"];
             if (document.querySelector(".scalarMax")) document.querySelector(".scalarMax").innerHTML = max;
             if (document.querySelector(".scalarMin")) document.querySelector(".scalarMin").innerHTML = min;
@@ -662,7 +696,6 @@ export default class csvView extends Component {
 
             if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
             if (dimensional === 2) {
-                console.log(model);
                 showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis, yAxis, 'text1'); //刻度标尺
                 // showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis, yAxis, 'text1', xMin, xMax, yMin, yMax, zMin, zMax); //刻度标尺
             } else {

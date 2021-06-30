@@ -119,7 +119,7 @@ export default class csvView extends Component {
 
     //渲染方法
     result = () => {
-        let { data,
+        let { data, appName
             // state 
         } = this.props;
         let { model } = this.state;
@@ -143,9 +143,15 @@ export default class csvView extends Component {
             function (resolve, reject) {
                 for (let i = 0; i < arr.length; i++) {
                     arrs.push(arr[i][3]);
-                    xAxis.push(arr[i][2]);
-                    yAxis.push(arr[i][1]);
-                    zAxis.push(arr[i][0]);
+                    if (appName === "大地电磁面波 (MT-Surf)") {
+                        xAxis.push(arr[i][1]);
+                        yAxis.push(arr[i][0]);
+                        zAxis.push(arr[i][2]);
+                    } else {
+                        xAxis.push(arr[i][2]);
+                        yAxis.push(arr[i][1]);
+                        zAxis.push(arr[i][0]);
+                    }
                 }
                 let xSort = Array.from(new Set(JSON.parse(JSON.stringify(xAxis))));
                 let ySort = Array.from(new Set(JSON.parse(JSON.stringify(yAxis))));
@@ -181,29 +187,56 @@ export default class csvView extends Component {
         ).then(
             (res) => {
                 for (let i = 0; i < arr.length; i++) {
-                    if (res.xAxis1.indexOf(arr[i][2]) === 0) {
-                        let index = res.yAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
-                        pointData5[index] = arr[i][3];
-                    }
-                    if (res.xAxis1.indexOf(arr[i][2]) === Math.round(res.xAxis1.length - 1)) {
-                        let index1 = res.yAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
-                        pointData6[index1] = arr[i][3];
-                    }
-                    if (res.yAxis1.indexOf(arr[i][1]) === 0) {
-                        let index2 = res.xAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
-                        pointData3[index2] = arr[i][3];
-                    }
-                    if (res.yAxis1.indexOf(arr[i][1]) === Math.round(res.yAxis1.length - 1)) {
-                        let index3 = res.xAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
-                        pointData4[index3] = arr[i][3];
-                    }
-                    if (res.zAxis1.indexOf(arr[i][0]) === 0) {
-                        let index4 = res.xAxis1.indexOf(arr[i][2]) * res.yLength + res.yAxis1.indexOf(arr[i][1]);
-                        pointData1[index4] = arr[i][3];
-                    }
-                    if (res.zAxis1.indexOf(arr[i][0]) === Math.round(res.zAxis1.length - 1)) {
-                        let index5 = res.xAxis1.indexOf(arr[i][2]) * res.yLength + res.yAxis1.indexOf(arr[i][1]);
-                        pointData2[index5] = arr[i][3];
+                    if (appName === "大地电磁面波 (MT-Surf)") {
+                        if (res.xAxis1.indexOf(arr[i][1]) === 0) {
+                            let index = res.yAxis1.indexOf(arr[i][0]) * res.zLength + res.zAxis1.indexOf(arr[i][2]);
+                            pointData5[index] = arr[i][3];
+                        }
+                        if (res.xAxis1.indexOf(arr[i][1]) === Math.round(res.xAxis1.length - 1)) {
+                            let index1 = res.yAxis1.indexOf(arr[i][0]) * res.zLength + res.zAxis1.indexOf(arr[i][2]);
+                            pointData6[index1] = arr[i][3];
+                        }
+                        if (res.yAxis1.indexOf(arr[i][0]) === 0) {
+                            let index2 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][2]);
+                            pointData3[index2] = arr[i][3];
+                        }
+                        if (res.yAxis1.indexOf(arr[i][0]) === Math.round(res.yAxis1.length - 1)) {
+                            let index3 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][2]);
+                            pointData4[index3] = arr[i][3];
+                        }
+                        if (res.zAxis1.indexOf(arr[i][2]) === 0) {
+                            let index4 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][0]);
+                            pointData1[index4] = arr[i][3];
+                        }
+                        if (res.zAxis1.indexOf(arr[i][2]) === Math.round(res.zAxis1.length - 1)) {
+                            let index5 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][0]);
+                            pointData2[index5] = arr[i][3];
+                        }
+                    } else {
+                        if (res.xAxis1.indexOf(arr[i][2]) === 0) {
+                            let index = res.yAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData5[index] = arr[i][3];
+                        }
+                        if (res.xAxis1.indexOf(arr[i][2]) === Math.round(res.xAxis1.length - 1)) {
+                            let index1 = res.yAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData6[index1] = arr[i][3];
+                        }
+                        if (res.yAxis1.indexOf(arr[i][1]) === 0) {
+                            let index2 = res.xAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData3[index2] = arr[i][3];
+                        }
+                        if (res.yAxis1.indexOf(arr[i][1]) === Math.round(res.yAxis1.length - 1)) {
+                            let index3 = res.xAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData4[index3] = arr[i][3];
+                        }
+                        if (res.zAxis1.indexOf(arr[i][0]) === 0) {
+                            let index4 = res.xAxis1.indexOf(arr[i][2]) * res.yLength + res.yAxis1.indexOf(arr[i][1]);
+                            pointData1[index4] = arr[i][3];
+                        }
+                        if (res.zAxis1.indexOf(arr[i][0]) === Math.round(res.zAxis1.length - 1)) {
+                            let index5 = res.xAxis1.indexOf(arr[i][2]) * res.yLength + res.yAxis1.indexOf(arr[i][1]);
+                            pointData2[index5] = arr[i][3];
+                        }
                     }
                 }
 
@@ -400,16 +433,17 @@ export default class csvView extends Component {
 
     componentDidMount() {
         this.props.dispatch(actions.setMoveStyle(actions.moveType.ROTATE));
-        this.props.dispatch(actions.toggleShitidanyuanButton("command-disable"));
-        this.props.dispatch(actions.toggleWanggeButton("command-disable"));
-        this.props.dispatch(actions.togglePointButton("command-disable"));
-        this.props.dispatch(actions.toggleAxisButton("command-disable"));
-        this.props.dispatch(actions.toggleBoundButton("command-disable"));
-        this.props.dispatch(actions.toggleResultButton("command-disable"));
-        this.props.dispatch(actions.toggleLightButton("command-disable"));
-        this.props.dispatch(actions.toggleSebiaoButton("command-disable"));
-        this.props.dispatch(actions.toggleCejuButton("command-disable"));
-        this.props.dispatch(actions.toggleScaleButton("command-disable"));
+        this.props.dispatch(actions.toggleShitidanyuanButton("command"));
+        this.props.dispatch(actions.toggleWanggeButton("command"));
+        this.props.dispatch(actions.togglePointButton("command"));
+        this.props.dispatch(actions.toggleAxisButton("command"));
+        this.props.dispatch(actions.toggleBoundButton("command"));
+        this.props.dispatch(actions.toggleResultButton("command"));
+        this.props.dispatch(actions.toggleLightButton("command"));
+        this.props.dispatch(actions.toggleSebiaoButton("command"));
+        this.props.dispatch(actions.toggleCejuButton("command"));
+        this.props.dispatch(actions.toggleScaleButton("command"));
+        this.props.dispatch(actions.toggleKeduButton("command"));
         this.result()
     };
 
@@ -479,7 +513,6 @@ export default class csvView extends Component {
         //应用ColorMap
         lut1.applyColorMap(preset);
         lut1.setMappingRange(min, max);
-        console.log({ min, max });
         lut1.updateRange();
         let num = Math.round(unique.length / 3);
         const picker = vtkPointPicker.newInstance();

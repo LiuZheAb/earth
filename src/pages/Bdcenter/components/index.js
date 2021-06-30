@@ -9,10 +9,12 @@ import { Row, Col, Layout, Table, Form, Icon, Button, message, Upload, Input, Ra
 import 'moment/locale/zh-cn';
 import Header from "../../../components/HomeNavbar";
 import axios from "axios";
-import { baseUrl, selectByOneUrl, selectByTwoUrl, selectByThreeUrl } from "../assets/url";
 import locale from 'antd/es/date-picker/locale/zh_CN';
 import reqwest from 'reqwest';
 import "./index.css";
+import apiPromise from '../../../assets/url';
+
+let baseUrl = "", selectByOneUrl = "", selectByTwoUrl = "", selectByThreeUrl = "";
 
 const { Option } = Select;
 const { Content } = Layout;
@@ -103,8 +105,6 @@ class Download extends React.Component {
       keyDatas: [],
       //数据集名称
       datasetNames: [],
-      //当前数据集
-      currentDataSet: "",
       //可否修改数据集名字
       dataSetSelect: true,
       //已上传文件列表
@@ -129,13 +129,20 @@ class Download extends React.Component {
   componentDidMount() {
     axios.defaults.timeout = 600000;
     //获取所有数据集名称
-    axios({
-      method: 'get',
-      url: baseUrl + "/Bigdata/service/ipig/getDataSetNameList"
-    }).then((res) => {
-      res.data.length > 0 && this.setState({ datasetNames: Array.from(new Set(res.data)) });
+    apiPromise.then(res => {
+      baseUrl = res.data.baseUrl;
+      selectByOneUrl = res.data.baseUrl + "/Bigdata/service/ipig/selectByOne";
+      selectByTwoUrl = res.data.baseUrl + "/Bigdata/service/ipig/selectByTwo";
+      selectByThreeUrl = res.data.baseUrl + "/Bigdata/service/ipig/selectByThree";
+    }).then(() => {
+      axios({
+        method: 'get',
+        url: baseUrl + "/Bigdata/service/ipig/getDataSetNameList"
+      }).then((res) => {
+        res.data.length > 0 && this.setState({ datasetNames: Array.from(new Set(res.data)) });
+      });
+      this.handleSelect();
     });
-    this.handleSelect();
   };
 
   //查询数据（通用）
@@ -229,10 +236,12 @@ class Download extends React.Component {
   //查询数据类别（select rowkey)
   dataCategorySelect = (value) => {
     this.setState({
-      select: true,
       selectedCategory: value
     });
     if (value !== "无") {
+      this.setState({
+        select: true,
+      });
       axios({
         method: 'get',
         url: baseUrl + "/Bigdata/service/ipig/getDataSetNameByCategory",
@@ -273,9 +282,6 @@ class Download extends React.Component {
   //根据关键字查询
   handleKeySelect = () => {
     let { selectKey } = this.state;
-    this.setState({
-      select: true
-    });
     this.btnLoadingStatus("keySelect", true);
     //判断关键字个数
     let selectKeys = selectKey ? selectKey.split(" ") : [];
@@ -285,7 +291,7 @@ class Download extends React.Component {
       params["Key" + (i + 1)] = selectKeys[i];
     }
     if (keyNum >= 1 && keyNum <= 3) {
-      this.setState({ keyLoading: true })
+      this.setState({ keyLoading: true, select: true })
       axios({
         method: 'get',
         url: keyNum === 1 ? selectByOneUrl : keyNum === 2 ? selectByTwoUrl : keyNum === 3 && selectByThreeUrl,
@@ -466,7 +472,6 @@ class Download extends React.Component {
                               setFieldsValue: currentDataSetName
                             })(
                               <Select
-                                id="currentDataSet"
                                 disabled={!dataSetSelect}
                                 style={{ width: "calc(100% - 80px)" }}
                                 onChange={this.dataSetNameSelect}
@@ -499,9 +504,9 @@ class Download extends React.Component {
                               </Select>
                             )}
                           </Form.Item>
-                          <Button onClick={this.handleCurrentDataSet} type="primary" loading={btnLoading.dataSetName} style={{ position: "absolute", right: 0, top: 3 }}>确定</Button>
+                          <Button onClick={this.handleCurrentDataSet} type="primary" loading={btnLoading.dataSetName} style={{ position: "absolute", right: 0, bottom: 28 }}>确定</Button>
                         </Row>
-                        <Form.Item label="摘要(50字以内)" >
+                        <Form.Item label="摘要(50字以内)">
                           {getFieldDecorator('summary', {
                             rules: [
                               {
@@ -619,29 +624,30 @@ class Download extends React.Component {
                     </div>
                   </TabPane>
                   <TabPane tab="文件信息检索" key="2">
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
-                      <label style={{ width: 120, textAlign: "right" }}>数据检索方式：</label>
+                    <div className="search-type">
+                      <label className="name">数据检索方式：</label>
                       <Radio.Group onChange={(e) => { this.setState({ searchType: e.target.value }) }} value={searchType}>
                         <Radio value={true}>数据集名称检索</Radio>
                         <Radio value={false}>关键词检索</Radio>
                       </Radio.Group>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+                    <div className="search-area">
                       {searchType ?
-                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500 }}>
-                          <label style={{ width: 120, textAlign: "right" }}>数据集名称：</label>
-                          <Select onChange={this.dataCategorySelect} value={selectedCategory} placeholder="选择数据集" id="dataSetSelect" style={{ width: "calc(100% - 120px)" }}>
+                        <>
+                          <label className="name">数据集名称：</label>
+                          <Select onChange={this.dataCategorySelect} value={selectedCategory} placeholder="选择数据集" className="dataset-select">
                             {datasetNames.length > 0 && datasetNames.map((item, index) => {
                               return (
                                 <Option key={index} value={item}>{item}</Option>
                               )
                             })}
                           </Select>
-                        </div>
+                        </>
                         :
-                        <div style={{ display: "inline-flex", alignItems: "center", width: "100%", maxWidth: 500 }}>
-                          <Form layout="inline" className="selectKey" style={{ width: "100%", marginRight: 20 }}>
-                            <Form.Item label="关键词">
+                        <>
+                          <label className="name">关键词：</label>
+                          <Form className="select-key">
+                            <Form.Item style={{ marginBottom: 0 }}>
                               {getFieldDecorator('selectKey', {
                                 rules: [
                                   {
@@ -655,12 +661,12 @@ class Download extends React.Component {
                                   },
                                 ],
                               })(
-                                <Input placeholder="请输入1~3个关键字，以空格分隔" id="keyWord" onChange={this.handleSelectKey}></Input>
+                                <Input placeholder="请输入1~3个关键字，以空格分隔" onChange={this.handleSelectKey}></Input>
                               )}
                             </Form.Item>
                           </Form>
                           <Button onClick={this.handleKeySelect} type="primary">查询</Button>
-                        </div>
+                        </>
                       }
                     </div>
                     <div style={{ textAlign: "right", marginBottom: 24 }}>

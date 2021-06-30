@@ -36,14 +36,6 @@ li {
   margin: 8px auto;
 }
 
-.ant-modal {
-  height: 100%;
-  top: unset;
-  display: flex;
-  align-items: center;
-  padding-bottom: unset;
-}
-
 .ant-modal-content, .ant-modal-body {
   width: 100%;
   max-height: 100vh;
@@ -51,6 +43,23 @@ li {
 
 .ant-modal-body {
   overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .ant-modal {
+    height: 100%;
+    top: unset;
+    display: flex;
+    align-items: center;
+    padding-bottom: unset;
+  }
+}
+
+@media (max-width: 767px) {
+  .ant-modal {
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
 }
 
 *::-webkit-scrollbar {
@@ -81,5 +90,11 @@ li {
   }
   .ant-btn {
     font-size: 14px !important;
+  }
+}
+
+@media(max-width:576px) {
+  body {
+    font-size: 14px;
   }
 }

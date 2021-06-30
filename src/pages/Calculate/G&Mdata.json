@@ -901,8 +901,8 @@
                         "paramName": "upfile",
                         "paramNameCN": "地磁数据文件",
                         "defaultValue": "magnetic.csv",
-                        "currentValue": "数据文件为csv格式，有效数据列为x,y,data",
-                        "tip": null,
+                        "currentValue": null,
+                        "tip": "数据文件为csv格式，有效数据列为x,y,data",
                         "type": null,
                         "enumList": null,
                         "max": null,
@@ -1534,7 +1534,7 @@
         "圆盘模型正演": {
             "calcApi": "/Disk_gra",
             "requestMethod": "get",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -1645,7 +1645,7 @@
         "二维多边形正演": {
             "calcApi": "/Polygon_forward",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -2554,7 +2554,7 @@
         "重力观测数据反演（多约束反演）": {
             "calcApi": "/grav_data_inversion",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -2702,7 +2702,7 @@
         "重力观测数据反演（三维正则，参考模型约束）": {
             "calcApi": "/grav_data_inversion1",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -2861,7 +2861,7 @@
         "重力观测数据反演（参考模型-全变分约束）": {
             "calcApi": "/grav_data_inversion2",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -3031,7 +3031,7 @@
         "MCMC反演": {
             "calcApi": "/grav_data_inversion_MCMC",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {
@@ -3114,7 +3114,7 @@
         "MCMC反演（参考模型约束）": {
             "calcApi": "/grav_data_inversion_MCMC1",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {

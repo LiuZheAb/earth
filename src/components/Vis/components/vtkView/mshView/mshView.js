@@ -205,16 +205,18 @@ export default class mshView extends Component {
 
     componentDidMount() {
         // let { appName } = this.props;
-        // this.props.dispatch(actions.toggleShitidanyuanButton("command-disable"));
-        // this.props.dispatch(actions.toggleWanggeButton("command-disable"));
-        // this.props.dispatch(actions.togglePointButton("command-disable"));
-        // this.props.dispatch(actions.toggleAxisButton("command-disable"));
-        // this.props.dispatch(actions.toggleBoundButton("command-disable"));
-        // this.props.dispatch(actions.toggleResultButton("command-disable"));
+        this.props.dispatch(actions.setMoveStyle(actions.moveType.ROTATE));
+        this.props.dispatch(actions.toggleShitidanyuanButton("command"));
+        this.props.dispatch(actions.toggleWanggeButton("command"));
+        this.props.dispatch(actions.togglePointButton("command"));
+        this.props.dispatch(actions.toggleAxisButton("command"));
+        this.props.dispatch(actions.toggleBoundButton("command"));
+        this.props.dispatch(actions.toggleResultButton("command"));
+        this.props.dispatch(actions.toggleKeduButton("command-disable"));
         this.props.dispatch(actions.toggleLightButton("command-disable"));
         this.props.dispatch(actions.toggleSebiaoButton("command-disable"));
-        // this.props.dispatch(actions.toggleCejuButton("command-disable"));
-        // this.props.dispatch(actions.toggleScaleButton("command-disable"));
+        this.props.dispatch(actions.toggleCejuButton("command"));
+        this.props.dispatch(actions.toggleScaleButton("command"));
         this.result();
         //绘制坐标
         Axis(this.state.model);
@@ -309,7 +311,7 @@ export default class mshView extends Component {
             light, axis
         } = this.state;
         let { show, state } = this.props;
-        let { moveStyle, screen, 
+        let { moveStyle, screen,
             // ruler,
             theme, attribute, ranging, modelStyle, inputValue } = state;
         // let scaleOpc = 0;

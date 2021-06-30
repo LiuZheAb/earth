@@ -8,6 +8,28 @@ import { withRouter } from "react-router-dom";
 import Vis from "../Vis";
 import "./index.css";
 
+const getEndTime = (endTime, status) => {
+    if (status === "1") {
+        if (endTime) {
+            return new Date(endTime).getTime();
+        } else {
+            return "";
+        }
+    } else if (status === "3") {
+        return "";
+    } else {
+        return new Date().getTime();
+    }
+}
+const getDuring = info => {
+    if ((info.status === "1" && info.endTime) || info.status === "0") {
+        let during = info.endTime ? new Date(info.endTime).getTime() - new Date(info.startTime).getTime() :
+            new Date().getTime() - new Date(info.startTime).getTime();
+        return during
+    } else {
+        return ""
+    }
+}
 const createColumns = _this =>
     [
         {
@@ -23,13 +45,15 @@ const createColumns = _this =>
             fixed: 'left',
             width: 232,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
-        }, {
-            title: 'ip',
-            dataIndex: 'dockerIP',
-            align: "center",
-            fixed: 'left',
-            render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
-        }, {
+        },
+        // {
+        //     title: 'ip',
+        //     dataIndex: 'dockerIP',
+        //     align: "center",
+        //     fixed: 'left',
+        //     render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
+        // },
+        {
             title: '模型名称',
             dataIndex: 'funcName',
             align: "center",
@@ -46,18 +70,51 @@ const createColumns = _this =>
             dataIndex: 'startTime',
             align: "center",
             width: 200,
+            sorter: (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         }, {
             title: '运行结束时间',
             dataIndex: 'endTime',
             align: "center",
             width: 200,
-            render: (text, info) => info.status === "1" ?
-                <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p> :
-                info.status === "3" ?
-                    <p className="ellipsis-column">无</p>
-                    :
-                    <p className="ellipsis-column">计算未完成</p>
+            sorter: (a, b) => getEndTime(a.endTime, a.status) - getEndTime(b.endTime, b.status),
+            render: (text, info) => {
+                switch (info.status) {
+                    case "0":
+                        return "计算未完成"
+                    case "1":
+                        if (info.hasUrl === "0") {
+                            return <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+                        } else {
+                            return "无"
+                        }
+                    case "2":
+                        return "计算错误"
+                    case "3":
+                        return "无"
+                    default:
+                        return "无"
+                }
+            }
+        }, {
+            title: '运行时间',
+            dataIndex: 'during',
+            align: "center",
+            sorter: (a, b) => getDuring(a) - getDuring(b),
+            render: (text, info) => {
+                if ((info.status === "1" && info.endTime) || info.status === "0") {
+                    let during = info.endTime ? new Date(info.endTime).getTime() - new Date(info.startTime).getTime() :
+                        new Date().getTime() - new Date(info.startTime).getTime();
+                    return <span>
+                        {parseInt(during / 1000 / 60 / 60 / 24) !== 0 && parseInt(during / 1000 / 60 / 60 / 24) + "天 "}
+                        {parseInt(during / 1000 / 60 / 60) % 60 !== 0 && parseInt(during / 1000 / 60 / 60) % 60 + "小时 "}
+                        {parseInt(during / 1000 / 60) % 60 !== 0 && parseInt(during / 1000 / 60) % 60 + "分钟 "}
+                        {parseInt(during / 1000) % 60 !== 0 && parseInt(during / 1000) % 60 + "秒"}
+                    </span>
+                } else {
+                    return "无"
+                }
+            }
         }, {
             title: '当前步骤',
             dataIndex: 'step',
@@ -148,7 +205,7 @@ const fileTableColumns = _this => [{
     align: "center",
     className: "file-desc",
     render: (text, info) => ["csv", "msh"].includes(info.suffix) || (info.suffix === "txt" && _this.state.currentItemInfo.idenMod === 51) || _this.state.currentItemInfo.idenMod === 7322 ?
-        (info.size < 500 ? <Button type="primary" onClick={_this.handleOpenVisModal.bind(_this, info)}>可视化</Button> : "文件过大，请下载后使用专业软件进行可视化")
+        (info.size < 80 ? <Button type="primary" onClick={_this.handleOpenVisModal.bind(_this, info)}>可视化</Button> : "文件过大，请下载后使用专业软件进行可视化")
         : "暂不支持此格式"
 }];
 const noticeContent = item => <ul className="notice-content">
@@ -187,6 +244,8 @@ class index extends Component {
         calcDrawerVisible: false,
         tdataDrawerVisible: false,
         tdataFileListData: [],
+        currentPage: 1,
+        currentTPage: 1
     }
     componentDidMount() {
         let { username } = this.state;
@@ -204,7 +263,8 @@ class index extends Component {
     updateDataSource = data => {
         if (data !== null) {
             let dataSource = [];
-            dataSource = data.map((info, i) => {
+            let dataCopy = JSON.parse(JSON.stringify(data)).reverse();
+            dataSource = dataCopy.map((info, i) => {
                 let { appname, modname, starttime, endtime, status, docid, hostip, hostport, index, funcname, idenMod, nowStep, stepNum, hasUrl, runStatus } = info;
                 return {
                     key: i,
@@ -247,8 +307,7 @@ class index extends Component {
             this.setState({
                 hasGotList: true
             });
-        }).catch(err => {
-        });
+        })
     }
     pollingData = () => {
         let { api, username, pollingErrTimes, hasGotList } = this.state;
@@ -410,6 +469,7 @@ class index extends Component {
             this.setState({
                 fileListLoading: false,
                 resFileListData: resFileList,
+                currentPage: 1
             })
         }).catch(err => {
             message.error("获取结果失败");
@@ -471,7 +531,7 @@ class index extends Component {
     }
     handleClickMenu = (item, info) => {
         let { key } = item;
-        let { status, nowStep, stepNum, idenMod } = info;
+        let { status, nowStep, stepNum, idenMod, hasUrl } = info;
         this.setState({ currentItemInfo: info }, () => {
             if (key === "1") {
                 switch (status) {
@@ -486,7 +546,13 @@ class index extends Component {
                         if (nowStep < stepNum) {
                             message.info("当前步骤无可查询结果，请点击下一步运行")
                         } else {
-                            this.getFileList();
+                            if (hasUrl === "1") {
+                                this.setState({
+                                    visDrawerVisible: true
+                                });
+                            } else {
+                                this.getFileList();
+                            }
                         }
                         break;
                     case "2":
@@ -511,6 +577,7 @@ class index extends Component {
             tdataDrawerVisible: true,
             fileListLoading: true,
             tdataFileListData: [],
+            uri: "http://" + dockerIP + ":" + vport,
             currentItemInfo: info
         })
         if (status !== "3") {
@@ -537,6 +604,7 @@ class index extends Component {
                     this.setState({
                         fileListLoading: false,
                         tdataFileListData: resFileList,
+                        currentTPage: 1
                     })
                 }).catch(err => {
                     message.error("获取结果失败");
@@ -933,75 +1001,87 @@ class index extends Component {
                     message.warn("数据错误，无法可视化");
                 } else {
                     this.setState({ dataLoading: true });
-                    // axios.get("./static/data/LC_2D_M1-D2T_tpwt50.csv", {
-                    // axios.get("http://192.168.0.129:8085/csvNew3D?filePath=LC_2D_M1-D2T_tpwt50.csv", {
                     axios.get("http://" + dockerIP + ":" + vport + '/resInfo', {
                         params: { path: absolutePath }
                     }).then(res => {
                         let { data } = res.data;
-                        // data.map(i => { i.pop(); return i })
-                        // data = data.split("\n").map(i => i.split(",")).map(i => { i.pop(); return i })
-                        console.log(data);
                         if (Array.isArray(data) && data.length > 0) {
-                            if (idenMod === 325) {
-                                if ((funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) || name.indexOf("residuals") > -1) {
-                                    data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
+                            if (data[0].length < 6 && data[0].length > 1) {
+                                //数组行列调换
+                                let new_data = data[0].map((col, i) => data.map(row => row[i]));
+                                let deleteIndex = [];
+                                //找到值相同的列的序号
+                                for (let i = 0; i < new_data.length; i++) {
+                                    if (Array.from(new Set(new_data[i])).length === 1) {
+                                        deleteIndex.push(i)
+                                    }
+                                }
+                                //删除值相同的列
+                                if (deleteIndex.length > 0) {
+                                    for (let i = 0; i < deleteIndex.length; i++) {
+                                        data = data.map(item => { item.splice(deleteIndex[i], 1); return item })
+                                    }
                                 }
                             }
-                            if ([321, 322, 323, 324].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) {
-                                data.map(item => item.splice(1, 1));
+                            // //矩阵转坐标数据
+                            // if (idenMod === 211) {
+                            //     let xLen = data[0].length, yLen = data.length, newArr = [];
+                            //     if (xLen > 5) {
+                            //         for (let i = 0; i < yLen; i++) {
+                            //             for (let j = 0; j < xLen; j++) {
+                            //                 newArr.push([i * 10, j * 10, data[i][j]])
+                            //             }
+                            //         }
+                            //         data = newArr;
+                            //     }
+                            // }
+                            //带坐标矩阵
+                            if (idenMod === 2122) {
+                                let xAxis = [], yAxis = [];
+                                data.map(item => {
+                                    yAxis.push(item.splice(0, 1))
+                                    xAxis.push(item.splice(0, 1))
+                                    return item;
+                                })
+                                let yLength = data.length;
+                                let xLength = data[0].length;
+                                let xmin = Number(xAxis[0]), xrange = xAxis[1] - xAxis[0];
+                                let newAxis = [];
+                                for (let i = 0; i < xLength; i++) {
+                                    newAxis.push(xmin + xrange * i);
+                                }
+                                xAxis = newAxis;
+                                let newData = [];
+                                for (let i = 0; i < yLength; i++) {
+                                    for (let j = 0; j < xLength; j++) {
+                                        newData.push([xAxis[j], yAxis[i], data[i][j]])
+                                    }
+                                }
+                                data = newData;
                             }
-                            if ([322].includes(idenMod) && funcName.indexOf("2D") > -1 && name.indexOf("_anomaly") > -1) {
-                                data.map(item => item.splice(1, 1));
-                            }
-                            if (idenMod === 7214) {
-                                data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
-                            }
-                            if (idenMod === 631) {
-                                data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
-                            }
-                            if (idenMod !== 51) {
-                                data = data.map(item => item.map(item2 => Number(item2)));
-                            }
-                            let expand = false;
+                            //数组x方向做插值，减少横纵坐标数据长度差异
                             if (idenMod === 2131 || idenMod === 7213) {
+                                data = data.map(item => item.map(item2 => Number(item2)));
+                                let new_data = data[0].map((col, i) => data.map(row => row[i]));
                                 if (data[0].length === 3) {
-                                    let new_data = data[0].map((col, i) => data.map(row => row[i]));
-                                    let xData = Array.from(new Set(new_data[0].map(item => Number(item))));
-                                    let yData = Array.from(new Set(new_data[1].map(item => Number(item))));
+                                    let xData = Array.from(new Set(new_data[0]));
+                                    let yData = Array.from(new Set(new_data[1]));
                                     let xLen = xData.length, yLen = yData.length;
-                                    if (xLen === 1) {
-                                        data = data.map(item => {
-                                            item.splice(0, 1);
-                                            return item;
-                                        })
-                                    }
-                                    if (yLen === 1) {
-                                        data = data.map(item => {
-                                            item.splice(1, 1);
-                                            return item;
-                                        })
-                                    }
-                                    if (data[0].length === 3) {
-                                        let newArr = [];
-                                        let m = parseInt(yLen / xLen);
-                                        if (m > 1) {
-                                            for (let i = 0; i < yLen; i++) {
-                                                newArr[i] = [];
-                                                for (let j = 0; j < xLen - 1; j++) {
-                                                    let range = data[i * xLen + j + 1][2] - data[i * xLen + j][2];
-                                                    for (let k = 0; k < m; k++) {
-                                                        newArr[i].push(data[i * xLen + j][2] + range / m * k)
-                                                    }
+                                    let newArr = [];
+                                    let m = parseInt(yLen / xLen);
+                                    if (m > 1) {
+                                        for (let i = 0; i < yLen; i++) {
+                                            newArr[i] = [];
+                                            for (let j = 0; j < xLen - 1; j++) {
+                                                let range = data[i * xLen + j + 1][2] - data[i * xLen + j][2];
+                                                for (let k = 0; k < m; k++) {
+                                                    newArr[i].push(data[i * xLen + j][2] + range / m * k)
                                                 }
                                             }
-                                            data = newArr;
                                         }
+                                        data = newArr;
                                     }
-                                    // if (yLen / xLen >= 3) {
-                                    //     expand = true;
-                                    // }
-                                } else {
+                                } else if (data[0].length > 4) {
                                     let xLen = data[0].length, yLen = data.length;
                                     let m = parseInt(yLen / xLen);
                                     let newArr = [];
@@ -1019,6 +1099,30 @@ class index extends Component {
                                     }
                                 }
                             }
+                            if (idenMod === 325) {
+                                if ((funcName.indexOf("2D") > -1 && name.indexOf("_voice") > -1) || name.indexOf("residuals") > -1) {
+                                    data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
+                                }
+                            }
+                            if (idenMod === 51) {
+                                data = data.map(item => String(item).split(" "));
+                                data = data[0].map((col, i) => data.map(row => row[i]));
+                            }
+                            if (idenMod === 631 || idenMod === 7214) {
+                                data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
+                                if (data[0].length === 4) {
+                                    let newArr = [];
+                                    data.map(item => {
+                                        //获取x=0的剖面
+                                        if (item[0] === "0") {
+                                            newArr.push([item[1], item[2], item[3]]);
+                                        }
+                                        return item;
+                                    })
+                                    data = newArr;
+                                }
+                            }
+                            data = data.map(item => item.map(item2 => Number(item2)));
                             let dataType = "";
                             if (Array.isArray(data[0])) {
                                 if (info.suffix === "csv") {
@@ -1031,9 +1135,6 @@ class index extends Component {
                                     } else if (data[0].length > 4) {
                                         dataType = "matrix";
                                     }
-                                    if ((idenMod === 2131 || idenMod === 7213) && dataType === "2d" && expand) {
-                                        dataType = "2d_heatmap";
-                                    }
                                 } else if (info.suffix === "msh") {
                                     dataType = "msh";
                                 } else if (info.suffix === "txt") {
@@ -1042,8 +1143,6 @@ class index extends Component {
                             } else {
                                 dataType = undefined;
                             }
-                            console.log(data);
-                            console.log(dataType);
                             this.setState({
                                 calcResData: data,
                                 dataType
@@ -1132,8 +1231,9 @@ class index extends Component {
         }
     }
     render() {
-        const { dataSource, resDrawerVisible, resFileListData, logModalVisible, logInfoArray, fileModalVisible, imgModalVisible, uri, filePath, visVisible,
-            calcResData, dataLoading, fileListLoading, dataType, currentItemInfo, username, visDrawerVisible, calcDrawerVisible, tdataDrawerVisible, tdataFileListData
+        const { dataSource, resDrawerVisible, resFileListData, logModalVisible, logInfoArray, fileModalVisible, imgModalVisible,
+            uri, filePath, visVisible, calcResData, dataLoading, fileListLoading, dataType, currentItemInfo, username, visDrawerVisible,
+            calcDrawerVisible, tdataDrawerVisible, tdataFileListData, currentPage, currentTPage
         } = this.state;
         return (
             <div id="console" className="box-shadow">
@@ -1195,7 +1295,10 @@ class index extends Component {
                                 showQuickJumper: tdataFileListData.length > 50 && true,
                                 hideOnSinglePage: true,
                                 showLessItems: true,
+                                current: currentTPage,
+                                onChange: current => { this.setState({ currentTPage: current }) }
                             }}
+                            scroll={{ x: true }}
                         />
                     </ConfigProvider>
                 </Drawer >
@@ -1211,7 +1314,10 @@ class index extends Component {
                                 showQuickJumper: resFileListData.length > 50 && true,
                                 hideOnSinglePage: true,
                                 showLessItems: true,
+                                current: currentPage,
+                                onChange: current => { this.setState({ currentPage: current }) }
                             }}
+                            scroll={{ x: true }}
                         />
                     </ConfigProvider>
                 </Drawer >

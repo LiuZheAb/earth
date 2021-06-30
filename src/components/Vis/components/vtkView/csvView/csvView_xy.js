@@ -44,7 +44,7 @@ export default class csvViewXy extends Component {
             zLength: 0,
             cells: [],
             value: 0,
-            mode: this.props.appName === "保幅超分辨率反演(Super Resolution ITSMF)" ? "Rainbow Desaturated" : "rainbow",
+            mode: this.props.appName === "保幅超分辨率反演(Super Resolution ITSMF)" || this.props.appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)" ? "Rainbow Desaturated" : "rainbow",
             xAxis: [],
             yAxis: [],
             activeScalar: [],
@@ -82,7 +82,7 @@ export default class csvViewXy extends Component {
         reassignManipulators(model);
         switch (datatype) {
             case "数据网格化": {
-                let xAxis = data.lat.map(item => Number(item.toFixed(0))), yAxis = data.lon.map(item => Number(item.toFixed(0))), arrs = [...data.griddata];
+                let xAxis = data.lat, yAxis = data.lon, arrs = [...data.griddata];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -108,7 +108,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "数据去趋势": {
-                let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.y.map(item => Number(item.toFixed(0))), arrs = [...data.data], arrs1 = [...data.trend_values], arrs2 = [...data.residuals];
+                let xAxis = data.x, yAxis = data.y, arrs = [...data.data], arrs1 = [...data.trend_values], arrs2 = [...data.residuals];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const actor1 = vtkActor.newInstance();
@@ -159,7 +159,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "坐标投影": {
-                let xAxis = data.x.map(item => Number(item.toFixed(4))), yAxis = data.y.map(item => Number(item.toFixed(4))), xAxis1 = data.lat.map(item => Number(item.toFixed(4))), yAxis1 = data.lon.map(item => Number(item.toFixed(4))), arrs = [...data.elev], arrs1 = [...data.grav] || [...data.griddata];
+                let xAxis = data.x, yAxis = data.y, xAxis1 = data.lat, yAxis1 = data.lon, arrs = [...data.elev], arrs1 = [...data.grav] || [...data.griddata];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const actor1 = vtkActor.newInstance();
@@ -195,7 +195,7 @@ export default class csvViewXy extends Component {
             }
             case "六面体模型重力异常正演":
             case "球型棱柱体模型重力异常正演": {
-                let xAxis = data.xp.map(item => Number(item.toFixed(2))), yAxis = data.yp.map(item => Number(item.toFixed(2))), arrs = [...data.field_gra], arrs1 = [...data.field_gra1];
+                let xAxis = data.xp, yAxis = data.yp, arrs = [...data.field_gra], arrs1 = [...data.field_gra1];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const actor1 = vtkActor.newInstance();
@@ -231,7 +231,7 @@ export default class csvViewXy extends Component {
             }
             case "六面体复杂模型构建及重力异常正演":
             case "球型棱柱体模型构建及重力异常正演": {
-                let xAxis = data.xp.map(item => Number(item.toFixed(2))), yAxis = data.yp.map(item => Number(item.toFixed(2))), arrs = [...data.field_gra];
+                let xAxis = data.xp, yAxis = data.yp, arrs = [...data.field_gra];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -252,7 +252,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "重力数据求偏导": {
-                let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.y.map(item => Number(item.toFixed(0))), arrs = [...data.grav_devir];
+                let xAxis = data.x, yAxis = data.y, arrs = [...data.grav_devir];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -272,49 +272,10 @@ export default class csvViewXy extends Component {
                 model.mapper = mapper;
                 break;
             }
-            case "典型矿区仿真数据反演一（最小模型约束反演）":
-            case "典型矿区仿真数据反演二（深度加权约束反演）":
-            case "典型矿区仿真数据反演三（光滑约束反演）":
-            case "典型矿区仿真数据反演四（多约束反演）":
-            case "典型矿区仿真数据反演五（全变分约束）": {
-                let xAxis = data.xp.map(item => Number(item.toFixed(2))), yAxis = data.yp.map(item => Number(item.toFixed(2))), arrs = [...data.predicted], arrs1 = [...data.residuals];
-                // 定义actor
-                const actor = vtkActor.newInstance();
-                const actor1 = vtkActor.newInstance();
-                const lookupTable = vtkColorTransferFunction.newInstance();
-                const preset = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
-                lookupTable.applyColorMap(preset);  //应用ColorMap
-                const lookupTable1 = vtkColorTransferFunction.newInstance();
-                const preset1 = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
-                lookupTable1.applyColorMap(preset1);  //应用ColorMap
-
-                // 定义映射器
-                const mapper = vtkMapper.newInstance({
-                    useLookupTableScalarRange: true,
-                    lookupTable,
-                });
-                const mapper1 = vtkMapper.newInstance({
-                    useLookupTableScalarRange: true,
-                    lookupTable1,
-                });
-                creatPlane(model, _this, xAxis, yAxis, datatype, arrs, xLength, yLength, actor, mapper, lookupTable, data.predicted);
-                let boun1 = actor.getBounds();
-                let cen1 = [boun1[1] + (boun1[3] - boun1[2]) * 0.75, 0, 0];
-                creatPlane(model, _this, xAxis, yAxis, datatype, arrs1, xLength, yLength, actor1, mapper1, lookupTable1, data.residuals, cen1);
-                model.renderer.resetCamera();
-                model.renderWindow.render();
-                model.actor = actor;
-                model.actor1 = actor1;
-                model.lookupTable = lookupTable;
-                model.lookupTable1 = lookupTable1;
-                model.mapper = mapper;
-                model.mapper1 = mapper1;
-                break;
-            }
             case "重力数据延拓":
             case "磁场空间延拓":
             case "磁场方向导数求取": {
-                let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.y.map(item => Number(item.toFixed(0))), arrs = [...data.data];
+                let xAxis = data.x, yAxis = data.y, arrs = [...data.data];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -337,7 +298,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "重力异常计算": {
-                let xAxis = data.lat.map(item => Number(item.toFixed(2))), yAxis = data.lon.map(item => Number(item.toFixed(2))), xAxis1 = [...data.lat].map(item => Number(item.toFixed(2))), yAxis1 = [...data.lon].map(item => Number(item.toFixed(2))), arrs = [...data.FGA], arrs1 = [...data.BGA_s];
+                let xAxis = data.lat, yAxis = data.lon, xAxis1 = [...data.lat], yAxis1 = [...data.lon], arrs = [...data.FGA], arrs1 = [...data.BGA_s];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const actor1 = vtkActor.newInstance();
@@ -378,8 +339,12 @@ export default class csvViewXy extends Component {
                 model.mapper1 = mapper1;
                 break;
             }
-            case "重力观测数据反演（多约束反演）": {
-                let xAxis = data.yp.map(item => Number(item.toFixed(2))), yAxis = data.xp, arrs = [...data.predicted], arrs1 = [...data.residuals];
+            case "重力观测数据反演（三维正则，参考模型约束）":
+            case "重力观测数据反演（多约束反演）":
+            case "重力观测数据反演（参考模型-全变分约束）":
+            case "MCMC反演":
+            case "MCMC反演（参考模型约束）": {
+                let xAxis = data.yp, yAxis = data.xp, arrs = [...data.predicted], arrs1 = [...data.residuals];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const actor1 = vtkActor.newInstance();
@@ -419,7 +384,7 @@ export default class csvViewXy extends Component {
             case "曲化平":
             case "数据扩边":
             case "最小曲率补空白": {
-                let xAxis = data.x.map(item => Number(item.toFixed(2))), yAxis = data.y.map(item => Number(item.toFixed(2))), arrs = [...data.data];
+                let xAxis = data.x, yAxis = data.y, arrs = [...data.data];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -442,7 +407,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "磁场模型正演": {
-                let xAxis = data.xp.map(item => Number(item.toFixed(2))), yAxis = data.yp.map(item => Number(item.toFixed(2))), arrs = [...data.field_mag].reverse();
+                let xAxis = data.xp, yAxis = data.yp, arrs = [...data.field_mag].reverse();
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -463,7 +428,7 @@ export default class csvViewXy extends Component {
                 break;
             }
             case "磁化极": {
-                let xAxis = data.y.map(item => Number(item.toFixed(0))), yAxis = data.x.map(item => Number(item.toFixed(0))), arrs = [...data.data];
+                let xAxis = data.y, yAxis = data.x, arrs = [...data.data];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -487,7 +452,7 @@ export default class csvViewXy extends Component {
             }
             case "欧拉反演(扩展窗)":
             case "欧拉反演(移动窗)": {
-                let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.y.map(item => Number(item.toFixed(0))), arrs = [...data.predict];
+                let xAxis = data.x, yAxis = data.y, arrs = [...data.predict];
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -507,90 +472,24 @@ export default class csvViewXy extends Component {
                 model.lookupTable = lookupTable;
                 model.actor = actor;
                 model.mapper = mapper;
-                break;
-            }
-            case "欧拉反演(移动窗)2": {
-                let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.y.map(item => Number(item.toFixed(0))), arrs = [...data.predict], arrs1 = [...data.p0];
-                // 定义actor
-                const actor = vtkActor.newInstance();
-                const lookupTable = vtkColorTransferFunction.newInstance();
-                const preset = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
-                lookupTable.applyColorMap(preset);  //应用ColorMap
-                const actor1 = vtkActor.newInstance();
-                const lookupTable1 = vtkColorTransferFunction.newInstance();
-                const preset1 = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
-                lookupTable1.applyColorMap(preset1);  //应用ColorMap
-                // 定义映射器
-                const mapper = vtkMapper.newInstance({
-                    useLookupTableScalarRange: true,
-                    lookupTable,
-                });
-                const mapper1 = vtkMapper.newInstance({
-                    useLookupTableScalarRange: true,
-                    lookupTable1,
-                });
-                creatPlane(model, _this, xAxis, yAxis, datatype, arrs, xLength, yLength, actor, mapper, lookupTable, data.predict);
-                let boun1 = actor.getBounds();
-                let cen1 = [boun1[1] + (boun1[3] - boun1[2]) * 0.75, 0, 0];
-                creatPlane(model, _this, xAxis, yAxis, datatype, arrs1, xLength, yLength, actor1, mapper1, lookupTable1, data.p0, cen1);
-
-                model.renderer.resetCamera();
-                model.renderWindow.render();
-                model.actor = actor;
-                model.mapper = mapper;
-                model.lookupTable = lookupTable;
-                model.actor1 = actor1;
-                model.mapper1 = mapper1;
-                model.lookupTable1 = lookupTable1;
-                break;
-            }
-            case "重磁2D数据模糊聚类联合反演":
-            case "重磁3D数据模糊聚类联合反演":
-            case "重磁2D数据模糊c回归聚类联合反演":
-            case "重磁3D数据模糊c回归聚类联合反演":
-            case "重磁2D数据相关分析联合反演":
-            case "重磁3D数据相关分析联合反演":
-            case "重磁2D数据基于数据空间的相关分析联合反演":
-            case "重磁3D数据基于数据空间的相关分析联合反演":
-            case "重磁2D数据交叉梯度联合反演":
-            case "重磁3D数据交叉梯度联合反演": {
-                let xAxis = data.x.map(item => Number(item.toFixed(0))), yAxis = data.z.map(item => Number(item.toFixed(0))), arrs = [...data.density], arrs1 = [...data.magnetization];
-                // 定义actor
-                const actor = vtkActor.newInstance();
-                const actor1 = vtkActor.newInstance();
-                const lookupTable = vtkColorTransferFunction.newInstance();
-                const preset = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
-                lookupTable.applyColorMap(preset);  //应用ColorMap
-                const lookupTable1 = vtkColorTransferFunction.newInstance();
-                const preset1 = vtkColorMaps.getPresetByName(mode);   //预设色标颜色样式
-                lookupTable1.applyColorMap(preset1);  //应用ColorMap
-
-                // 定义映射器
-                const mapper = vtkMapper.newInstance({
-                    useLookupTableScalarRange: true,
-                    lookupTable,
-                });
-                const mapper1 = vtkMapper.newInstance({
-                    useLookupTableScalarRange: true,
-                    lookupTable1,
-                });
-                creatPlane(model, _this, xAxis, yAxis, datatype, arrs, xLength, yLength, actor, mapper, lookupTable, data.density);
-                let boun1 = actor.getBounds();
-                let cen1 = [boun1[1] + (boun1[3] - boun1[2]) * 0.75, 0, 0];
-                creatPlane(model, _this, xAxis, yAxis, datatype, arrs1, xLength, yLength, actor1, mapper1, lookupTable1, data.magnetization, cen1);
-                model.renderer.resetCamera();
-                model.renderWindow.render();
-                model.actor = actor;
-                model.mapper = mapper;
-                model.actor1 = actor1;
-                model.lookupTable = lookupTable;
-                model.lookupTable1 = lookupTable1;
-                model.mapper1 = mapper1;
                 break;
             }
             case "2d": {
                 let xAxis = [], yAxis = [], arrs = [];
-                if (["接收函数反演 (ReceiverFunc Inversion)", "接收函数-面波联合反演 (ReceiverFunc-Surf Inversion)", "ERPS USTC", "地震背景噪声成像(ERPS USTC)", "相关分析联合反演", "模糊聚类联合反演", "基于数据空间的相关分析反演", "交叉梯度联合反演", "FCRM联合反演", "模糊C回归聚类", "大地电磁面波 (MT-Surf RealData)", "保幅超分辨率反演(Super Resolution ITSMF)"].includes(appName)) {
+                if (["接收函数反演 (ReceiverFunc Inversion)",
+                    "接收函数-面波联合反演 (ReceiverFunc-Surf Inversion)",
+                    "地震背景噪声成像(ERPS USTC)",
+                    "相关分析联合反演",
+                    "模糊聚类联合反演",
+                    "基于数据空间的相关分析反演",
+                    "交叉梯度联合反演",
+                    "模糊C回归聚类",
+                    "大地电磁面波 (MT-Surf Field)",
+                    "大地电磁面波 (MT-Surf)",
+                    "保幅超分辨率反演(Super Resolution ITSMF)",
+                    "保幅超分辨率反演 (Super Resolution Seismic Imaging)",
+                    "同步挤压",
+                    "最小二乘逆时偏移 (LSRTM)"].includes(appName)) {
                     for (let i = 0; i < data.length; i++) {
                         arrs.push(Number(data[i][2]));
                         xAxis.push(Number(data[i][0]));
@@ -603,12 +502,10 @@ export default class csvViewXy extends Component {
                         yAxis.push(Number(data[i][0]));
                     }
                 }
-
                 yLength = Array.from(new Set(yAxis)).length > 1 ? Array.from(new Set(yAxis)).length : 2;
-
                 xLength = Array.from(new Set(xAxis)).length;
                 //左右颠倒
-                if (appName === "保幅超分辨率反演(Super Resolution ITSMF)") {
+                if (appName === "保幅超分辨率反演(Super Resolution ITSMF)" || appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)" || appName === "同步挤压") {
                     let newArr = [];
                     for (let i = 0; i < yLength; i++) {
                         for (let j = 0; j < xLength; j++) {
@@ -617,7 +514,6 @@ export default class csvViewXy extends Component {
                     }
                     arrs = newArr;
                 }
-                console.log(arrs);
                 // 定义actor
                 const actor = vtkActor.newInstance();
                 const lookupTable = vtkColorTransferFunction.newInstance();
@@ -650,18 +546,19 @@ export default class csvViewXy extends Component {
 
     componentDidMount() {
         this.props.dispatch(actions.setMoveStyle(actions.moveType.PAN));
-        this.props.dispatch(actions.toggleDxuanzhuanButton("command-disable"));
-        this.props.dispatch(actions.toggleRaogoujianxuanzhuanButton("command-disable"));
+        this.props.dispatch(actions.toggleDxuanzhuanButton("command"));
+        this.props.dispatch(actions.toggleRaogoujianxuanzhuanButton("command"));
         this.props.dispatch(actions.toggleShitidanyuanButton("command-disable"));
         this.props.dispatch(actions.toggleWanggeButton("command-disable"));
         this.props.dispatch(actions.togglePointButton("command-disable"));
         this.props.dispatch(actions.toggleAxisButton("command-disable"));
-        this.props.dispatch(actions.toggleBoundButton("command-disable"));
-        this.props.dispatch(actions.toggleResultButton("command-disable"));
-        this.props.dispatch(actions.toggleLightButton("command-disable"));
+        this.props.dispatch(actions.toggleBoundButton("command"));
+        this.props.dispatch(actions.toggleResultButton("command"));
+        this.props.dispatch(actions.toggleLightButton("command"));
+        this.props.dispatch(actions.toggleKeduButton("command"));
         this.props.dispatch(actions.toggleSebiaoButton("command-disable"));
-        this.props.dispatch(actions.toggleCejuButton("command-disable"));
-        this.props.dispatch(actions.toggleScaleButton("command-disable"));
+        this.props.dispatch(actions.toggleCejuButton("command"));
+        this.props.dispatch(actions.toggleScaleButton("command"));
         this.result();
     };
 
@@ -675,7 +572,7 @@ export default class csvViewXy extends Component {
     }
     render() {
         let { boxBgColor, model, mode } = this.state;
-        let { show, state, datatype } = this.props;
+        let { show, state, datatype, appName } = this.props;
         let { moveStyle, screen, ruler, attribute,
             //  scale, ranging, 
             theme } = state;
@@ -725,7 +622,7 @@ export default class csvViewXy extends Component {
             model.fullScreenRenderer.setBackground(bgColor);
             for (let i = 0; i < model.actState.length; i++) {
                 let { min, max, xlon, ylon, planeCenter, pointLeft, } = model.actState[i];
-                Sfn(model, mode, min, max, xlon, ylon, planeCenter, pointLeft, this.container, fontColor, datatype, 'textCanvas' + i);
+                Sfn(model, mode, min, max, xlon, ylon, planeCenter, pointLeft, this.container, fontColor, datatype, 'textCanvas' + i, appName);
             }
             if (document.querySelector('.text1')) this.container.current.children[0].removeChild(document.querySelector('.text1'))
             if (document.querySelector('.text2')) this.container.current.children[0].removeChild(document.querySelector('.text2'))
