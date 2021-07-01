@@ -215,7 +215,7 @@ class Download extends React.Component {
           allData: res.list
         });
       };
-      let total = parseInt(res.list[0].num);
+      let total = res.list[0] && parseInt(res.list[0].num);
       if (total > 0) {
         this.setState({
           loading: false,

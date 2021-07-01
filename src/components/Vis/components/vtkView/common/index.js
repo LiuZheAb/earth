@@ -857,28 +857,28 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                         } else {
                             textCtx.fillText(`${fixed(yAxisRe[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         };
-                        let middleX, textY;
-                        if (num === 6) {
-                            middleX = (coordsList[2][0] + coordsList[3][0]) / 2;
-                            textY = (coordsList[11][1] - coordsList[6][1]) * 0.1;
-                        } else if (num === 2) {
-                            middleX = (coordsList[0][0] + coordsList[1][0]) / 2;
-                            textY = (coordsList[3][1] - coordsList[2][1]) * 0.1;
-                        } else if (num === 11) {
-                            middleX = coordsList[5][0];
-                            textY = (coordsList[21][1] - coordsList[12][1]) * 0.1;
-                        };
-                        if (props.datatype === "重力观测数据反演（多约束反演）" || props.datatype === "重力观测数据反演（三维正则，参考模型约束）" || props.datatype === "重力观测数据反演（参考模型-全变分约束）" || props.datatype === "MCMC反演" || props.datatype === "MCMC反演（参考模型约束）") {
-                            textCtx.fillText(imgIndex === 0 ? "重力预测值" : (imgIndex === 1 ? "数据残差" : ""), middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
-                        } else if (props.datatype === "欧拉反演(移动窗)") {
-                            textCtx.fillText("欧拉反演(移动窗)效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
-                        } else if (props.datatype === "欧拉反演(扩展窗)") {
-                            textCtx.fillText("欧拉反演(扩展窗)效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                        if (["重力观测数据反演（多约束反演）", "重力观测数据反演（三维正则，参考模型约束）", "重力观测数据反演（参考模型-全变分约束）", "MCMC反演", "MCMC反演（参考模型约束）", "欧拉反演(移动窗)", "欧拉反演(扩展窗)"].includes(props.datatype)) {
+                            let middleX, textY;
+                            if (num === 6) {
+                                middleX = (coordsList[2][0] + coordsList[3][0]) / 2;
+                                textY = (coordsList[11][1] - coordsList[6][1]) * 0.1;
+                            } else if (num === 2) {
+                                middleX = (coordsList[0][0] + coordsList[1][0]) / 2;
+                                textY = (coordsList[3][1] - coordsList[2][1]) * 0.1;
+                            } else if (num === 11) {
+                                middleX = coordsList[5][0];
+                                textY = (coordsList[21][1] - coordsList[12][1]) * 0.1;
+                            };
+                            if (props.datatype === "重力观测数据反演（多约束反演）" || props.datatype === "重力观测数据反演（三维正则，参考模型约束）" || props.datatype === "重力观测数据反演（参考模型-全变分约束）" || props.datatype === "MCMC反演" || props.datatype === "MCMC反演（参考模型约束）") {
+                                textCtx.fillText(imgIndex === 0 ? "重力预测值" : (imgIndex === 1 ? "数据残差" : ""), middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "欧拉反演(移动窗)") {
+                                textCtx.fillText("欧拉反演(移动窗)效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "欧拉反演(扩展窗)") {
+                                textCtx.fillText("欧拉反演(扩展窗)效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            }
                         }
                     };
-
                 });
-
             }
         });
         const textActor = vtkActor.newInstance();

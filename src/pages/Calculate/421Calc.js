@@ -1224,8 +1224,6 @@ class Calculate extends React.Component {
                                                                                                 callback(`${paramName}的值不能为空!`);
                                                                                             } else if (/\s/.test(value)) {
                                                                                                 callback(`${paramName}的值不能包含空格`);
-                                                                                            } else if (/\s/.test(value)) {
-                                                                                                callback(`${paramName}的值不能包含空格`);
                                                                                             } else if (!enumList.includes(value)) {
                                                                                                 callback(`${paramName}的值只能为[${enumList}]`);
                                                                                             } else {

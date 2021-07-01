@@ -9,10 +9,8 @@ import React from 'react';
 import { Layout, Menu, Pagination } from 'antd';
 import { Link, withRouter } from "react-router-dom";
 import IconFont from '../../components/IconFont';
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
+import { pdfjs, Document, Page } from 'react-pdf';
 import "./index.css";
-
 const { Header, Sider, Content } = Layout;
 pdfjs.GlobalWorkerOptions.workerSrc = `./js/pdf.worker.js`;
 
@@ -27,6 +25,7 @@ class About extends React.Component {
     };
     // 点击侧边栏调用
     changeSider = ({ key }) => {
+        sessionStorage.setItem("aboutSiderKey", key);
         this.setState({
             aboutSiderKey: key
         });
@@ -41,7 +40,6 @@ class About extends React.Component {
     };
     render() {
         const { aboutSiderKey, pageNumber, numPages } = this.state;
-        sessionStorage.setItem("aboutSiderKey", aboutSiderKey);
         let content = null;
         switch (aboutSiderKey) {
             case "1":

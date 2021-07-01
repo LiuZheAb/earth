@@ -17,7 +17,7 @@ export default class vis extends Component {
     render() {
         let { data, appName, datatype } = this.props;
         let visComponent = null;
-        if (["混合谱元法 (SEM)", "混合谱元法 (MSEM)", "混合谱元法电磁正演 (MSEM)", "极限学习机电磁联合反演(ELM_INV)"].includes(appName)) {
+        if (["混合谱元法 (SEM)", "混合谱元法 (MSEM)", "混合谱元法电磁正演 (MSEM)", "极限学习机电磁联合反演(ELM_INV)", "极限学习机电磁联合反演"].includes(appName)) {
             if (datatype === "line_1") {
                 visComponent = <CsvViewLineContainer data={data} datatype={datatype} appName={appName} />;
             } else if (datatype === "line_2") {

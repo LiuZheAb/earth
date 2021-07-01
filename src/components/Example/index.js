@@ -42,10 +42,10 @@ class index extends Component {
         let { data, api } = this.props;
         if (data && api) {
             let geoModalData1 = {
-                "高分辨率地震成像方法与技术": data["高分辨率地震成像方法与技术"],
-                "位场正反演方法与技术": data["位场正反演方法与技术"],
-                "电磁场正反演方法与技术": data["电磁场正反演方法与技术"],
-                "人工智能综合地球物理技术": data["人工智能综合地球物理技术"],
+                "高分辨率地震成像": data["高分辨率地震成像"],
+                "位场正反演": data["位场正反演"],
+                "电磁场正反演": data["电磁场正反演"],
+                "人工智能综合地球物理": data["人工智能综合地球物理"],
             };
             this.setState({
                 data: data["典型示范 (Demonstration)"],
@@ -202,10 +202,10 @@ class index extends Component {
         let { data, api } = nextProps;
         if (data && data !== prevState.data) {
             let geoModalData1 = {
-                "高分辨率地震成像方法与技术": data["高分辨率地震成像方法与技术"],
-                "位场正反演方法与技术": data["位场正反演方法与技术"],
-                "电磁场正反演方法与技术": data["电磁场正反演方法与技术"],
-                "人工智能综合地球物理技术": data["人工智能综合地球物理技术"],
+                "高分辨率地震成像": data["高分辨率地震成像"],
+                "位场正反演": data["位场正反演"],
+                "电磁场正反演": data["电磁场正反演"],
+                "人工智能综合地球物理": data["人工智能综合地球物理"],
             };
             return {
                 data: data["典型示范 (Demonstration)"],
