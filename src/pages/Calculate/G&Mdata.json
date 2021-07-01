@@ -2392,7 +2392,7 @@
         "二维多边形反演": {
             "calcApi": "/Polygon_inversion",
             "requestMethod": "post",
-            "vis": false,
+            "vis": true,
             "params": {
                 "texts": [
                     {

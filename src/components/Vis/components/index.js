@@ -210,6 +210,11 @@ export default class Vtk extends React.Component {
                                     case "重磁3D数据交叉梯度联合反演":
                                     case "2d":
                                         return <CsvViewXyContainer data={data} datatype={datatype} show={show} appName={appName} />;
+                                    case "重力观测数据反演（多约束反演）0":
+                                    case "重力观测数据反演（三维正则，参考模型约束）0":
+                                    case "重力观测数据反演（参考模型-全变分约束）0":
+                                    case "MCMC反演0":
+                                    case "MCMC反演（参考模型约束）0":
                                     case "3d":
                                         return <CsvViewXyzContainer data={data} datatype={datatype} show={show} />;
                                     case "matrix":

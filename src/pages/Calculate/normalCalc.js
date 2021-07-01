@@ -120,7 +120,9 @@ class Calculate extends React.Component {
             realValue: "model",
             hasGotParam: true,
             startTime: 0,
-            endTime: 0
+            endTime: 0,
+            axisData: {},
+            visIndex: 1
         };
     };
     logTimer = undefined;
@@ -253,12 +255,11 @@ class Calculate extends React.Component {
                     }
                     let dimension = false, real = false;
                     for (let i = 0; i < proList.length; i++) {
-                        let name = proList[i];
-                        if (name.toUpperCase().indexOf("3D") > -1) {
+                        if (proList[i].toUpperCase().indexOf("3D") > -1 && i > proList.length - 1) {
                             dimension = true;
                             break;
                         }
-                        if (name.toUpperCase().indexOf("REAL") > -1) {
+                        if (proList[i].toUpperCase().indexOf("REAL") > -1 && i > proList.length - 1) {
                             real = true;
                             break;
                         }
@@ -542,6 +543,30 @@ class Calculate extends React.Component {
                                 });
                             }
                             )
+                        }
+                        if (["重力观测数据反演（三维正则，参考模型约束）", "重力观测数据反演（多约束反演）", "重力观测数据反演（参考模型-全变分约束）", "MCMC反演", "MCMC反演（参考模型约束）"].includes(apiName)) {
+                            let getObjectValue = (objArr, paramName) => {
+                                for (let i = 0, len = objArr.length; i < len; i++) {
+                                    if (objArr[i].paramName === paramName) {
+                                        return objArr[i].currentValue;
+                                    }
+                                }
+                            };
+                            let area = getObjectValue(texts, "area").split(",").map(item => Number(item));
+                            let shape = getObjectValue(texts, "shape").split(",").map(item => Number(item));
+                            let [x1, x2, y1, y2, z1, z2] = area;
+                            let [nz, ny, nx] = shape;
+                            let axisData = { xp: [], yp: [], zp: [] };
+                            for (let i = 0; i < nz; i++) {
+                                for (let j = 0; j < ny; j++) {
+                                    for (let k = 0; k < nx; k++) {
+                                        axisData.xp.push((x2 - x1) / nx * (k + 0.5) + x1);
+                                        axisData.yp.push((y2 - y1) / ny * (j + 0.5) + y1);
+                                        axisData.zp.push((z2 - z1) / nz * (i + 0.5) + z1);
+                                    }
+                                }
+                            }
+                            this.setState({ axisData });
                         }
                     }
                 })
@@ -835,7 +860,27 @@ class Calculate extends React.Component {
         }
     }
     downloadData = file => {
-        let { calcResData, apiName, baseUrl } = this.state;
+        let { calcResData, apiName, baseUrl, axisData } = this.state;
+        let JSONToCSVConvertor = jsonData => {
+            let length = 0;
+            let csv = "", row = "";
+            for (let key in jsonData) {
+                if (!Array.isArray(jsonData[key])) {
+                    jsonData[key] = [jsonData[key]];
+                }
+                length = length < jsonData[key].length ? jsonData[key].length : length;
+                row += key + ",";
+            }
+            csv += row.substring(0, row.lastIndexOf(',')) + "\r\n";
+            for (let i = 0; i < length; i++) {
+                let row = "";
+                for (let key in jsonData) {
+                    row += (jsonData[key][i] === undefined ? "" : jsonData[key][i]) + ",";
+                }
+                csv += row.substring(0, row.lastIndexOf(',')) + "\r\n";
+            }
+            return csv;
+        };
         if (apiName === "计算完全布格异常") {
             let elementA = document.createElement('a');
             elementA.style.display = 'none';
@@ -843,33 +888,46 @@ class Calculate extends React.Component {
             document.body.appendChild(elementA);
             elementA.click();
             document.body.removeChild(elementA);
+        } else if (["重力观测数据反演（三维正则，参考模型约束）", "重力观测数据反演（多约束反演）", "重力观测数据反演（参考模型-全变分约束）", "MCMC反演", "MCMC反演（参考模型约束）"].includes(apiName)) {
+            if (file === 0) {
+                let jsonData = {
+                    Density: calcResData.DensityDistribution || calcResData.Density || calcResData.density,
+                    xp: axisData.xp,
+                    yp: axisData.yp,
+                    zp: axisData.zp
+                }
+                let elementA = document.createElement('a');
+                elementA.download = "三维密度分布数据_" + +new Date() + ".csv";
+                let str = JSONToCSVConvertor(jsonData)
+                elementA.style.display = 'none';
+                //unescape("\ufeff" + str)解决excel打开csv文件中文乱码问题
+                let blob = new Blob([unescape("\ufeff" + str)], { type: 'text/csv,charset=UTF-8' });
+                elementA.href = URL.createObjectURL(blob);
+                document.body.appendChild(elementA);
+                elementA.click();
+                document.body.removeChild(elementA);
+            } else if (file === 1) {
+                let jsonData = {
+                    predicted: calcResData.predicted,
+                    residuals: calcResData.residuals,
+                    xp: calcResData.xp,
+                    yp: calcResData.yp,
+                }
+                let elementA = document.createElement('a');
+                elementA.download = "重力预测值&残差数据_" + +new Date() + ".csv";
+                let str = JSONToCSVConvertor(jsonData)
+                elementA.style.display = 'none';
+                //unescape("\ufeff" + str)解决excel打开csv文件中文乱码问题
+                let blob = new Blob([unescape("\ufeff" + str)], { type: 'text/csv,charset=UTF-8' });
+                elementA.href = URL.createObjectURL(blob);
+                document.body.appendChild(elementA);
+                elementA.click();
+                document.body.removeChild(elementA);
+            }
         } else {
-            let JSONToCSVConvertor = jsonData => {
-                console.log(jsonData);
-                let length = 0;
-                let csv = "", row = "";
-                for (let key in jsonData) {
-                    if (!Array.isArray(jsonData[key])) {
-                        jsonData[key] = [jsonData[key]];
-                    }
-                    length = length < jsonData[key].length ? jsonData[key].length : length;
-                    row += key + ",";
-                }
-                csv += row.substring(0, row.lastIndexOf(',')) + "\r\n";
-                for (let i = 0; i < length; i++) {
-                    let row = "";
-                    for (let key in jsonData) {
-                        row += (jsonData[key][i] === undefined ? "" : jsonData[key][i]) + ",";
-                    }
-                    csv += row.substring(0, row.lastIndexOf(',')) + "\r\n";
-                }
-                return csv;
-            };
             let elementA = document.createElement('a');
             elementA.download = apiName + "_resData_" + +new Date() + ".csv";
             let str = JSONToCSVConvertor(calcResData)
-            console.log(str);
-            console.log(unescape("\ufeff" + str));
             elementA.style.display = 'none';
             //unescape("\ufeff" + str)解决excel打开csv文件中文乱码问题
             let blob = new Blob([unescape("\ufeff" + str)], { type: 'text/csv,charset=UTF-8' });
@@ -1431,7 +1489,7 @@ class Calculate extends React.Component {
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, currentStep2, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener,
-            hideUpload, dimension, real, dimensionValue, realValue, funcName, startTime, endTime
+            hideUpload, dimension, real, dimensionValue, realValue, funcName, startTime, endTime, visIndex, axisData
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {
@@ -1658,7 +1716,7 @@ class Calculate extends React.Component {
                                                             )}
                                                             {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map(({ paramNameCN, paramName, defaultValue, tip, enumList }, index) =>
                                                                 <div style={{ position: "relative" }} key={index}>
-                                                                    <Form.Item id={paramName + index} label={<label title={paramNameCN}>{paramName}</label>}>
+                                                                    <Form.Item id={paramName + index} label={<label title={paramNameCN}>{[321, 322, 323, 324, 325].includes(idenMod) ? paramNameCN : paramName}</label>}>
                                                                         <Upload
                                                                             name="uploadParamFile"
                                                                             action={"http://" + dockerIP + ":" + vport + "/upFile"}
@@ -2025,10 +2083,19 @@ class Calculate extends React.Component {
                                                 <Table className="filelist-table"
                                                     title={() => <span style={{ fontWeight: "bold" }}>计算结果</span>}
                                                     dataSource={
-                                                        [{
-                                                            key: apiName,
-                                                            name: apiName + "_resData.csv",
-                                                        }]
+                                                        ["重力观测数据反演（三维正则，参考模型约束）", "重力观测数据反演（多约束反演）", "重力观测数据反演（参考模型-全变分约束）", "MCMC反演", "MCMC反演（参考模型约束）"].includes(apiName) ?
+                                                            [{
+                                                                key: 0,
+                                                                name: "三维密度分布数据.csv",
+                                                            }, {
+                                                                key: 1,
+                                                                name: "重力预测值&残差数据.csv",
+                                                            }]
+                                                            :
+                                                            [{
+                                                                key: apiName,
+                                                                name: apiName + "_resData.csv",
+                                                            }]
                                                     }
                                                     columns={[{
                                                         title: '文件名',
@@ -2038,11 +2105,17 @@ class Calculate extends React.Component {
                                                     }, {
                                                         title: '下载数据',
                                                         align: "center",
-                                                        render: (text, info) => <Button type="primary" onClick={this.downloadData}>下载</Button>
+                                                        render: record =>
+                                                            ["重力观测数据反演（三维正则，参考模型约束）", "重力观测数据反演（多约束反演）", "重力观测数据反演（参考模型-全变分约束）", "MCMC反演", "MCMC反演（参考模型约束）"].includes(apiName) ?
+                                                                <Button type="primary" onClick={this.downloadData.bind(this, record.key)}>下载</Button>
+                                                                :
+                                                                <Button type="primary" onClick={this.downloadData}>下载</Button>
                                                     }, {
                                                         title: '可视化',
                                                         align: "center",
-                                                        render: () => needVis ? <Button type="primary" onClick={() => { this.setState({ visVisible: true }) }}>可视化</Button> : "-"
+                                                        render: record => needVis ?
+                                                            <Button type="primary" onClick={() => { this.setState({ visVisible: true, visIndex: record.key }) }}>可视化</Button>
+                                                            : "-"
                                                     }]}
                                                     sticky
                                                     pagination={{
@@ -2073,7 +2146,11 @@ class Calculate extends React.Component {
                         </ConfigProvider>
                     </Drawer >
                     <Modal className="vis-modal" visible={visVisible} onCancel={() => { this.setState({ visVisible: false }) }} footer={null} destroyOnClose>
-                        <Vis data={calcResData} appName={appName} datatype={dockerType === 2 ? dataType : apiName} />
+                        <Vis
+                            data={visIndex === 0 ? [axisData.zp, axisData.yp, axisData.xp, calcResData.DensityDistribution || calcResData.Density || calcResData.density] : calcResData}
+                            appName={appName}
+                            datatype={dockerType === 2 ? dataType : visIndex === 0 ? apiName + "0" : apiName}
+                        />
                     </Modal>
                     <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>
                         <iframe id="file_iframe"

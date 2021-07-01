@@ -203,6 +203,12 @@
     padding-left: 12px;
 }
 
+.ant-table-filter-dropdown-btns {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
 @media(max-width:768px) {
     #console {
         padding: 10px;

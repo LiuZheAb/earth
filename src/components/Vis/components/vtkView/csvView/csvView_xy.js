@@ -627,9 +627,9 @@ export default class csvViewXy extends Component {
             if (document.querySelector('.text1')) this.container.current.children[0].removeChild(document.querySelector('.text1'))
             if (document.querySelector('.text2')) this.container.current.children[0].removeChild(document.querySelector('.text2'))
             if (document.querySelector('.text3')) this.container.current.children[0].removeChild(document.querySelector('.text3'))
-            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, model.actState[0].xAxis, model.actState[0].yAxis, 'text1'); //刻度标尺
-            if (model.actor1) showBoundRuler(ruler, model, this.container, vtk(model.actor1.getMapper().getInputData().getState()), this.props, dimensional, fontColor, model.actState[1].xAxis, model.actState[1].yAxis, 'text2'); //刻度标尺
-            if (model.actor2) showBoundRuler(ruler, model, this.container, vtk(model.actor2.getMapper().getInputData().getState()), this.props, dimensional, fontColor, model.actState[2].xAxis, model.actState[2].yAxis, 'text3'); //刻度标尺
+            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, model.actState[0].xAxis, model.actState[0].yAxis, 'text1',null,null,null,null,null,null,0); //刻度标尺
+            if (model.actor1) showBoundRuler(ruler, model, this.container, vtk(model.actor1.getMapper().getInputData().getState()), this.props, dimensional, fontColor, model.actState[1].xAxis, model.actState[1].yAxis, 'text2',null,null,null,null,null,null,1); //刻度标尺
+            if (model.actor2) showBoundRuler(ruler, model, this.container, vtk(model.actor2.getMapper().getInputData().getState()), this.props, dimensional, fontColor, model.actState[2].xAxis, model.actState[2].yAxis, 'text3',null,null,null,null,null,null,2); //刻度标尺
         }
         let useScreen = state.screen;
         if (useScreen !== screen) {

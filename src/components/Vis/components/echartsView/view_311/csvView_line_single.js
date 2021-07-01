@@ -5,8 +5,9 @@ export default class csvView_1d extends Component {
     componentDidMount() {
         this.chart = echarts.init(document.getElementById('chart'));
         let { data, datatype } = this.props;
-        let xData = datatype === "圆盘模型正演" ? data.xarray : "二维多边形正演" ? data.x : data.gravity.map((item, index) => index);
-        let max = Math.max(...data.gravity), min = Math.min(...data.gravity), range = max - min;
+        let xData = datatype === "圆盘模型正演" ? data.xarray : datatype === "二维多边形正演" || datatype === "二维多边形反演" ? data.x : data.gravity.map((item, index) => index);
+        let dataKey = datatype === "二维多边形反演" ? "estimated" : "gravity";
+        let max = Math.max(...data[dataKey]), min = Math.min(...data[dataKey]), range = max - min;
         let option = {
             xAxis: {
                 name: "x",
@@ -14,10 +15,10 @@ export default class csvView_1d extends Component {
                     fontSize: 16,
                     fontWeight: "bold"
                 },
-                data: xData
+                data: xData,
             },
             yAxis: {
-                name: "y",
+                name: dataKey,
                 nameTextStyle: {
                     fontSize: 16,
                     fontWeight: "bold"
@@ -28,12 +29,12 @@ export default class csvView_1d extends Component {
             tooltip: {
                 show: true,
                 trigger: 'axis',
-                formatter: params => 'x: ' + params[0].axisValue + '<br>y: ' + params[0].value
+                formatter: params => `x: ${params[0].axisValue}<br>${dataKey}: ${params[0].value}`
             },
             series: [{
                 name: "a",
                 showSymbol: false,
-                data: data.gravity,
+                data: data[dataKey],
                 type: 'line',
                 smooth: true,
             }]

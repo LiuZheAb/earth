@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ConfigProvider, Table, Button, Tag, Drawer, message, Modal, notification, Spin, Popconfirm, Tooltip, Icon, Upload, Menu, Dropdown } from "antd";
+import { ConfigProvider, Table, Button, Tag, Drawer, message, Modal, notification, Spin, Popconfirm, Tooltip, Input, Icon, Upload, Menu, Dropdown } from "antd";
 import zhCN from 'antd/es/locale/zh_CN';
 import apiPromise from '../../assets/url.js';
 import axios from "axios";
@@ -44,6 +44,32 @@ const createColumns = _this =>
             align: "center",
             fixed: 'left',
             width: 232,
+            filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                <div style={{ padding: 8 }}>
+                    <Input
+                        placeholder="搜索程序名称"
+                        value={selectedKeys[0]}
+                        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                        onPressEnter={() => {
+                            confirm();
+                        }}
+                        style={{ marginBottom: 8, display: 'block' }}
+                    />
+                    <Button onClick={() => clearFilters()} style={{ width: 90, marginRight: 60 }}>
+                        重置
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={() => { confirm() }}
+                        style={{ width: 90 }}
+                    >
+                        <Icon type="search" />搜索
+                    </Button>
+                </div>
+            ),
+            filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />,
+            onFilter: (value, record) => record.appName.toString().toLowerCase().includes(value.toLowerCase()),
+            filteredValue: _this.state.filteredInfo.appName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         },
         // {
@@ -58,12 +84,46 @@ const createColumns = _this =>
             dataIndex: 'funcName',
             align: "center",
             width: 200,
+            filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                <div style={{ padding: 8 }}>
+                    <Input
+                        placeholder="搜索模型名称"
+                        value={selectedKeys[0]}
+                        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                        onPressEnter={() => { confirm() }}
+                        style={{ marginBottom: 8, display: 'block' }}
+                    />
+                    <Button onClick={() => clearFilters()} style={{ width: 90, marginRight: 60 }}>
+                        重置
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={() => { confirm() }}
+                        style={{ width: 90 }}
+                    >
+                        <Icon type="search" />搜索
+                    </Button>
+                </div>
+            ),
+            filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />,
+            onFilter: (value, record) => record.funcName.toString().toLowerCase().includes(value.toLowerCase()),
+            filteredValue: _this.state.filteredInfo.funcName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         }, {
             title: '所属模块',
             dataIndex: 'moduleName',
             align: "center",
             width: 232,
+            filters: [
+                { text: '高分辨率地震成像', value: '高分辨率地震成像' },
+                { text: '位场正反演', value: '位场正反演' },
+                { text: '电磁场正反演', value: '电磁场正反演' },
+                { text: '专业高性能求解器', value: '专业高性能求解器' },
+                { text: '人工智能综合地球物理', value: '人工智能综合地球物理' },
+                { text: '典型示范 (Demonstration)', value: '典型示范 (Demonstration)' }
+            ],
+            onFilter: (value, record) => record.moduleName.includes(value),
+            filteredValue: _this.state.filteredInfo.moduleName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         }, {
             title: '启动时间',
@@ -71,6 +131,7 @@ const createColumns = _this =>
             align: "center",
             width: 200,
             sorter: (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+            sortOrder: _this.state.sortedInfo.columnKey === 'startTime' && _this.state.sortedInfo.order,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         }, {
             title: '运行结束时间',
@@ -78,6 +139,7 @@ const createColumns = _this =>
             align: "center",
             width: 200,
             sorter: (a, b) => getEndTime(a.endTime, a.status) - getEndTime(b.endTime, b.status),
+            sortOrder: _this.state.sortedInfo.columnKey === 'endTime' && _this.state.sortedInfo.order,
             render: (text, info) => {
                 switch (info.status) {
                     case "0":
@@ -100,16 +162,16 @@ const createColumns = _this =>
             title: '运行时间',
             dataIndex: 'during',
             align: "center",
+            width: 150,
             sorter: (a, b) => getDuring(a) - getDuring(b),
+            sortOrder: _this.state.sortedInfo.columnKey === 'during' && _this.state.sortedInfo.order,
             render: (text, info) => {
                 if ((info.status === "1" && info.endTime) || info.status === "0") {
                     let during = info.endTime ? new Date(info.endTime).getTime() - new Date(info.startTime).getTime() :
                         new Date().getTime() - new Date(info.startTime).getTime();
                     return <span>
-                        {parseInt(during / 1000 / 60 / 60 / 24) !== 0 && parseInt(during / 1000 / 60 / 60 / 24) + "天 "}
-                        {parseInt(during / 1000 / 60 / 60) % 60 !== 0 && parseInt(during / 1000 / 60 / 60) % 60 + "小时 "}
-                        {parseInt(during / 1000 / 60) % 60 !== 0 && parseInt(during / 1000 / 60) % 60 + "分钟 "}
-                        {parseInt(during / 1000) % 60 !== 0 && parseInt(during / 1000) % 60 + "秒"}
+                        <span>{parseInt(during / 1000 / 60 / 60 / 24) !== 0 && parseInt(during / 1000 / 60 / 60 / 24) + "天 "}{parseInt(during / 1000 / 60 / 60) % 60 !== 0 && parseInt(during / 1000 / 60 / 60) % 60 + "小时 "}</span>
+                        <span style={{ whiteSpace: "nowrap" }}>{parseInt(during / 1000 / 60) % 60 !== 0 && parseInt(during / 1000 / 60) % 60 + "分钟 "}{parseInt(during / 1000) % 60 !== 0 && parseInt(during / 1000) % 60 + "秒"}</span>
                     </span>
                 } else {
                     return "无"
@@ -245,7 +307,13 @@ class index extends Component {
         tdataDrawerVisible: false,
         tdataFileListData: [],
         currentPage: 1,
-        currentTPage: 1
+        currentTPage: 1,
+        filteredInfo: {
+            appName: [],
+            funcName: [],
+            moduleName: []
+        },
+        sortedInfo: {},
     }
     componentDidMount() {
         let { username } = this.state;
@@ -270,7 +338,7 @@ class index extends Component {
                     key: i,
                     appName: appname,
                     funcName: funcname ? funcname : "无",
-                    moduleName: modname,
+                    moduleName: modname.replace("典型示范 (Decomonstration)", "典型示范 (Demonstration)"),
                     startTime: starttime,
                     endTime: endtime,
                     status: runStatus === 1 ? String(runStatus) : status,
@@ -309,6 +377,12 @@ class index extends Component {
             });
         })
     }
+    handleTableChange = (pagination, filters, sorter) => {
+        this.setState({
+            filteredInfo: filters,
+            sortedInfo: sorter,
+        });
+    };
     pollingData = () => {
         let { api, username, pollingErrTimes, hasGotList } = this.state;
         if (hasGotList) {
@@ -1240,7 +1314,19 @@ class index extends Component {
                 <ConfigProvider locale={zhCN}>
                     <Table
                         className="console-table"
-                        title={() => <span style={{ fontWeight: "bold" }}>控制台</span>}
+                        title={() => <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+                            <span style={{ fontWeight: "bold" }}>控制台</span>
+                            <Button onClick={() => {
+                                this.setState({
+                                    sortedInfo: {},
+                                    filteredInfo: {
+                                        appName: [],
+                                        funcName: [],
+                                        moduleName: []
+                                    }
+                                })
+                            }}>清除筛选和排序</Button>
+                        </div>}
                         dataSource={dataSource || []}
                         columns={createColumns(this)}
                         loading={{ size: "large", tip: "数据加载中...", spinning: !Array.isArray(dataSource) }}
@@ -1252,6 +1338,7 @@ class index extends Component {
                             onChange: page => this.props.history.push(page === 1 ? "/console" : "/console/" + page)
                         }}
                         scroll={{ x: true }}
+                        onChange={this.handleTableChange}
                     />
                 </ConfigProvider>
                 {currentItemInfo && currentItemInfo.idenMod === 7321 &&

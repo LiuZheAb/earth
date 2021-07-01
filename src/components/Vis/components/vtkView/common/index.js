@@ -605,7 +605,7 @@ export const showBounds = (bounds, model, container, polydata, theme) => {
 }
 
 // 显示坐标刻度
-export const showBoundRuler = (ruler, model, container, polydata, props, dimensional, theme, xAxis, yAxis, className, xMin, xMax, yMin, yMax, zMin, zMax) => {
+export const showBoundRuler = (ruler, model, container, polydata, props, dimensional, theme, xAxis, yAxis, className, xMin, xMax, yMin, yMax, zMin, zMax, imgIndex) => {
     let actColor;
     if (theme === "#fff") {
         actColor = [1.0, 1.0, 1.0]
@@ -702,7 +702,6 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
         model.rulerX = rulerX;
         model.renderer.addActor(model.rulerXactor);
 
-
         const rulerY = [];
         for (let i = 0; i <= ratio; i++) {
             rulerY.push({
@@ -781,7 +780,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                     return num
                 }
             }
-        }
+        };
         psMapper.setCallback((coordsList) => {
             if (document.querySelector(".vtk-container")) {
                 let dims = document.querySelector(".vtk-container").getBoundingClientRect();
@@ -795,8 +794,61 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                         "六面体模型重力异常正演", "六面体复杂模型构建及重力异常正演", "球型棱柱体模型重力异常正演", "球型棱柱体模型构建及重力异常正演", "四面体模型单元正演",
                         "数据去趋势", "数据网格化", "磁场方向导数求取", "磁场空间延拓", "磁化极", "磁场模型正演"].includes(props.datatype)) {
                         if (idx < num) {
+                            //x
                             textCtx.fillText(`${fixed(xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                            //图片名位置
+                            let middleX, textY;
+                            if (num === 6) {
+                                middleX = (coordsList[2][0] + coordsList[3][0]) / 2;
+                                textY = (coordsList[11][1] - coordsList[6][1]) * 0.1;
+                            } else if (num === 2) {
+                                middleX = (coordsList[0][0] + coordsList[1][0]) / 2;
+                                textY = (coordsList[3][1] - coordsList[2][1]) * 0.1;
+                            } else if (num === 11) {
+                                middleX = coordsList[5][0];
+                                textY = (coordsList[21][1] - coordsList[12][1]) * 0.1;
+                            };
+                            if (props.datatype === "数据去趋势") {
+                                textCtx.fillText(imgIndex === 0 ? "原始数据" : (imgIndex === 1 ? "区域异常" : "局部异常"), middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "重力数据求偏导") {
+                                textCtx.fillText("重力梯度等值线分布图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "重力数据延拓") {
+                                textCtx.fillText("重力数据延拓效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "重力异常计算") {
+                                textCtx.fillText(imgIndex === 0 ? "自由空间异常" : "布格异常", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "边缘识别") {
+                                textCtx.fillText("边缘识别效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "磁场方向导数求取") {
+                                textCtx.fillText("磁场导数等值线分布图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "磁场空间延拓") {
+                                textCtx.fillText("此数据延拓效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "磁化极") {
+                                textCtx.fillText("化级结果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "曲化平") {
+                                textCtx.fillText("曲化平效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "三维断层模型正演") {
+                                textCtx.fillText("三维断层模型重力异常正演", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "六面体模型重力异常正演") {
+                                textCtx.fillText(imgIndex === 0 ? "重力异常等值线图" : "带噪声的重力异常", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "六面体复杂模型构建及重力异常正演") {
+                                textCtx.fillText("重力异常等值线图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "球型棱柱体模型重力异常正演") {
+                                textCtx.fillText(imgIndex === 0 ? "重力异常等值线图" : "带噪声的重力异常", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "球型棱柱体模型构建及重力异常正演") {
+                                textCtx.fillText("重力异常等值线图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "磁场模型正演") {
+                                textCtx.fillText("磁异常等值线图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "四面体模型单元正演") {
+                                textCtx.fillText("重力异常等值线图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "数据网格化") {
+                                textCtx.fillText("网格化数据", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "数据扩边") {
+                                textCtx.fillText("数据扩边效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            } else if (props.datatype === "最小曲率补空白") {
+                                textCtx.fillText("数据补空白效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                            }
                         } else {
+                            //y
                             textCtx.fillText(`${fixed(yAxis[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         }
                     } else {
@@ -804,9 +856,29 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                             textCtx.fillText(`${fixed(xAxis[(idx * (xAxis.length - 1) / (num - 1)).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
                         } else {
                             textCtx.fillText(`${fixed(yAxisRe[((idx - num) * (yAxis.length - 1) / ratio).toFixed(0)])}`, xy[0], dims.height * window.devicePixelRatio - xy[1]);
+                        };
+                        let middleX, textY;
+                        if (num === 6) {
+                            middleX = (coordsList[2][0] + coordsList[3][0]) / 2;
+                            textY = (coordsList[11][1] - coordsList[6][1]) * 0.1;
+                        } else if (num === 2) {
+                            middleX = (coordsList[0][0] + coordsList[1][0]) / 2;
+                            textY = (coordsList[3][1] - coordsList[2][1]) * 0.1;
+                        } else if (num === 11) {
+                            middleX = coordsList[5][0];
+                            textY = (coordsList[21][1] - coordsList[12][1]) * 0.1;
+                        };
+                        if (props.datatype === "重力观测数据反演（多约束反演）" || props.datatype === "重力观测数据反演（三维正则，参考模型约束）" || props.datatype === "重力观测数据反演（参考模型-全变分约束）" || props.datatype === "MCMC反演" || props.datatype === "MCMC反演（参考模型约束）") {
+                            textCtx.fillText(imgIndex === 0 ? "重力预测值" : (imgIndex === 1 ? "数据残差" : ""), middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                        } else if (props.datatype === "欧拉反演(移动窗)") {
+                            textCtx.fillText("欧拉反演(移动窗)效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
+                        } else if (props.datatype === "欧拉反演(扩展窗)") {
+                            textCtx.fillText("欧拉反演(扩展窗)效果图", middleX, dims.height * window.devicePixelRatio - coordsList[0][1] + textY);
                         }
-                    }
+                    };
+
                 });
+
             }
         });
         const textActor = vtkActor.newInstance();
@@ -3063,6 +3135,8 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
         case "重力数据延拓":
         case "重力异常计算":
         case "重力观测数据反演（多约束反演）":
+        case "MCMC反演":
+        case "MCMC反演（参考模型约束）":
         case "重力观测数据反演（三维正则，参考模型约束）":
         case "重力观测数据反演（参考模型-全变分约束）":
         case "三维断层模型正演":
@@ -3152,7 +3226,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
                 pointLeft[0] + 2.15 * xlon, planeCenter[1] - 2 * xlon / 5, 0,
                 pointLeft[0] + 2.1 * xlon, planeCenter[1] - xlon / 2, 0,
                 pointLeft[0] + 2.15 * xlon, planeCenter[1] - xlon / 2, 0
-            ]
+            ];
             for (let i = 0; i < ScalPoint.length - 2; i++) {
                 ScalCell.push(3, i, i + 1, i + 2)
             }
@@ -3165,7 +3239,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
                 });
                 rulerScal.push(ScalPoint[i * 6 + 3] + 0.05 * xlon, ScalPoint[i * 6 + 4], 0);
                 ScalPointData.push(max - (max - min) / 10 * i, max - (max - min) / 10 * i)
-            }
+            };
             break;
         default:
             ScalPoint = [
@@ -3332,6 +3406,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
             }
         }
     }
+    //色标卡值
     psMapper.setCallback((coordsList) => {
         let dims = {};
         if (document.querySelector(".vtk-container")) dims = document.querySelector(".vtk-container").getBoundingClientRect();

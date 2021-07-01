@@ -119,9 +119,10 @@ export default class csvView extends Component {
 
     //渲染方法
     result = () => {
-        let { data, appName
+        let { data, appName, datatype
             // state 
         } = this.props;
+        console.log(data);
         let { model } = this.state;
         let vtkBox = document.getElementsByClassName('vtk-container')[0];
         if (vtkBox) {
@@ -131,7 +132,11 @@ export default class csvView extends Component {
         let yLength = data.length;
         let xLength = data[0].length;
         let zLength = yLength;
-
+        if (["重力观测数据反演（三维正则，参考模型约束）0", "重力观测数据反演（多约束反演）0", "重力观测数据反演（参考模型-全变分约束）0", "MCMC反演0", "MCMC反演（参考模型约束）0"].includes(datatype)) {
+            yLength = data[0].length;
+            xLength = data.length;
+            zLength = yLength;
+        }
         let arr = data;
         let
             // array = [],
@@ -141,16 +146,23 @@ export default class csvView extends Component {
             pointData1 = [], pointData2 = [], pointData3 = [], pointData4 = [], pointData5 = [], pointData6 = [];
         new Promise(
             function (resolve, reject) {
-                for (let i = 0; i < arr.length; i++) {
-                    arrs.push(arr[i][3]);
-                    if (appName === "大地电磁面波 (MT-Surf)") {
-                        xAxis.push(arr[i][1]);
-                        yAxis.push(arr[i][0]);
-                        zAxis.push(arr[i][2]);
-                    } else {
-                        xAxis.push(arr[i][2]);
-                        yAxis.push(arr[i][1]);
-                        zAxis.push(arr[i][0]);
+                if (["重力观测数据反演（三维正则，参考模型约束）0", "重力观测数据反演（多约束反演）0", "重力观测数据反演（参考模型-全变分约束）0", "MCMC反演0", "MCMC反演（参考模型约束）0"].includes(datatype)) {
+                    arrs = arr[3];
+                    xAxis = arr[1];
+                    yAxis = arr[0];
+                    zAxis = arr[2];
+                } else {
+                    for (let i = 0; i < arr.length; i++) {
+                        arrs.push(arr[i][3]);
+                        if (appName === "大地电磁面波 (MT-Surf)") {
+                            xAxis.push(arr[i][1]);
+                            yAxis.push(arr[i][0]);
+                            zAxis.push(arr[i][2]);
+                        } else {
+                            xAxis.push(arr[i][2]);
+                            yAxis.push(arr[i][1]);
+                            zAxis.push(arr[i][0]);
+                        }
                     }
                 }
                 let xSort = Array.from(new Set(JSON.parse(JSON.stringify(xAxis))));

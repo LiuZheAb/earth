@@ -16,7 +16,6 @@ import "./index.css";
 export default class vis extends Component {
     render() {
         let { data, appName, datatype } = this.props;
-        console.log(appName, datatype);
         let visComponent = null;
         if (["混合谱元法 (SEM)", "混合谱元法 (MSEM)", "混合谱元法电磁正演 (MSEM)", "极限学习机电磁联合反演(ELM_INV)"].includes(appName)) {
             if (datatype === "line_1") {
@@ -42,7 +41,13 @@ export default class vis extends Component {
         } else if (appName === "线性求解器(实/复) (Linear Solver)" && datatype === "txt") {
             visComponent = <CsvViewMaltiLineContainer data={data} datatype={datatype} appName={appName} />;
         } else if (appName === "重磁正演(GM Forward Modeling)") {
-            if (datatype === "圆盘模型正演" || datatype === "二维多边形正演") {
+            if (datatype === "圆盘模型正演" || datatype === "二维多边形正演" || datatype === "二维多边形反演") {
+                visComponent = <CsvViewSingleLineContainer2 data={data} datatype={datatype} appName={appName} />;
+            } else {
+                visComponent = <Vtk data={data} datatype={datatype} appName={appName} />;
+            }
+        } else if (appName === "重磁反演（GM Inversion）") {
+            if (datatype === "二维多边形反演") {
                 visComponent = <CsvViewSingleLineContainer2 data={data} datatype={datatype} appName={appName} />;
             } else {
                 visComponent = <Vtk data={data} datatype={datatype} appName={appName} />;
