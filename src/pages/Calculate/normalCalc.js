@@ -1732,7 +1732,7 @@ class Calculate extends React.Component {
                                                                                 vport,
                                                                                 index: modelIndex,
                                                                                 fileIndex: index + 1
-                                                                            }}
+                                                                            }} sac_file
                                                                             beforeUpload={(file, fileList) => {
                                                                                 if ((idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue) {
                                                                                     if (file.name === defaultValue) {
@@ -1745,6 +1745,8 @@ class Calculate extends React.Component {
                                                                                     return true;
                                                                                 }
                                                                             }}
+                                                                            directory={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
+                                                                            multiple={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
                                                                             onChange={this.changeUpload.bind(this, index)}
                                                                             accept={enumList && enumList.join(",")}
                                                                             fileList={uploadFileList[index]}

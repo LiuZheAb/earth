@@ -113,7 +113,7 @@ const createColumns = _this =>
             title: '所属模块',
             dataIndex: 'moduleName',
             align: "center",
-            width: 232,
+            width: 182,
             filters: [
                 { text: '高分辨率地震成像', value: '高分辨率地震成像' },
                 { text: '位场正反演', value: '位场正反演' },
@@ -186,7 +186,18 @@ const createColumns = _this =>
             title: '运行状态',
             dataIndex: 'status',
             align: "center",
-            width: 104,
+            width: 124,
+            filters: [
+                { text: '运行中', value: "0" },
+                { text: '已完成', value: "1" },
+                { text: '错误', value: "2" },
+                { text: '异常', value: "fail" },
+            ],
+            onFilter: (value, record) => {
+                record.status = record.status === "3" ? "1" : record.status;
+                return record.status.includes(value);
+            },
+            filteredValue: _this.state.filteredInfo.status,
             render: status => status === "0"
                 ? <Tag color="#2db7f5">运行中</Tag>
                 : status === "2" || status === "fail" ?
@@ -311,7 +322,8 @@ class index extends Component {
         filteredInfo: {
             appName: [],
             funcName: [],
-            moduleName: []
+            moduleName: [],
+            nowStep: []
         },
         sortedInfo: {},
     }
@@ -1320,7 +1332,8 @@ class index extends Component {
                                     filteredInfo: {
                                         appName: [],
                                         funcName: [],
-                                        moduleName: []
+                                        moduleName: [],
+                                        nowStep: []
                                     }
                                 })
                             }}>清除筛选和排序</Button>
