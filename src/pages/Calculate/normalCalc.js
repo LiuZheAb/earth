@@ -255,11 +255,11 @@ class Calculate extends React.Component {
                     }
                     let dimension = false, real = false;
                     for (let i = 0; i < proList.length; i++) {
-                        if (proList[i].toUpperCase().indexOf("3D") > -1 && i > proList.length - 1) {
+                        if (proList[i].toUpperCase().indexOf("3D") > -1) {
                             dimension = true;
                             break;
                         }
-                        if (proList[i].toUpperCase().indexOf("REAL") > -1 && i > proList.length - 1) {
+                        if (proList[i].toUpperCase().indexOf("REAL") > -1) {
                             real = true;
                             break;
                         }
@@ -282,6 +282,7 @@ class Calculate extends React.Component {
                     });
                     break;
                 case 3:
+                    //镜像未找到
                     message.error(data, 2);
                     break;
                 case 4:
@@ -745,6 +746,9 @@ class Calculate extends React.Component {
                             i -= 1;
                         }
                     }
+                    if (data.length === 0 || (Array.from(new Set(data)).length === 1 && Array.from(new Set(data))[0] === "")) {
+                        data.push("暂无日志");
+                    }
                     this.setState({ logInfoArray: data });
                 }).catch(() => {
                     this.setState({ hasGotInfo: true });
@@ -801,7 +805,7 @@ class Calculate extends React.Component {
             calcResData: {},
             isComputing: false
         });
-        if (nowStep === 2 && idenMod === 222) {
+        if (nowStep === 2 && (idenMod === 222 || idenMod === 7221)) {
             this.props.history.push("/operateData");
         } else {
             axios({

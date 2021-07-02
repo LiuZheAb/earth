@@ -565,6 +565,9 @@ class Calculate extends React.Component {
                             i -= 1;
                         }
                     }
+                    if (data.length === 0 || (Array.from(new Set(data)).length === 1 && Array.from(new Set(data))[0] === "")) {
+                        data.push("暂无日志");
+                    }
                     this.setState({ logInfoArray: data });
                 }).catch(() => {
                     this.setState({ hasGotInfo: true });
@@ -1327,7 +1330,7 @@ class Calculate extends React.Component {
                                                                                 <div className="devide-line">
                                                                                     <div className="devide-line-title">工作路径参数</div>
                                                                                 </div>
-                                                                                {textItem()}
+                                                                                {/* {textItem()} */}
                                                                                 {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map((upload, i) =>
                                                                                     upload.paramName === "Meshfile" && uploadItem(upload, i)
                                                                                 )}

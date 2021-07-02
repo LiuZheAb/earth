@@ -66,7 +66,8 @@ export default class Listener extends React.Component {
                         this.setState({
                             gotPie: true,
                             pieData: response.data,
-                            memoryUsed: Number(response.data[0].value.toFixed(2))
+                            memoryUsed: Number(response.data[0].value.toFixed(2)),
+                            memoryUsed2: ((Number(response.data[0].value) + Number(response.data[1].value)) / (Number(response.data[0].value) + Number(response.data[1].value) + Number(response.data[2].value)) * 100).toFixed(2)
                         });
                     }).catch(error => {
                         this.setState({ gotLine: true });
@@ -118,7 +119,7 @@ export default class Listener extends React.Component {
     };
     render() {
         const { DataView } = DataSet;
-        let { pieData, lineData, minLineData, maxLineData, memoryUsed, cpuUsed } = this.state;
+        let { pieData, lineData, minLineData, maxLineData, memoryUsed, memoryUsed2, cpuUsed } = this.state;
         let { toggle } = this.props;
         const dv = new DataView();
         dv.source(pieData).transform({
@@ -162,7 +163,7 @@ export default class Listener extends React.Component {
             <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                 <div style={{ width: 140, display: "flex", justifyContent: "space-between" }}>
                     <span>内存使用率</span>
-                    <span style={{ color: memoryUsed >= 85 ? "#f5222d" : memoryUsed < 50 ? "#52c41a" : memoryUsed !== undefined && "#fa8c16" }}>&nbsp;{memoryUsed}&nbsp;%</span>
+                    <span style={{ color: memoryUsed2 >= 85 ? "#f5222d" : memoryUsed2 < 50 ? "#52c41a" : memoryUsed2 !== undefined && "#fa8c16" }}>&nbsp;{memoryUsed2}&nbsp;%</span>
                 </div>
                 <Divider type="vertical" style={{ height: 30 }} />
                 <div style={{ width: 140, display: "flex", justifyContent: "space-between" }}>

@@ -409,33 +409,32 @@ class index extends Component {
                             description: noticeContent(newApp[i])
                         });
                     }
-                }
-                if (JSON.stringify(resData) !== JSON.stringify(data)) {
+                } else if (JSON.stringify(resData) !== JSON.stringify(data)) {
                     for (let i = 0, len = resData.length; i < len; i++) {
                         this.updateDataSource(data);
-                        if (resData[i].docid === data[i].docid && resData[i].status === "0" && data[i].status === "1") {
-                            notification.success({
-                                message: `程序 ${i} 运行成功`,
-                                description:
-                                    <>
-                                        {noticeContent(data[i])}
-                                        <div style={{ textAlign: "right" }}>
-                                            <Button type="primary" onClick={() => this.handleView(this.state.dataSource[i])}>查看结果</Button>
-                                        </div>
-                                    </>
-                            });
-                        }
-                        if (resData[i].docid === data[i].docid && resData[i].status === "0" && data[i].status === "2") {
-                            notification.error({
-                                message: `程序 ${i} 运行失败`,
-                                description: noticeContent(data[i])
-                            });
-                        }
-                        if (resData[i].docid === data[i].docid && resData[i].status === "1" && data[i].status === "0") {
-                            notification.info({
-                                message: '有新程序开始运行',
-                                description: noticeContent(data[i])
-                            });
+                        if (resData[i].docid === data[i].docid) {
+                            if (resData[i].status === "0" && data[i].status === "1") {
+                                notification.success({
+                                    message: `程序 ${i} 运行成功`,
+                                    description:
+                                        <>
+                                            {noticeContent(data[i])}
+                                            <div style={{ textAlign: "right" }}>
+                                                <Button type="primary" onClick={() => this.handleView(this.state.dataSource[i])}>查看结果</Button>
+                                            </div>
+                                        </>
+                                });
+                            } else if (resData[i].status === "0" && data[i].status === "2") {
+                                notification.error({
+                                    message: `程序 ${i} 运行失败`,
+                                    description: noticeContent(data[i])
+                                });
+                            } else if (resData[i].status === "1" && data[i].status === "0") {
+                                notification.info({
+                                    message: '有新程序开始运行',
+                                    description: noticeContent(data[i])
+                                });
+                            }
                         }
                     }
                 }
@@ -1087,13 +1086,13 @@ class index extends Component {
                                 //找到值相同的列的序号
                                 for (let i = 0; i < new_data.length; i++) {
                                     if (Array.from(new Set(new_data[i])).length === 1) {
-                                        deleteIndex.push(i)
+                                        deleteIndex.push(i);
                                     }
                                 }
                                 //删除值相同的列
                                 if (deleteIndex.length > 0) {
                                     for (let i = 0; i < deleteIndex.length; i++) {
-                                        data = data.map(item => { item.splice(deleteIndex[i], 1); return item })
+                                        data = data.map(item => { item.splice(deleteIndex[i], 1); return item });
                                     }
                                 }
                             }
@@ -1237,7 +1236,6 @@ class index extends Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err);
                         this.checkTimer = setInterval(this.pollingData, 5000);
                         this.setState({
                             dataLoading: false
