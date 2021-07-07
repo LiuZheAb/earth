@@ -250,19 +250,23 @@ class Calculate extends React.Component {
                     });
                     break;
                 case 2:
-                    if (stepNum === 1 && ![51, 52, 731, 7321, 7322].includes(idenMod)) {
-                        proList.unshift("用户自定义计算");
-                    }
-                    let dimension = false, real = false;
+                    let dimension = false, real = false, dimNum = 0, realNum = 0;
                     for (let i = 0; i < proList.length; i++) {
                         if (proList[i].toUpperCase().indexOf("3D") > -1) {
-                            dimension = true;
-                            break;
+                            dimNum += 1;
                         }
                         if (proList[i].toUpperCase().indexOf("REAL") > -1) {
-                            real = true;
-                            break;
+                            realNum += 1;
                         }
+                    }
+                    if (dimNum > 0 && dimNum < proList.length) {
+                        dimension = true;
+                    }
+                    if (realNum > 0 && realNum < proList.length && !dimension) {
+                        real = true;
+                    }
+                    if (stepNum === 1 && ![51, 52, 731, 7321, 7322].includes(idenMod)) {
+                        proList.unshift("用户自定义计算");
                     }
                     //常规docker返回结果
                     if (proList.length === 1) {
@@ -682,15 +686,22 @@ class Calculate extends React.Component {
                     if (!Array.isArray(data)) {
                         let resFileList = [];
                         for (let key in data) {
-                            resFileList.push({
-                                name: key,
-                                suffix: key.split(".").pop(),
-                                absolutePath: data[key][0],
-                                staticPath: data[key][1],
-                                size: data[key][2] ? +data[key][2] : "",
-                            });
+                            if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                                resFileList.push({
+                                    name: key,
+                                    suffix: key.split(".").pop(),
+                                    absolutePath: data[key][0],
+                                    staticPath: data[key][1],
+                                    size: data[key][2] ? +data[key][2] : "",
+                                });
+                            }
                         }
-                        Object.keys(data).map((item, index) => resFileList[index].key = index);
+                        Object.keys(data).map((item, index) => {
+                            if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                                resFileList[index].key = index;
+                            }
+                            return item;
+                        });
                         this.setState({
                             resFileListData: resFileList
                         });
@@ -976,15 +987,22 @@ class Calculate extends React.Component {
                 let { data } = res.data;
                 let resFileList = [];
                 for (let key in data) {
-                    resFileList.push({
-                        name: key,
-                        suffix: key.split(".").pop(),
-                        absolutePath: data[key][0],
-                        staticPath: data[key][1],
-                        size: data[key][2] ? +data[key][2] : "",
-                    })
+                    if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                        resFileList.push({
+                            name: key,
+                            suffix: key.split(".").pop(),
+                            absolutePath: data[key][0],
+                            staticPath: data[key][1],
+                            size: data[key][2] ? +data[key][2] : "",
+                        })
+                    }
                 }
-                Object.keys(data).map((item, index) => resFileList[index].key = index)
+                Object.keys(data).map((item, index) => {
+                    if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                        resFileList[index].key = index;
+                    }
+                    return item;
+                })
                 this.setState({
                     fileListLoading: false,
                     tdataFileListData: resFileList,
@@ -1493,7 +1511,7 @@ class Calculate extends React.Component {
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, currentStep2, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener,
-            hideUpload, dimension, real, dimensionValue, realValue, funcName, startTime, endTime, visIndex, axisData
+            hideUpload, dimension, real, dimensionValue, realValue, funcName, startTime, endTime, visIndex, axisData, hasGotParam
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {
@@ -1699,6 +1717,7 @@ class Calculate extends React.Component {
                                                         </Result>
                                                         :
                                                         <Form {...formItemLayout} onSubmit={this.createPFile} className="calculate-form">
+                                                            {!hasGotParam && <Spin spinning={!hasGotParam} tip={"正在获取参数..."} size="large" />}
                                                             {inputFiles === null ? null : inputFiles.map(({ paramName, paramNameCN, tip, currentValue, defaultValue }, index) =>
                                                                 <div style={{ position: "relative" }} key={index}>
                                                                     <Form.Item className="input-file-wrapper" label={<label title={paramNameCN}>{paramName}</label>}>
@@ -2172,7 +2191,7 @@ class Calculate extends React.Component {
                         <div className="close-icon" onClick={() => { this.setState({ dataLoading: false }) }}>
                             <Icon type="close" />
                         </div>
-                        <Spin wrapperClassName="data-loading-spin" spinning={dataLoading} tip={"正在获取数据并处理..."} size="large"></Spin>
+                        <Spin wrapperClassName="data-loading-spin" spinning={dataLoading} tip={"正在获取数据并处理..."} size="large" />
                     </div>
                 </Content >
             </div >

@@ -509,7 +509,7 @@ export default class csvViewXy extends Component {
                     let newArr = [];
                     for (let i = 0; i < yLength; i++) {
                         for (let j = 0; j < xLength; j++) {
-                            newArr.push(arrs[(i + 1) * xLength - j - 1])
+                            newArr.push(arrs[(i + 1) * xLength - j - 1]);
                         }
                     }
                     arrs = newArr;

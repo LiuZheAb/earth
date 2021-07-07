@@ -246,20 +246,23 @@ class Calculate extends React.Component {
                     message.error(data, 2);
                     break;
                 case 2:
-                    if (stepNum === 1 && proList.length > 1) {
-                        proList.unshift("用户自定义计算");
-                    }
-                    let dimension = false, real = false;
+                    let dimension = false, real = false, dimNum = 0, realNum = 0;
                     for (let i = 0; i < proList.length; i++) {
-                        let name = proList[i];
-                        if (name.toUpperCase().indexOf("3D") > -1) {
-                            dimension = true;
-                            break;
+                        if (proList[i].toUpperCase().indexOf("3D") > -1) {
+                            dimNum += 1;
                         }
-                        if (name.toUpperCase().indexOf("REAL") > -1) {
-                            real = true;
-                            break;
+                        if (proList[i].toUpperCase().indexOf("REAL") > -1) {
+                            realNum += 1;
                         }
+                    }
+                    if (dimNum > 0 && dimNum < proList.length) {
+                        dimension = true;
+                    }
+                    if (realNum > 0 && realNum < proList.length && !dimension) {
+                        real = true;
+                    }
+                    if (stepNum === 1 && ![51, 52, 731, 7321, 7322].includes(idenMod)) {
+                        proList.unshift("用户自定义计算");
                     }
                     //常规docker返回结果
                     if (proList.length === 1) {

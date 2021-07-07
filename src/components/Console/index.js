@@ -542,15 +542,22 @@ class index extends Component {
             let { data } = res.data;
             let resFileList = [];
             for (let key in data) {
-                resFileList.push({
-                    name: key,
-                    suffix: key.split(".").pop(),
-                    absolutePath: data[key][0],
-                    staticPath: data[key][1],
-                    size: data[key][2] ? +data[key][2] : "",
-                });
+                if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                    resFileList.push({
+                        name: key,
+                        suffix: key.split(".").pop(),
+                        absolutePath: data[key][0],
+                        staticPath: data[key][1],
+                        size: data[key][2] ? +data[key][2] : "",
+                    });
+                }
             }
-            Object.keys(data).map((item, index) => resFileList[index].key = index);
+            Object.keys(data).map((item, index) => {
+                if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                    resFileList[index].key = index;
+                }
+                return item;
+            });
             this.setState({
                 fileListLoading: false,
                 resFileListData: resFileList,
@@ -677,15 +684,22 @@ class index extends Component {
                     let { data } = res.data;
                     let resFileList = [];
                     for (let key in data) {
-                        resFileList.push({
-                            name: key,
-                            suffix: key.split(".").pop(),
-                            absolutePath: data[key][0],
-                            staticPath: data[key][1],
-                            size: data[key][2] ? +data[key][2] : "",
-                        })
+                        if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                            resFileList.push({
+                                name: key,
+                                suffix: key.split(".").pop(),
+                                absolutePath: data[key][0],
+                                staticPath: data[key][1],
+                                size: data[key][2] ? +data[key][2] : "",
+                            })
+                        }
                     }
-                    Object.keys(data).map((item, index) => resFileList[index].key = index)
+                    Object.keys(data).map((item, index) => {
+                        if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                            resFileList[index].key = index;
+                        }
+                        return item;
+                    })
                     this.setState({
                         fileListLoading: false,
                         tdataFileListData: resFileList,
