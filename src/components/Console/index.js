@@ -1105,6 +1105,7 @@ class index extends Component {
                         params: { path: absolutePath }
                     }).then(res => {
                         let { data } = res.data;
+                        let dataType = "";
                         if (Array.isArray(data) && data.length > 0) {
                             if (data[0].length < 6 && data[0].length > 1) {
                                 //数组行列调换
@@ -1208,6 +1209,7 @@ class index extends Component {
                                 data = data.map(item => String(item).split(" "));
                                 data = data[0].map((col, i) => data.map(row => row[i]));
                             }
+                            //三个切面
                             if (idenMod === 631 || idenMod === 7214) {
                                 let x = [], y = [], z = [];
                                 data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
@@ -1221,7 +1223,6 @@ class index extends Component {
                                     x = Array.from(new Set(x));
                                     y = Array.from(new Set(y));
                                     z = Array.from(new Set(z));
-                                    console.log(x, y, z);
                                     let xNum = x[Math.floor(x.length / 2)], yNum = y[Math.floor(y.length / 2)], zNum = z[Math.floor(z.length / 2)];
                                     for (let i = 0, len = data.length; i < len; i++) {
                                         if (data[i][0] === xNum) {
@@ -1236,15 +1237,14 @@ class index extends Component {
                                     }
                                     newArr[3].push(x.length, y.length, z.length)
                                     data = newArr;
+                                    dataType = "cut";
                                 }
                             }
                             data = data.map(item => item.map(item2 => Number(item2)));
-                            let dataType = "";
-                            if (Array.isArray(data[0])) {
-                                if (info.suffix === "csv") {
-                                    if (idenMod === 631 || idenMod === 7214) {
-                                        dataType = "cut";
-                                    } else {
+                            if (!dataType) {
+                                if (Array.isArray(data[0])) {
+                                    if (info.suffix === "csv") {
+
                                         if (data[0].length === 1 || data[0].length === 2) {
                                             dataType = "1d";
                                         } else if (data[0].length === 3) {
@@ -1254,14 +1254,14 @@ class index extends Component {
                                         } else if (data[0].length > 4) {
                                             dataType = "matrix";
                                         }
+                                    } else if (info.suffix === "msh") {
+                                        dataType = "msh";
+                                    } else if (info.suffix === "txt") {
+                                        dataType = "txt";
                                     }
-                                } else if (info.suffix === "msh") {
-                                    dataType = "msh";
-                                } else if (info.suffix === "txt") {
-                                    dataType = "txt";
+                                } else {
+                                    dataType = undefined;
                                 }
-                            } else {
-                                dataType = undefined;
                             }
                             this.setState({
                                 calcResData: data,

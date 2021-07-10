@@ -135,20 +135,22 @@ export default class csvView extends Component {
             origin: [0, 0, zLength / 2],
             point1: [0, yLength, zLength / 2],
             point2: [xLength, 0, zLength / 2]
-        });
+          });
+
         const planeSourceXZ = vtkPlaneSource.newInstance({
-            xResolution: zLength - 1,
-            yResolution: xLength - 1,
+            xResolution: xLength - 1,
+            yResolution: zLength - 1,
             origin: [0, yLength / 2, 0],
             point1: [xLength, yLength / 2, 0],
             point2: [0, yLength / 2, zLength]
         });
+
         const planeSourceYZ = vtkPlaneSource.newInstance({
-            xResolution: zLength - 1,
-            yResolution: yLength - 1,
+            xResolution: yLength - 1,
+            yResolution: zLength - 1,
             origin: [xLength / 2, 0, 0],
-            point1: [xLength / 2, 0, zLength],
-            point2: [xLength / 2, yLength, 0]
+            point1: [xLength / 2, yLength, 0],
+            point2: [xLength / 2, 0, zLength]
         });
 
         //要显示的三个横截面的数据（一维数组）
