@@ -103,9 +103,6 @@ export default class mshView extends Component {
                 for (let i = 0; i < valueCopy.length; i++) {
                     scalarValues.push(Math.log(valueCopy[i]))
                 };
-                // for(let i=0;i<970712;i++){
-                //   scalarValues.push("")
-                // }
                 scalarValuesCopy = JSON.parse(JSON.stringify(scalarValues));
                 //scalarValues排序去重
                 scalarValues.sort(function (a, b) {
@@ -114,7 +111,6 @@ export default class mshView extends Component {
                 unique = [...new Set(scalarValues)];
                 min = Number(unique[0]);
                 max = Number(unique[unique.length - 1]);
-                console.log(min, max, "min,max");
                 this.setState({
                     min,
                     max
@@ -175,7 +171,6 @@ export default class mshView extends Component {
                 cells,
                 scalarValuesCopy
             });
-
             const outline = vtkOutlineFilter.newInstance();
             outline.setInputData(polydata);
             const mapper = vtkMapper.newInstance({
@@ -271,6 +266,7 @@ export default class mshView extends Component {
             points: newP
         })
         model.renderer.resetCameraClippingRange();
+
         model.renderWindow.render();
     }
     //更该模型边界z
@@ -303,12 +299,11 @@ export default class mshView extends Component {
         this.setState({
             inputValue: value,
         });
-
     };
 
     render() {
         let { boxBgColor, model, mode, modeBounds, points, cells, scalarValuesCopy, min, max,
-            light, axis
+            light, axis, clippingMiddle
         } = this.state;
         let { show, state } = this.props;
         let { moveStyle, screen,
@@ -349,7 +344,7 @@ export default class mshView extends Component {
                 // let pickedPoint = picker.getPickPosition();
                 let PointID = picker.getPointId();
                 // let posX = Math.round(points[PointID * 3]), posY = Math.abs(Math.round(points[PointID * 3 + 1])), posZ = Math.abs(Math.round(points[PointID * 3 + 2]));
-                model.textCtx.font = '14px serif';
+                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor;
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';
@@ -435,11 +430,16 @@ export default class mshView extends Component {
             model.actor = actor1;
             actor1.setMapper(mapper1);
             model.renderer.addActor(actor1);
-
             model.renderer.resetCamera();
-            model.renderWindow.render();
+
+            model.renderer.getActiveCamera().zoom(20);
             //清除textCanvas
             model.fullScreenRenderer.setBackground(bgColor);
+            //侧面，保持90，结果面朝前
+            model.actor.rotateX(110);
+            //结果面相邻面
+            model.actor.rotateY(-10);
+            model.actor.rotateZ(100);
             // let dimensional = 3;
             // if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
             // showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, show); //刻度标尺
@@ -584,7 +584,6 @@ export default class mshView extends Component {
                                         </Col>
                                     </Row >) : (null)
                                 }
-
                             </InputGroup>
 
                         </div>

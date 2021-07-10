@@ -122,16 +122,28 @@ class Calculate extends React.Component {
             startTime: 0,
             endTime: 0,
             axisData: {},
-            visIndex: 1
+            visIndex: 1,
+            reStart: sessionStorage.getItem("reStart") || undefined
         };
     };
     logTimer = undefined;
     componentDidMount() {
         apiPromise.then(res => {
             api = res.data.api;
-            let { dockerType, modelIndex } = this.state;
+            let { dockerType, modelIndex, reStart } = this.state;
             if (dockerType === 2) {
                 this.getParam(modelIndex);
+            }
+            if (reStart) {
+                this.setState({
+                    defaultIndex: Number(sessionStorage.getItem("defaultIndex")),
+                    dimension: sessionStorage.getItem("dimension") === "true" ? true : false,
+                    dimensionValue: sessionStorage.getItem("dimensionValue"),
+                    real: sessionStorage.getItem("real") === "true" ? true : false,
+                    realValue: sessionStorage.getItem("realValue")
+                }, () => {
+                    this.startDocker();
+                })
             }
         });
         if (window.innerWidth > 768) {
@@ -214,7 +226,7 @@ class Calculate extends React.Component {
     }
     //启动容器
     startDocker = () => {
-        let { username, idenMod, currentStep, appName, stepNum } = this.state;
+        let { username, idenMod, currentStep, appName, stepNum, reStart } = this.state;
         this.setState({ loading: true });
         axios({
             method: 'post',
@@ -247,6 +259,11 @@ class Calculate extends React.Component {
                         dockerID: data.dockerID,
                         dockerIP: data.dockerIP,
                         vport: data.vport,
+                    }, () => {
+                        if (reStart) {
+                            this.handleSelectModel(Number(sessionStorage.getItem("defaultIndex")))
+                            sessionStorage.removeItem("reStart");
+                        }
                     });
                     break;
                 case 2:
@@ -283,6 +300,11 @@ class Calculate extends React.Component {
                         started: true,
                         dimension,
                         real,
+                    }, () => {
+                        if (reStart) {
+                            this.handleSelectModel(Number(sessionStorage.getItem("defaultIndex")))
+                            sessionStorage.removeItem("reStart");
+                        }
                     });
                     break;
                 case 3:
@@ -304,6 +326,11 @@ class Calculate extends React.Component {
                         baseUrl: uri,
                         started: true,
                         uri
+                    }, () => {
+                        if (reStart) {
+                            this.handleSelectModel(Number(sessionStorage.getItem("defaultIndex")))
+                            sessionStorage.removeItem("reStart");
+                        }
                     });
                     break;
                 default:
@@ -369,6 +396,11 @@ class Calculate extends React.Component {
             uploadFileList: []
         });
         this.getParam(modelIndex);
+        sessionStorage.setItem("defaultIndex", value);
+        sessionStorage.setItem("dimension", dimension);
+        sessionStorage.setItem("dimensionValue", dimensionValue);
+        sessionStorage.setItem("real", real);
+        sessionStorage.setItem("realValue", realValue);
     }
     //重&磁选择计算接口
     handleSelectApi = value => {
@@ -686,7 +718,7 @@ class Calculate extends React.Component {
                     if (!Array.isArray(data)) {
                         let resFileList = [];
                         for (let key in data) {
-                            if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                            if (key.toUpperCase().indexOf("COOR") === -1) {
                                 resFileList.push({
                                     name: key,
                                     suffix: key.split(".").pop(),
@@ -697,7 +729,7 @@ class Calculate extends React.Component {
                             }
                         }
                         Object.keys(data).map((item, index) => {
-                            if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                            if (item.toUpperCase().indexOf("COOR") === -1) {
                                 resFileList[index].key = index;
                             }
                             return item;
@@ -794,6 +826,7 @@ class Calculate extends React.Component {
             if (res.data.status === 1) {
                 message.success("应用已停止");
                 sessionStorage.setItem("nowStep", 1);
+                sessionStorage.setItem("reStart", 1);
                 this.setState({ isComputing: false });
                 setTimeout(() => {
                     window.location.reload()
@@ -965,6 +998,12 @@ class Calculate extends React.Component {
         sessionStorage.removeItem("modelIndex");
         sessionStorage.removeItem("baseUrl");
         sessionStorage.removeItem("funcName");
+        sessionStorage.removeItem("reStart");
+        sessionStorage.removeItem("dimension");
+        sessionStorage.removeItem("dimensionValue");
+        sessionStorage.removeItem("real");
+        sessionStorage.removeItem("realValue");
+        sessionStorage.removeItem("defaultIndex");
         this.setState = () => {
             return;
         }
@@ -976,6 +1015,7 @@ class Calculate extends React.Component {
             fileListLoading: true,
             tdataFileListData: []
         })
+
         axios.get("http://" + dockerIP + ":" + vport + "/fileList",
             {
                 params: {
@@ -987,7 +1027,7 @@ class Calculate extends React.Component {
                 let { data } = res.data;
                 let resFileList = [];
                 for (let key in data) {
-                    if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                    if (key.toUpperCase().indexOf("COOR") === -1) {
                         resFileList.push({
                             name: key,
                             suffix: key.split(".").pop(),
@@ -998,7 +1038,7 @@ class Calculate extends React.Component {
                     }
                 }
                 Object.keys(data).map((item, index) => {
-                    if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                    if (item.toUpperCase().indexOf("COOR") === -1) {
                         resFileList[index].key = index;
                     }
                     return item;
@@ -1511,7 +1551,7 @@ class Calculate extends React.Component {
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, currentStep2, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener,
-            hideUpload, dimension, real, dimensionValue, realValue, funcName, startTime, endTime, visIndex, axisData, hasGotParam
+            hideUpload, dimension, real, dimensionValue, realValue, startTime, endTime, visIndex, axisData, hasGotParam, defaultIndex
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {
@@ -1597,6 +1637,7 @@ class Calculate extends React.Component {
                                     {nowStep === 1 && currentStep === 0 && dockerType !== 5 &&
                                         <div style={{ textAlign: "center", paddingTop: 50 }}>
                                             <Button type="primary" loading={loading} disabled={!idenMod || started} onClick={this.startDocker}>{started ? "已启动" : "启动容器"}</Button>
+                                            {!idenMod && <p style={{ marginTop: 15 }}>未获取到程序信息，请返回首页重新进入</p>}
                                         </div>
                                     }
                                     {(nowStep === 1 && currentStep === 1) || (nowStep > 1 && currentStep2 === 0 && nowStep !== 3) || dockerType === 5 ?
@@ -1680,7 +1721,7 @@ class Calculate extends React.Component {
                                                         <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择测试模型</label>
                                                     </Col>
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
-                                                        <Select onChange={this.handleSelectModel} value={funcName} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
+                                                        <Select onChange={this.handleSelectModel} defaultValue={proList[defaultIndex]} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
                                                             {proList.map((value, index) =>
                                                                 <Option key={value} value={index} className={getClassName(value)}>
                                                                     {value}
@@ -1717,9 +1758,16 @@ class Calculate extends React.Component {
                                                         </Result>
                                                         :
                                                         <Form {...formItemLayout} onSubmit={this.createPFile} className="calculate-form">
-                                                            {!hasGotParam && <Spin spinning={!hasGotParam} tip={"正在获取参数..."} size="large" />}
-                                                            {inputFiles === null ? null : inputFiles.map(({ paramName, paramNameCN, tip, currentValue, defaultValue }, index) =>
-                                                                <div style={{ position: "relative" }} key={index}>
+                                                            {!hasGotParam &&
+                                                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                                                    <Spin spinning={!hasGotParam} tip={"正在获取参数..."} size="large" />
+                                                                </div>
+                                                            }
+                                                            {inputFiles && inputFiles.map(({ paramName, paramNameCN, tip, currentValue, defaultValue }, index) => {
+                                                                if (apiName === "计算完全布格异常" && paramName === "topoDetfname") {
+                                                                    return null
+                                                                }
+                                                                return <div style={{ position: "relative" }} key={index}>
                                                                     <Form.Item className="input-file-wrapper" label={<label title={paramNameCN}>{paramName}</label>}>
                                                                         <Tooltip title={apiName !== "上传文件" && ((tip || paramNameCN) + (defaultValue && "，若不上传，则使用默认文件" + defaultValue.split(",")[0]))}>
                                                                             <span className="ant-btn ant-btn-default input-file">
@@ -1736,65 +1784,68 @@ class Calculate extends React.Component {
                                                                         </div>
                                                                     }
                                                                 </div>
+                                                            }
                                                             )}
-                                                            {uploadBoxs === null || uploadBoxs === undefined ? null : uploadBoxs.map(({ paramNameCN, paramName, defaultValue, tip, enumList }, index) =>
-                                                                <div style={{ position: "relative" }} key={index}>
-                                                                    <Form.Item id={paramName + index} label={<label title={paramNameCN}>{[321, 322, 323, 324, 325].includes(idenMod) ? paramNameCN : paramName}</label>}>
-                                                                        <Upload
-                                                                            name="uploadParamFile"
-                                                                            action={"http://" + dockerIP + ":" + vport + "/upFile"}
-                                                                            data={{
-                                                                                username,
-                                                                                idenMod: idenMod * Math.pow(10, nowStep - 1),
-                                                                                dockerID,
-                                                                                dockerIP,
-                                                                                vport,
-                                                                                index: modelIndex,
-                                                                                fileIndex: index + 1
-                                                                            }} sac_file
-                                                                            beforeUpload={(file, fileList) => {
-                                                                                if ((idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue) {
-                                                                                    if (file.name === defaultValue) {
-                                                                                        return true
-                                                                                    } else {
-                                                                                        message.error("文件名必须为" + defaultValue, 4)
-                                                                                        return false
-                                                                                    }
+                                                            {uploadBoxs && uploadBoxs.map(({ paramNameCN, paramName, defaultValue, tip, enumList }, index) => <div style={{ position: "relative" }} key={index}>
+                                                                <Form.Item label={<label title={paramNameCN}>{[321, 322, 323, 324, 325].includes(idenMod) ? paramNameCN : paramName}</label>}>
+                                                                    <Upload
+                                                                        name="uploadParamFile"
+                                                                        action={"http://" + dockerIP + ":" + vport + "/upFile"}
+                                                                        data={{
+                                                                            username,
+                                                                            idenMod: idenMod * Math.pow(10, nowStep - 1),
+                                                                            dockerID,
+                                                                            dockerIP,
+                                                                            vport,
+                                                                            index: modelIndex,
+                                                                            fileIndex: index + 1
+                                                                        }} sac_file
+                                                                        beforeUpload={(file, fileList) => {
+                                                                            if ((idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue) {
+                                                                                if (file.name === defaultValue) {
+                                                                                    return true
                                                                                 } else {
-                                                                                    return true;
+                                                                                    message.error("文件名必须为" + defaultValue, 4)
+                                                                                    return false
                                                                                 }
-                                                                            }}
-                                                                            directory={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
-                                                                            multiple={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
-                                                                            onChange={this.changeUpload.bind(this, index)}
-                                                                            accept={enumList && enumList.join(",")}
-                                                                            fileList={uploadFileList[index]}
-                                                                        >
-                                                                            {hideUpload ?
-                                                                                <Button type="default" disabled={hideUpload}><Icon type="upload" />上传文件</Button>
-                                                                                :
-                                                                                <Tooltip title={(idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue ?
-                                                                                    tip || paramNameCN + ",请上传名称为" + defaultValue + "的文件"
-                                                                                    :
-                                                                                    tip || (enumList && `请上传${enumList.join("，")}文件`) || paramNameCN}>
-                                                                                    <Button type="default" disabled={hideUpload}><Icon type="upload" />上传文件</Button>
-                                                                                </Tooltip>
+                                                                            } else {
+                                                                                return true;
                                                                             }
-                                                                        </Upload>
-                                                                    </Form.Item>
-                                                                    {(
-                                                                        (idenMod === 51 && (paramName === "MatrixFile" || paramName === "RightHandFile")) ||
-                                                                        (idenMod === 52 && (paramName === "input_Function_file" || paramName === "input_Jacobi_file"))
-                                                                    ) &&
-                                                                        <div className="file-icon" onClick={this.getExampleFile.bind(this, paramName)}>
-                                                                            <Icon type="download" title="获取示例文件" />
-                                                                            <span className="file-name">示例文件</span>
-                                                                        </div>
-                                                                    }
-                                                                </div>
+                                                                        }}
+                                                                        directory={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
+                                                                        multiple={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
+                                                                        onChange={this.changeUpload.bind(this, index)}
+                                                                        accept={enumList && enumList.join(",")}
+                                                                        fileList={uploadFileList[index]}
+                                                                    >
+                                                                        {hideUpload ?
+                                                                            <Button type="default" disabled={hideUpload}><Icon type="upload" />上传文件</Button>
+                                                                            :
+                                                                            <Tooltip title={(idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue ?
+                                                                                tip || paramNameCN + ",请上传名称为" + defaultValue + "的文件"
+                                                                                :
+                                                                                tip || (enumList && `请上传${enumList.join("，")}文件`) || paramNameCN}>
+                                                                                <Button type="default" disabled={hideUpload}><Icon type="upload" />上传文件</Button>
+                                                                            </Tooltip>
+                                                                        }
+                                                                    </Upload>
+                                                                </Form.Item>
+                                                                {(
+                                                                    (idenMod === 51 && (paramName === "MatrixFile" || paramName === "RightHandFile")) ||
+                                                                    (idenMod === 52 && (paramName === "input_Function_file" || paramName === "input_Jacobi_file"))
+                                                                ) &&
+                                                                    <div className="file-icon" onClick={this.getExampleFile.bind(this, paramName)}>
+                                                                        <Icon type="download" title="获取示例文件" />
+                                                                        <span className="file-name">示例文件</span>
+                                                                    </div>
+                                                                }
+                                                            </div>
                                                             )}
-                                                            {texts === null ? null : texts.map(({ paramName, paramNameCN, tip, currentValue, type, enumList, max, min, required }, index) =>
-                                                                <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
+                                                            {texts && texts.map(({ paramName, paramNameCN, tip, currentValue, type, enumList, max, min, required }, index) => {
+                                                                if (apiName === "计算完全布格异常" && paramName === "det_flag") {
+                                                                    return null
+                                                                }
+                                                                return <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <Tooltip title={tip || paramNameCN}>
                                                                         {getFieldDecorator(paramName, {
                                                                             rules: [{
@@ -1891,8 +1942,8 @@ class Calculate extends React.Component {
                                                                         )}
                                                                     </Tooltip>
                                                                 </Form.Item>
-                                                            )}
-                                                            {selects === null ? null : selects.map(({ paramName, paramNameCN, defaultValue, currentValue }, index) =>
+                                                            })}
+                                                            {selects && selects.map(({ paramName, paramNameCN, defaultValue, currentValue }, index) =>
                                                                 <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <Select onChange={this.changeOption.bind(this, index)} value={currentValue}>
                                                                         {defaultValue.map((value, index2) =>
@@ -1903,7 +1954,7 @@ class Calculate extends React.Component {
                                                                     </Select>
                                                                 </Form.Item>
                                                             )}
-                                                            {textAreas === null ? null : textAreas.map(({ paramName, paramNameCN, tip, currentValue }, index) =>
+                                                            {textAreas && textAreas.map(({ paramName, paramNameCN, tip, currentValue }, index) =>
                                                                 <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <Tooltip title={tip || paramNameCN}>
                                                                         {getFieldDecorator(paramName, {
@@ -1923,7 +1974,7 @@ class Calculate extends React.Component {
                                                                     </Tooltip>
                                                                 </Form.Item>
                                                             )}
-                                                            {radios === null ? null : radios.map(({ paramName, paramNameCN, defaultValue, currentValue }, index) =>
+                                                            {radios && radios.map(({ paramName, paramNameCN, defaultValue, currentValue }, index) =>
                                                                 <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <RadioGroup onChange={this.changeRadio.bind(this, index)} value={currentValue}>
                                                                         {defaultValue.map((value, index2) => {
@@ -1936,7 +1987,7 @@ class Calculate extends React.Component {
                                                                     </RadioGroup>
                                                                 </Form.Item>
                                                             )}
-                                                            {checkBoxs === null ? null : checkBoxs.map(({ paramName, paramNameCN, defaultValue, currentValue }, index) =>
+                                                            {checkBoxs && checkBoxs.map(({ paramName, paramNameCN, defaultValue, currentValue }, index) =>
                                                                 <Form.Item label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <CheckboxGroup options={defaultValue} value={currentValue} onChange={this.changeCheck.bind(this, index)} />
                                                                 </Form.Item>

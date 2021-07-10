@@ -158,6 +158,10 @@ export default class csvView extends Component {
                             xAxis.push(arr[i][1]);
                             yAxis.push(arr[i][0]);
                             zAxis.push(arr[i][2]);
+                        } else if (appName === "相关分析联合反演" || appName === "模糊C回归聚类" || appName === "模糊聚类联合反演" || appName === "基于数据空间的相关分析反演" || appName === "交叉梯度联合反演") {
+                            xAxis.push(arr[i][1]);
+                            yAxis.push(arr[i][2]);
+                            zAxis.push(arr[i][0]);
                         } else {
                             xAxis.push(arr[i][2]);
                             yAxis.push(arr[i][1]);
@@ -224,6 +228,105 @@ export default class csvView extends Component {
                             let index5 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][0]);
                             pointData2[index5] = arr[i][3];
                         }
+                    } else if (appName === "相关分析联合反演") {
+                        //x=50  x值固定 yz面
+                        if (res.xAxis1.indexOf(arr[i][1]) === 0) {
+                            let index = res.yAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData5[index] = arr[i][3];
+                        }
+                        //x=450 x值固定 yz面
+                        if (res.xAxis1.indexOf(arr[i][1]) === Math.round(res.xAxis1.length - 1)) {
+                            let index1 = res.yAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData6[index1] = arr[i][3];
+                        }
+
+                        //y=54.9375 y值固定 xz面
+                        if (res.yAxis1.indexOf(arr[i][2]) === 0) {
+                            let index2 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData4[index2] = arr[i][3];
+                        }
+
+                        //y=yAxis1[40] y值固定 xz面
+                        if (res.yAxis1.indexOf(arr[i][2]) === Math.round(res.yAxis1.length - 1)) {
+                            let index3 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData3[index3] = arr[i][3];
+                        }
+                        //z=zAxis[0] z值固定 xy面
+                        if (res.zAxis1.indexOf(arr[i][0]) === 0) {
+                            let index4 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][2]);
+                            pointData2[index4] = arr[i][3];
+                        }
+                        //z=zAxis[60] z值固定 xy面
+                        if (res.zAxis1.indexOf(arr[i][0]) === Math.round(res.zAxis1.length - 1)) {
+                            let index5 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][2]);
+                            pointData1[index5] = arr[i][3];
+                        }
+                    } else if (appName === "模糊C回归聚类") {
+                        //x=50  x值固定 yz面
+                        if (res.xAxis1.indexOf(arr[i][1]) === 0) {
+                            let index = res.yAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData5[index] = arr[i][3];
+                        }
+                        //x=450 x值固定 yz面
+                        if (res.xAxis1.indexOf(arr[i][1]) === Math.round(res.xAxis1.length - 1)) {
+                            let index1 = res.yAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData6[index1] = arr[i][3];
+                        }
+
+                        //y=54.9375 y值固定 xz面
+                        if (res.yAxis1.indexOf(arr[i][2]) === 0) {
+                            let index2 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData4[index2] = arr[i][3];
+                        }
+
+                        //y=yAxis1[40] y值固定 xz面
+                        if (res.yAxis1.indexOf(arr[i][2]) === Math.round(res.yAxis1.length - 1)) {
+                            let index3 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData3[index3] = arr[i][3];
+                        }
+                        //z=zAxis[0] z值固定 xy面
+                        if (res.zAxis1.indexOf(arr[i][0]) === 0) {
+                            let index4 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][2]);
+                            pointData1[index4] = arr[i][3];
+                        }
+                        //z=zAxis[60] z值固定 xy面
+                        if (res.zAxis1.indexOf(arr[i][0]) === Math.round(res.zAxis1.length - 1)) {
+                            let index5 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][2]);
+                            pointData2[index5] = arr[i][3];
+                        }
+                    } else if (appName === "模糊聚类联合反演" || appName === "基于数据空间的相关分析反演" || appName === "交叉梯度联合反演") {
+                        //x=50  x值固定 yz面
+                        if (res.xAxis1.indexOf(arr[i][1]) === 0) {
+                            let index = res.yAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData5[index] = arr[i][3];
+                        }
+                        //x=450 x值固定 yz面
+                        if (res.xAxis1.indexOf(arr[i][1]) === Math.round(res.xAxis1.length - 1)) {
+                            let index1 = res.yAxis1.indexOf(arr[i][2]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData6[index1] = arr[i][3];
+                        }
+
+                        //y=54.9375 y值固定 xz面
+                        if (res.yAxis1.indexOf(arr[i][2]) === 0) {
+                            let index2 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData4[index2] = arr[i][3];
+                        }
+
+                        //y=yAxis1[40] y值固定 xz面
+                        if (res.yAxis1.indexOf(arr[i][2]) === Math.round(res.yAxis1.length - 1)) {
+                            let index3 = res.xAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
+                            pointData3[index3] = arr[i][3];
+                        }
+                        //z=zAxis[0] z值固定 xy面
+                        if (res.zAxis1.indexOf(arr[i][0]) === 0) {
+                            let index4 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][2]);
+                            pointData1[index4] = arr[i][3];
+                        }
+                        //z=zAxis[60] z值固定 xy面
+                        if (res.zAxis1.indexOf(arr[i][0]) === Math.round(res.zAxis1.length - 1)) {
+                            let index5 = res.xAxis1.indexOf(arr[i][1]) * res.yLength + res.yAxis1.indexOf(arr[i][2]);
+                            pointData2[index5] = arr[i][3];
+                        }
                     } else {
                         if (res.xAxis1.indexOf(arr[i][2]) === 0) {
                             let index = res.yAxis1.indexOf(arr[i][1]) * res.zLength + res.zAxis1.indexOf(arr[i][0]);
@@ -255,48 +358,223 @@ export default class csvView extends Component {
                 Rendering(model, this.container);
                 // 定义平面源
                 const lookupTable = vtkLookupTable.newInstance();
-                const planeSource1 = vtkPlaneSource.newInstance({
-                    xResolution: res.zLength - 1,
-                    yResolution: res.yLength - 1,
-                    origin: [0, 0, 0],
-                    point1: [res.zLength, 0, 0],
-                    point2: [0, res.yLength, 0],
-                });
-                const planeSource2 = vtkPlaneSource.newInstance({
-                    xResolution: res.zLength - 1,
-                    yResolution: res.yLength - 1,
-                    origin: [0, 0, res.xLength],
-                    point1: [res.zLength, 0, res.xLength],
-                    point2: [0, res.yLength, res.xLength],
-                });
-                const planeSource3 = vtkPlaneSource.newInstance({
-                    xResolution: res.zLength - 1,
-                    yResolution: res.xLength - 1,
-                    origin: [0, 0, 0],
-                    point1: [res.zLength, 0, 0],
-                    point2: [0, 0, res.xLength],
-                });
-                const planeSource4 = vtkPlaneSource.newInstance({
-                    xResolution: res.zLength - 1,
-                    yResolution: res.xLength - 1,
-                    origin: [0, res.yLength, 0],
-                    point1: [res.zLength, res.yLength, 0],
-                    point2: [0, res.yLength, res.xLength],
-                });
-                const planeSource5 = vtkPlaneSource.newInstance({
-                    xResolution: res.yLength - 1,
-                    yResolution: res.xLength - 1,
-                    origin: [0, 0, 0],
-                    point1: [0, res.yLength, 0],
-                    point2: [0, 0, res.xLength],
-                });
-                const planeSource6 = vtkPlaneSource.newInstance({
-                    xResolution: res.yLength - 1,
-                    yResolution: res.xLength - 1,
-                    origin: [res.zLength, 0, 0],
-                    point1: [res.zLength, res.yLength, 0],
-                    point2: [res.zLength, 0, res.xLength],
-                });
+                let planeSource1, planeSource2, planeSource3, planeSource4, planeSource5, planeSource6;
+                if (appName === "相关分析联合反演") {
+                    planeSource1 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [res.zLength, 0, 0],
+                        point1: [0, 0, 0],
+                        point2: [res.zLength, res.yLength, 0],
+                    });
+                    planeSource2 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [res.zLength, 0, res.xLength],
+                        point1: [0, 0, res.xLength],
+                        point2: [res.zLength, res.yLength, res.xLength],
+                    });
+                    planeSource3 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource4 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource5 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [0, res.yLength, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource6 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [res.zLength, 0, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [res.zLength, 0, res.xLength],
+                    });
+                } else if (appName === "模糊C回归聚类") {
+                    planeSource1 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, 0, 0],
+                    });
+                    planeSource2 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, res.yLength, res.xLength],
+                        point1: [res.zLength, res.yLength, res.xLength],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource3 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource4 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource5 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [0, 0, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource6 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [res.zLength, res.yLength, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [res.zLength, res.yLength, res.xLength],
+                    });
+                } else if (appName === "模糊聚类联合反演") {
+                    planeSource1 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, 0, 0],
+                    });
+                    planeSource2 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, res.yLength, res.xLength],
+                        point1: [res.zLength, res.yLength, res.xLength],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource3 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource4 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource5 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [0, res.yLength, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource6 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [res.zLength, 0, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [res.zLength, 0, res.xLength],
+                    });
+                } else if (appName === "基于数据空间的相关分析反演" || appName === "交叉梯度联合反演") {
+                    planeSource1 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, 0, 0],
+                    });
+                    planeSource2 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, res.yLength, res.xLength],
+                        point1: [res.zLength, res.yLength, res.xLength],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource3 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource4 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource5 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [0, 0, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource6 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [res.zLength, res.yLength, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [res.zLength, res.yLength, res.xLength],
+                    });
+                } else {
+                    planeSource1 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [0, res.yLength, 0],
+                    });
+                    planeSource2 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.yLength - 1,
+                        origin: [0, 0, res.xLength],
+                        point1: [res.zLength, 0, res.xLength],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource3 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [res.zLength, 0, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource4 = vtkPlaneSource.newInstance({
+                        xResolution: res.zLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, res.yLength, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [0, res.yLength, res.xLength],
+                    });
+                    planeSource5 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [0, 0, 0],
+                        point1: [0, res.yLength, 0],
+                        point2: [0, 0, res.xLength],
+                    });
+                    planeSource6 = vtkPlaneSource.newInstance({
+                        xResolution: res.yLength - 1,
+                        yResolution: res.xLength - 1,
+                        origin: [res.zLength, 0, 0],
+                        point1: [res.zLength, res.yLength, 0],
+                        point2: [res.zLength, 0, res.xLength],
+                    });
+                }
 
                 const polydata1 = planeSource1.getOutputData().getState();
                 polydata1.pointData = {
@@ -376,7 +654,7 @@ export default class csvView extends Component {
                         },
                     }],
                 }
-                let pointDatas = JSON.parse(JSON.stringify(arrs))
+                let pointDatas = pointData1.concat(pointData2).concat(pointData3).concat(pointData4).concat(pointData5).concat(pointData6);
                 pointDatas.sort(function (a, b) {
                     return a - b
                 });
@@ -505,7 +783,7 @@ export default class csvView extends Component {
                 const point = [pos.x, pos.y, 0.0];
                 picker.pick(point, model.renderer);
                 let pickedPoint = picker.getPickPosition();
-                model.textCtx.font = '14px serif';
+                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';
@@ -544,7 +822,7 @@ export default class csvView extends Component {
                 // let pickedPoint = picker.getPickPosition();
                 let PointID = picker.getPointId();
                 let posX = Math.round(model.points[PointID * 3]), posY = Math.abs(Math.round(model.points[PointID * 3 + 1])), posZ = Math.abs(Math.round(model.points[PointID * 3 + 2]));
-                model.textCtx.font = '14px serif';
+                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor;
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';

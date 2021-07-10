@@ -1,0 +1,100 @@
+#chart-container-2 {
+    padding: 80px 90px 80px 80px;
+    position: relative;
+    width: 860px;
+    font-size: 14px;
+}
+
+#chart-container-2 #matrix_chart {
+    box-sizing: unset;
+    border: 1px solid #000;
+    width: 690px;
+    height: 460px;
+}
+
+#chart-container-2 #legend {
+    position: absolute;
+    right: 0;
+    top: 80px;
+    width: 75px;
+    display: flex;
+    height: 460px;
+}
+
+#chart-container-2 #legend .color-bar {
+    box-sizing: unset;
+    height: 100%;
+    width: 30px;
+    border: 1px solid #000;
+    /* background: linear-gradient(#f2ef18, #f4e41f, #f5d727, #f9cc31, #fbc13b, #f5bd42, #f0d840, #e1e93b, #bbe836, #94e332, #6cdd2b, #43d826, #23d42c, #1fcf48, #18cb67, #16c485, #12c1a2, #0eb6b9, #0aa5c1, #08a0c7, #0b98ce, #108dcf, #1585cf, #127cd4, #0c73d8, #066bdd, #0760db, #224fcc, #3242b1, #343198, #39307f);*/
+    background: linear-gradient(#f8fa0d, #fbcd2d, #d8ba55, #91be72, #37b89d, #05a6c6, #1484d3, #0262e0, #352a86);
+}
+
+#chart-container-2 #legend .color-num {
+    box-sizing: unset;
+    height: 100%;
+    width: 40px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    line-height: 1em;
+    margin-left: 5px;
+}
+
+#chart-container-2 #legend .color-num span {
+    height: 0;
+    display: flex;
+    align-items: center;
+}
+
+#chart-container-2 #x-axis {
+    position: absolute;
+    left: 80px;
+    bottom: 55px;
+    height: 20px;
+    width: 690px;
+}
+
+#chart-container-2 #x-axis span {
+    width: 0;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+}
+
+#chart-container-2 #x-axis::before {
+    content: "X";
+    position: absolute;
+    top: 1em;
+    width: 690px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#chart-container-2 #y-axis {
+    position: absolute;
+    left: 35px;
+    top: 80px;
+    height: 460px;
+    width: 40px;
+    line-height: 1em;
+}
+
+#chart-container-2 #y-axis span {
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+}
+
+#chart-container-2 #y-axis::before {
+    content: "Y";
+    position: absolute;
+    height: 460px;
+    writing-mode: vertical-lr;
+    text-align: center;
+    transform: rotate(180deg);
+    font-weight: bold;
+}

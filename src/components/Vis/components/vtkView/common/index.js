@@ -584,7 +584,7 @@ export const showBounds = (bounds, model, container, polydata, theme) => {
         psMapper.setCallback((coordsList) => {
             textCtx.clearRect(0, 0, dims.width * window.devicePixelRatio, dims.height * window.devicePixelRatio);
             coordsList.forEach((xy, idx) => {
-                textCtx.font = '12px serif';
+                textCtx.font = `${12 * window.pixelRatio}px serif`;
                 textCtx.fillStyle = theme
                 textCtx.textAlign = 'center';
                 textCtx.textBaseline = 'middle';
@@ -786,7 +786,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 let dims = document.querySelector(".vtk-container").getBoundingClientRect();
                 textCtx.clearRect(0, 0, dims.width * window.devicePixelRatio, dims.height * window.devicePixelRatio);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`;
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2493,7 +2493,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler1Yactor);
                 model.renderer.addActor(model.ruler1Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`;
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2524,7 +2524,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler2Yactor);
                 model.renderer.addActor(model.ruler2Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2555,7 +2555,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler6Yactor);
                 model.renderer.addActor(model.ruler6Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2586,7 +2586,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler5Yactor);
                 model.renderer.addActor(model.ruler5Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2617,7 +2617,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler4Yactor);
                 model.renderer.addActor(model.ruler4Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2648,7 +2648,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler3Yactor);
                 model.renderer.addActor(model.ruler3Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2679,7 +2679,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler7Yactor);
                 model.renderer.addActor(model.ruler7Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -2710,7 +2710,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
                 model.renderer.addActor(model.ruler8Yactor);
                 model.renderer.addActor(model.ruler8Zactor);
                 coordsList.forEach((xy, idx) => {
-                    textCtx.font = '14px serif';
+                    textCtx.font = `${14 * window.pixelRatio}px serif`
                     textCtx.fillStyle = theme
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
@@ -3412,7 +3412,7 @@ export const Sfn = (model, mode, min, max, xlon, ylon, planeCenter, pointLeft, c
         if (document.querySelector(".vtk-container")) dims = document.querySelector(".vtk-container").getBoundingClientRect();
         textCtx.clearRect(0, 0, dims.width * window.devicePixelRatio, dims.height * window.devicePixelRatio);
         coordsList.forEach((xy, idx) => {
-            textCtx.font = '14px serif';
+            textCtx.font = `${14 * window.pixelRatio}px serif`
             textCtx.fillStyle = theme
             textCtx.textAlign = 'left';
             textCtx.textBaseline = 'middle';

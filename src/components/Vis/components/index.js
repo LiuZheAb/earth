@@ -8,7 +8,7 @@ import React from "react";
 import MenuBar from './MenuBar/MenuContainer';
 import { Col, Layout } from "antd";
 import * as actions from '../redux/actions';
-import { CsvViewContainer, CsvViewXyContainer, CsvViewXyzContainer, CsvViewXyzNoContainer } from './vtkView/csvView/index';
+import { CsvViewContainer, CsvViewXyContainer, CsvViewXyzContainer, CsvViewXyzNoContainer,CsvViewCutContainer } from './vtkView/csvView/index';
 import { MshViewContainer } from './vtkView/mshView';
 
 const { Content } = Layout;
@@ -216,7 +216,7 @@ export default class Vtk extends React.Component {
                                     case "MCMC反演0":
                                     case "MCMC反演（参考模型约束）0":
                                     case "3d":
-                                        return <CsvViewXyzContainer data={data} datatype={datatype} show={show} />;
+                                        return <CsvViewXyzContainer data={data} datatype={datatype} show={show} appName={appName} />;
                                     case "matrix":
                                         if (data.length / data[0].length > 10 || data[0].length / data.length > 10) {
                                             return <CsvViewXyzNoContainer data={data} datatype={datatype} appName={appName} show={show} />
@@ -225,6 +225,8 @@ export default class Vtk extends React.Component {
                                         }
                                     case "msh":
                                         return <MshViewContainer data={data} datatype={datatype} appName={appName} show={show} />
+                                    case "cut":
+                                        return <CsvViewCutContainer data={data} datatype={datatype} appName={appName} show={show} />
                                     default:
                                         return null;
                                 }

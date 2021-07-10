@@ -4,6 +4,7 @@ import CsvView from './csvView';
 import CsvViewXy from './csvView_xy';
 import CsvViewXyz from './csvView_xyz';
 import CsvViewXyzNo from './csvView_xyz_no';
+import CsvViewCut from "./csvView_cut";
 
 const mapStateToProps = (state, ownProps) => {
     return ({
@@ -29,3 +30,7 @@ export const CsvViewXyzNoContainer = connect(
     mapStateToProps,
     mapDispatchToProps
 )(CsvViewXyzNo)
+export const CsvViewCutContainer = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(CsvViewCut)

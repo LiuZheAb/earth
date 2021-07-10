@@ -136,15 +136,27 @@ class Calculate extends React.Component {
             dimensionValue: "2D",
             realValue: "model",
             hasGotParam: true,
+            reStart: sessionStorage.getItem("reStart") || undefined
         };
     };
     logTimer = undefined;
     componentDidMount() {
         apiPromise.then(res => {
             api = res.data.api;
-            let { dockerType, modelIndex } = this.state;
+            let { dockerType, modelIndex, reStart } = this.state;
             if (dockerType === 2) {
                 this.getPram(modelIndex);
+            }
+            if (reStart) {
+                this.setState({
+                    defaultIndex: Number(sessionStorage.getItem("defaultIndex")),
+                    dimension: sessionStorage.getItem("dimension") === "true" ? true : false,
+                    dimensionValue: sessionStorage.getItem("dimensionValue"),
+                    real: sessionStorage.getItem("real") === "true" ? true : false,
+                    realValue: sessionStorage.getItem("realValue")
+                }, () => {
+                    this.startDocker();
+                })
             }
         });
         if (window.innerWidth > 768) {
@@ -221,7 +233,7 @@ class Calculate extends React.Component {
     };
     //启动容器
     startDocker = () => {
-        let { username, idenMod, currentStep, appName, stepNum } = this.state;
+        let { username, idenMod, currentStep, appName, stepNum, reStart } = this.state;
         this.setState({ loading: true });
         axios({
             method: 'post',
@@ -279,6 +291,11 @@ class Calculate extends React.Component {
                         started: true,
                         dimension,
                         real,
+                    }, () => {
+                        if (reStart) {
+                            this.handleSelectModel(Number(sessionStorage.getItem("defaultIndex")))
+                            sessionStorage.removeItem("reStart");
+                        }
                     });
                     break;
                 case 3:
@@ -354,6 +371,11 @@ class Calculate extends React.Component {
             uploadFileList: []
         });
         this.getPram(modelIndex);
+        sessionStorage.setItem("defaultIndex", value);
+        sessionStorage.setItem("dimension", dimension);
+        sessionStorage.setItem("dimensionValue", dimensionValue);
+        sessionStorage.setItem("real", real);
+        sessionStorage.setItem("realValue", realValue);
     }
     //获取参数
     getPram = index => {
@@ -605,6 +627,7 @@ class Calculate extends React.Component {
             if (res.data.status === 1) {
                 message.success("应用已停止");
                 sessionStorage.setItem("nowStep", 1);
+                sessionStorage.setItem("reStart", 1);
                 this.setState({ isComputing: false });
                 setTimeout(() => {
                     window.location.reload()
@@ -659,6 +682,12 @@ class Calculate extends React.Component {
         sessionStorage.removeItem("modelIndex");
         sessionStorage.removeItem("baseUrl");
         sessionStorage.removeItem("funcName");
+        sessionStorage.removeItem("reStart");
+        sessionStorage.removeItem("dimension");
+        sessionStorage.removeItem("dimensionValue");
+        sessionStorage.removeItem("real");
+        sessionStorage.removeItem("realValue");
+        sessionStorage.removeItem("defaultIndex");
         this.setState = () => {
             return;
         }
@@ -1049,7 +1078,7 @@ class Calculate extends React.Component {
             computed, nowStep, stepNum, disabled, proList, calcResData, calcStatus, resType, visVisible, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath,
             sourceParamType, materialIndex, materialModalVisible, materialName, materialValue, dataType, tinyListener,
-            dimension, real, dimensionValue, realValue, funcName
+            dimension, real, dimensionValue, realValue, hasGotParam, defaultIndex
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {
@@ -1113,6 +1142,7 @@ class Calculate extends React.Component {
                                     {nowStep === 1 && currentStep === 0 &&
                                         <div style={{ textAlign: "center", paddingTop: 50 }}>
                                             <Button type="primary" loading={loading} disabled={started} onClick={this.startDocker}>{started ? "已启动" : "启动容器"}</Button>
+                                            {!idenMod && <p style={{ marginTop: 15 }}>未获取到程序信息，请返回首页重新进入</p>}
                                         </div>
                                     }
                                     {(nowStep === 1 && currentStep === 1) ?
@@ -1174,12 +1204,12 @@ class Calculate extends React.Component {
                                                 </Row>
                                             }
                                             {proList.length > 1 &&
-                                                <Row style={{ marginTop: 20 }}>
+                                                <Row style={{ marginTop: 10 }}>
                                                     <Col xs={24} sm={8} className="ant-form-item-label">
                                                         <label style={{ whiteSpace: "nowrap", fontWeight: 500, lineHeight: "32px" }}>请选择测试模型</label>
                                                     </Col>
                                                     <Col xs={24} sm={16} className="ant-form-item-control-wrapper ant-form-item-control">
-                                                        <Select onChange={this.handleSelectModel} value={funcName} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
+                                                        <Select onChange={this.handleSelectModel} defaultValue={proList[defaultIndex]} placeholder="--请选择测试模型--" style={{ width: "100%" }}>
                                                             {proList.map((value, index) =>
                                                                 <Option key={value} value={index} className={getClassName(value)}>
                                                                     {value}
@@ -1199,6 +1229,11 @@ class Calculate extends React.Component {
                                                         />
                                                         :
                                                         <Form {...formItemLayout} onSubmit={this.createPFile} className="calculate-form">
+                                                            {!hasGotParam &&
+                                                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                                                    <Spin spinning={!hasGotParam} tip={"正在获取参数..."} size="large" />
+                                                                </div>
+                                                            }
                                                             {inputFiles === null ? null : inputFiles.map(({ paramName, paramNameCN, tip, currentValue }, index) =>
                                                                 <Form.Item className="input-file-wrapper" label={<label title={paramNameCN}>{paramName}</label>} key={index}>
                                                                     <Tooltip title={tip || paramNameCN}>

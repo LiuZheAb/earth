@@ -10,7 +10,7 @@ import CsvViewSingleLineContainer from './components/echartsView/view_421&422/cs
 import CsvViewSingleLineContainer2 from './components/echartsView/view_311/csvView_line_single';
 import CsvViewMatrixContainer from './components/echartsView/view_421&422/csvView_matrix';
 import CsvViewMatrixContainer2 from './components/echartsView/view_421&422/csvView_matrix2';
-// import CsvViewMatrixContainer3 from './components/echartsView/view_2131&7213/csvView_matrix';
+import CsvViewMatrixContainer3 from './components/echartsView/view_421&422/csvView_matrix3';
 import "./index.css";
 
 export default class vis extends Component {
@@ -26,6 +26,8 @@ export default class vis extends Component {
                 visComponent = <CsvViewMatrixContainer data={data} datatype={datatype} appName={appName} />;
             } else if (datatype === "2d_2") {
                 visComponent = <CsvViewMatrixContainer2 data={data} datatype={datatype} appName={appName} />;
+            } else if (datatype === "2d_3") {
+                visComponent = <CsvViewMatrixContainer3 data={data} datatype={datatype} appName={appName} />;
             } else if (datatype === "single") {
                 visComponent = <CsvViewSingleLineContainer data={data} datatype={datatype} appName={appName} />;
             }

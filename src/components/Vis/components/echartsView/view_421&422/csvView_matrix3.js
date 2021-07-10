@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Heatmap from 'heatmap.js';
-import "./index2.css";
+import "./index3.css";
 
 let getMax = arr => {
     var max = arr[0];
@@ -49,7 +49,8 @@ export default class csvView_matrix extends Component {
                 dataMap = data[i].map(item => Number(item));
             }
         }
-        let xMin = getMin(xData), xMax = getMax(xData), yMin = getMin(yData), yMax = getMax(yData), max = getMax(dataMap), min = getMin(dataMap);
+        let xMin = getMin(xData), xMax = getMax(xData), yMin = getMin(yData), yMax = getMax(yData), max = getMax(dataMap), min = getMin(dataMap), range = max - min;
+        console.log({ max, min });
         let xRange = xMax - xMin, yRange = yMax - yMin;
         let dataSource = [], xAxisData = [], yAxisData = [];
         let chart = document.getElementById("matrix_chart");
@@ -71,58 +72,100 @@ export default class csvView_matrix extends Component {
             }
         }
         let legendDataSource = [];
-        for (let i = max; i > min; i -= (max - min) / 9) {
+        for (let i = -3.0111; i > -4.0689; i -= (-3.0111 - -4.0689) / 7) {
             legendDataSource.push(i.toFixed(4))
+        }
+        legendDataSource.push(-4.0689)
+        let maxPercent = 1 - (max - -3.0111) / range, minPercent = (-4.0689 - min) / range;
+        let gradient = {
+            "1": "#f8fa0d",
+            "0": "#352a86"
+        };
+        gradient[String(maxPercent + 0.00000001)] = "#f8fa0d";
+        gradient[String(minPercent)] = "#352a86";
+        let corlorMap = ["#0262e0", "#1484d3", "#05a6c6", "#37b89d", "#91be72", "#d8ba55", "#fbcd2d"];
+        for (let i = 0; i < 7; i++) {
+            gradient[String((maxPercent - minPercent) / 7 * i + minPercent + 0.00000001)] = corlorMap[i];
+            gradient[String((maxPercent - minPercent) / 7 * (i + 1) + minPercent)] = corlorMap[i];
         }
         this.map = Heatmap.create({
             container: chart,
-            radius: 2.6,
+            radius: 4.5,
             maxOpacity: 1,
             minOpacity: 1,
             blur: 1,
-            backgroundColor: "#ffffff",
-            gradient: {
-                "0": "#3e29aa",
-                "0.02857142857142857": "#4330be",
-                "0.05714285714285714": "#4738d1",
-                "0.08571428571428572": "#4740de",
-                "0.11428571428571428": "#4849e2",
-                "0.14285714285714285": "#4754ef",
-                "0.17142857142857143": "#465ef4",
-                "0.19999999999999998": "#4267f6",
-                "0.22857142857142856": "#3b71f7",
-                "0.2571428571428571": "#337aee",
-                "0.2857142857142857": "#2e87ef",
-                "0.3142857142857143": "#2b8ee9",
-                "0.34285714285714286": "#2797e3",
-                "0.37142857142857144": "#239fdf",
-                "0.39999999999999997": "#1fa2d6",
-                "0.42857142857142855": "#15add2",
-                "0.45714285714285713": "#07b1c8",
-                "0.4857142857142857": "#09b6bd",
-                "0.5142857142857142": "#1bbbb1",
-                "0.5428571428571428": "#2dbda4",
-                "0.5714285714285714": "#35c097",
-                "0.6": "#42c68a",
-                "0.6285714285714286": "#57c878",
-                "0.6571428571428571": "#6fc967",
-                "0.6857142857142857": "#86c753",
-                "0.7142857142857143": "#9cc140",
-                "0.7428571428571429": "#b4c030",
-                "0.7714285714285714": "#cabb2a",
-                "0.7999999999999999": "#dab92c",
-                "0.8285714285714285": "#ecb63a",
-                "0.8571428571428571": "#f3b73d",
-                "0.8857142857142857": "#f8c337",
-                "0.9142857142857143": "#f4cd30",
-                "0.9428571428571428": "#f1da2c",
-                "0.9714285714285714": "#eee423",
-                "1": "#edea1f",
-            }
+            backgroundColor: "#fff",
+            gradient: gradient
+            // {
+            // "1": "#f2ef18",
+            // "0.96666667": "#f4e41f",
+            // "0.93333333": "#f5d727",
+            // "0.9": "#f9cc31",
+            // "0.86666667": "#fbc13b",
+            // "0.83333333": "#f5bd42",
+            // "0.8": "#f0d840",
+            // "0.76666667": "#e1e93b",
+            // "0.73333333": "#bbe836",
+            // "0.7": "#94e332",
+            // "0.66666667": "#6cdd2b",
+            // "0.63333333": "#43d826",
+            // "0.6": "#23d42c",
+            // "0.56666667": "#1fcf48",
+            // "0.53333333": "#18cb67",
+            // "0.5": "#16c485",
+            // "0.46666667": "#12c1a2",
+            // "0.43333333": "#0eb6b9",
+            // "0.4": "#0aa5c1",
+            // "0.36666667": "#08a0c7",
+            // "0.33333333": "#0b98ce",
+            // "0.3": "#108dcf",
+            // "0.26666667": "#1585cf",
+            // "0.23333333": "#127cd4",
+            // "0.2": "#0c73d8",
+            // "0.16666667": "#066bdd",
+            // "0.13333333": "#0760db",
+            // "0.1": "#224fcc",
+            // "0.06666667": "#3242b1",
+            // "0.03333333": "#343198",
+            // "0": "#39307f",
+
+            // "1": "#f8fa0d",
+            // "0.95": "#fbcd2d",
+            // "0.85714286": "#fbcd2d",
+            // "0.85714285": "#d8ba55",
+            // "0.71428572": "#d8ba55",
+            // "0.71428571": "#91be72",
+            // "0.57142858": "#91be72",
+            // "0.57142857": "#37b89d",
+            // "0.42857143": "#37b89d",
+            // "0.42857142": "#05a6c6",
+            // "0.28571429": "#05a6c6",
+            // "0.28571428": "#1484d3",
+            // "0.14285715": "#1484d3",
+            // "0.14285714": "#0262e0",
+            // "0.05": "#0262e0",
+            // "0": "#352a86",
+
+
+            // "1": "#ffffff",
+            // "0.85714286": "#ffffff",
+            // "0.85714285": "#cacaca",
+            // "0.71428571": "#cacaca",
+            // "0.71428570": "#a1a1a1",
+            // "0.57142857": "#a1a1a1",
+            // "0.57142856": "#797979",
+            // "0.42857143": "#797979",
+            // "0.42857142": "#515151",
+            // "0.28571429": "#515151",
+            // "0.28571428": "#282828",
+            // "0.14285714": "#282828",
+            // "0.14285713": "#000000",
+            // "0": "#000000",
+            // }
         });
         this.map.setData({
-            max: max,
-            min: min,
+            max: -3.0111,
+            min: -4.0689,
             data: dataSource
         });
         this.setState({

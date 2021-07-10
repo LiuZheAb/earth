@@ -616,7 +616,7 @@ export default class csvView extends Component {
                 // let pickedPoint = picker.getPickPosition();
                 let PointID = picker.getPointId();
                 let posX = Math.round(model.points[PointID * 3]), posY = Math.abs(Math.round(model.points[PointID * 3 + 1])), posZ = Math.abs(Math.round(model.points[PointID * 3 + 2]));
-                model.textCtx.font = '14px serif';
+                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor;
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';

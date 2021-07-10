@@ -542,7 +542,7 @@ class index extends Component {
             let { data } = res.data;
             let resFileList = [];
             for (let key in data) {
-                if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                if (key.toUpperCase().indexOf("COOR") === -1) {
                     resFileList.push({
                         name: key,
                         suffix: key.split(".").pop(),
@@ -553,7 +553,7 @@ class index extends Component {
                 }
             }
             Object.keys(data).map((item, index) => {
-                if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                if (item.toUpperCase().indexOf("COOR") === -1) {
                     resFileList[index].key = index;
                 }
                 return item;
@@ -684,7 +684,7 @@ class index extends Component {
                     let { data } = res.data;
                     let resFileList = [];
                     for (let key in data) {
-                        if (idenMod !== 211 || (idenMod === 211 && key.toUpperCase().indexOf("COOR") === -1)) {
+                        if (key.toUpperCase().indexOf("COOR") === -1) {
                             resFileList.push({
                                 name: key,
                                 suffix: key.split(".").pop(),
@@ -695,7 +695,7 @@ class index extends Component {
                         }
                     }
                     Object.keys(data).map((item, index) => {
-                        if (idenMod !== 211 || (idenMod === 211 && item.toUpperCase().indexOf("COOR") === -1)) {
+                        if (item.toUpperCase().indexOf("COOR") === -1) {
                             resFileList[index].key = index;
                         }
                         return item;
@@ -766,6 +766,7 @@ class index extends Component {
                 let elementA = document.createElement('a');
                 elementA.style.display = 'none';
                 elementA.href = this.state.uri + "/output/" + path;
+                console.log(elementA.href);
                 document.body.appendChild(elementA);
                 elementA.click();
                 document.body.removeChild(elementA);
@@ -1041,7 +1042,7 @@ class index extends Component {
                     if (Array.isArray(data) && data.length > 0) {
                         this.setState({
                             calcResData: data,
-                            dataType: "2d_2"
+                            dataType: funcName === "ELM_INV Model1" ? "2d_3" : "2d_2"
                         }, () => {
                             if (this.state.dataLoading) {
                                 this.setState({
@@ -1208,16 +1209,30 @@ class index extends Component {
                                 data = data[0].map((col, i) => data.map(row => row[i]));
                             }
                             if (idenMod === 631 || idenMod === 7214) {
+                                let x = [], y = [], z = [];
                                 data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
                                 if (data[0].length === 4) {
-                                    let newArr = [];
+                                    let newArr = [[], [], [], []];
                                     data.map(item => {
+                                        x.push(item[0]);
+                                        y.push(item[0]);
+                                        z.push(item[0]);
                                         //获取x=0的剖面
+                                        // if (item[0] === "0") {
+                                        //     newArr.push([item[1], item[2], item[3]]);
+                                        // }
                                         if (item[0] === "0") {
-                                            newArr.push([item[1], item[2], item[3]]);
+                                            newArr[0].push([item[3]]);
+                                        }
+                                        if (item[1] === "0") {
+                                            newArr[1].push([item[3]]);
+                                        }
+                                        if (item[2] === "0") {
+                                            newArr[2].push([item[3]]);
                                         }
                                         return item;
                                     })
+                                    newArr[3].push(Array.from(new Set(x)).length, Array.from(new Set(x)).length, Array.from(new Set(x)).length)
                                     data = newArr;
                                 }
                             }
@@ -1225,14 +1240,18 @@ class index extends Component {
                             let dataType = "";
                             if (Array.isArray(data[0])) {
                                 if (info.suffix === "csv") {
-                                    if (data[0].length === 1 || data[0].length === 2) {
-                                        dataType = "1d";
-                                    } else if (data[0].length === 3) {
-                                        dataType = "2d";
-                                    } else if (data[0].length === 4) {
-                                        dataType = "3d";
-                                    } else if (data[0].length > 4) {
-                                        dataType = "matrix";
+                                    if(idenMod === 631 || idenMod === 7214){
+                                        dataType = "cut";
+                                    }else{
+                                        if (data[0].length === 1 || data[0].length === 2) {
+                                            dataType = "1d";
+                                        } else if (data[0].length === 3) {
+                                            dataType = "2d";
+                                        } else if (data[0].length === 4) {
+                                            dataType = "3d";
+                                        } else if (data[0].length > 4) {
+                                            dataType = "matrix";
+                                        }
                                     }
                                 } else if (info.suffix === "msh") {
                                     dataType = "msh";

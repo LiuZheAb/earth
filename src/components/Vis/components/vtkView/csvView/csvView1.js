@@ -366,7 +366,7 @@ export default class csvView extends Component {
                 const point = [pos.x, pos.y, 0.0];
                 picker.pick(point, model.renderer);
                 let pickedPoint = picker.getPickPosition();
-                model.textCtx.font = '14px serif';
+                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';
