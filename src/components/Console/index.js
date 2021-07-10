@@ -215,7 +215,7 @@ const createColumns = _this =>
                 :
                 <Dropdown overlay={<Menu onClick={item => { _this.handleClickMenu(item, info) }}>
                     {(info.status === "1" || info.idenMod === 731) && <Menu.Item key="1">运行结果</Menu.Item>}
-                    <Menu.Item key="2">模板结果</Menu.Item>
+                    {info.funcName !== "用户自定义计算" && <Menu.Item key="2">模板结果</Menu.Item>}
                     <Menu.Item key="3">运行日志</Menu.Item>
                 </Menu>
                 } >
@@ -1235,7 +1235,7 @@ class index extends Component {
                                     dataType = "cut";
                                 }
                             }
-                            data = data.map(item => item.map(item2 => Math.log(Number(item2))));
+                            data = data.map(item => item.map(item2 => Number(item2)));
                             if (!dataType) {
                                 if (Array.isArray(data[0])) {
                                     if (info.suffix === "csv") {

@@ -1007,45 +1007,51 @@ class Calculate extends React.Component {
         }
     }
     handleViewTdata = () => {
-        let { dockerIP, vport, modelIndex, idenMod } = this.state;
+        let { dockerIP, vport, modelIndex, idenMod, funcName } = this.state;
         this.setState({
             tdataDrawerVisible: true,
             fileListLoading: true,
             tdataFileListData: []
         })
-
-        axios.get("http://" + dockerIP + ":" + vport + "/fileList",
-            {
-                params: {
-                    index: modelIndex,
-                    idenMod,
-                    tData: 1
-                }
-            }).then(res => {
-                let { data } = res.data;
-                let resFileList = [];
-                for (let key in data) {
-                    if (key.toUpperCase().indexOf("COOR") === -1) {
-                        resFileList.push({
-                            name: key,
-                            suffix: key.split(".").pop(),
-                            absolutePath: data[key][0],
-                            staticPath: data[key][1],
-                            size: data[key][2] ? +data[key][2] : "",
-                        })
+        if (funcName !== "用户自定义计算") {
+            axios.get("http://" + dockerIP + ":" + vport + "/fileList",
+                {
+                    params: {
+                        index: modelIndex,
+                        idenMod,
+                        tData: 1
                     }
-                }
-                resFileList.map((item, index) => {
-                    item.key = index;
-                    return item;
-                });
-                this.setState({
-                    fileListLoading: false,
-                    tdataFileListData: resFileList,
+                }).then(res => {
+                    let { data } = res.data;
+                    let resFileList = [];
+                    for (let key in data) {
+                        if (key.toUpperCase().indexOf("COOR") === -1) {
+                            resFileList.push({
+                                name: key,
+                                suffix: key.split(".").pop(),
+                                absolutePath: data[key][0],
+                                staticPath: data[key][1],
+                                size: data[key][2] ? +data[key][2] : "",
+                            })
+                        }
+                    }
+                    resFileList.map((item, index) => {
+                        item.key = index;
+                        return item;
+                    });
+                    this.setState({
+                        fileListLoading: false,
+                        tdataFileListData: resFileList,
+                    })
+                }).catch(err => {
+                    message.error("获取结果失败");
                 })
-            }).catch(err => {
-                message.error("获取结果失败");
+        } else {
+            this.setState({
+                fileListLoading: false,
+                tdataFileListData: [],
             })
+        }
     }
     handleOpenVisModal = info => {
         let { absolutePath, name } = info;

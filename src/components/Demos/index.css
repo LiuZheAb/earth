@@ -12,10 +12,41 @@
     width: 100%;
     max-width: 800px;
     margin-bottom: 20px;
+    cursor: zoom-in;
 }
 
 #demos p {
     font-weight: bold;
     font-size: 20px;
     color: #000;
+}
+
+#zoom-in-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    align-items: center;
+    justify-content: center;
+    display: none;
+    z-index: 99999;
+}
+
+#zoom-in-container .img-border {
+    width: 90%;
+    height: 90%;
+    background-color: #fff;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 2vh 2vw;
+}
+
+#zoom-in-container .img-container {
+    width: 100%;
+    height: 100%;
+    background: center / contain no-repeat;
+    cursor: zoom-out;
 }
