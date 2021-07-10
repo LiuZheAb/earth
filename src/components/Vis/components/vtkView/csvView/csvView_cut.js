@@ -140,8 +140,8 @@ export default class csvView extends Component {
             xResolution: zLength - 1,
             yResolution: xLength - 1,
             origin: [0, yLength / 2, 0],
-            point1: [0, yLength / 2, zLength],
-            point2: [xLength, yLength / 2, 0]
+            point1: [xLength, yLength / 2, 0],
+            point2: [0, yLength / 2, zLength]
         });
         const planeSourceYZ = vtkPlaneSource.newInstance({
             xResolution: zLength - 1,
@@ -229,6 +229,7 @@ export default class csvView extends Component {
         const lookupTable = vtkLookupTable.newInstance({
         });
         model.lookupTable = lookupTable;
+        model.unique = unique;
 
         const map = vtkMapper.newInstance({
             useLookupTableScalarRange: true,
@@ -258,7 +259,7 @@ export default class csvView extends Component {
         model.data = map.getInputData();
         model.renderer.addActor(act);
         model.interactorStyle.setCenterOfRotation(model.mapper.getCenter())
-        // reassignManipulators(model);
+        reassignManipulators(model);
         model.renderer.resetCamera();
         model.renderWindow.render();
     };

@@ -1213,26 +1213,28 @@ class index extends Component {
                                 data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
                                 if (data[0].length === 4) {
                                     let newArr = [[], [], [], []];
-                                    data.map(item => {
-                                        x.push(item[0]);
-                                        y.push(item[0]);
-                                        z.push(item[0]);
-                                        //获取x=0的剖面
-                                        // if (item[0] === "0") {
-                                        //     newArr.push([item[1], item[2], item[3]]);
-                                        // }
-                                        if (item[0] === "0") {
-                                            newArr[0].push([item[3]]);
+                                    for (let i = 0, len = data.length; i < len; i++) {
+                                        x.push(data[i][0]);
+                                        y.push(data[i][1]);
+                                        z.push(data[i][2]);
+                                    }
+                                    x = Array.from(new Set(x));
+                                    y = Array.from(new Set(y));
+                                    z = Array.from(new Set(z));
+                                    console.log(x, y, z);
+                                    let xNum = x[Math.floor(x.length / 2)], yNum = y[Math.floor(y.length / 2)], zNum = z[Math.floor(z.length / 2)];
+                                    for (let i = 0, len = data.length; i < len; i++) {
+                                        if (data[i][0] === xNum) {
+                                            newArr[0].push([data[i][3]]);
                                         }
-                                        if (item[1] === "0") {
-                                            newArr[1].push([item[3]]);
+                                        if (data[i][1] === yNum) {
+                                            newArr[1].push([data[i][3]]);
                                         }
-                                        if (item[2] === "0") {
-                                            newArr[2].push([item[3]]);
+                                        if (data[i][2] === zNum) {
+                                            newArr[2].push([data[i][3]]);
                                         }
-                                        return item;
-                                    })
-                                    newArr[3].push(Array.from(new Set(x)).length, Array.from(new Set(x)).length, Array.from(new Set(x)).length)
+                                    }
+                                    newArr[3].push(x.length, y.length, z.length)
                                     data = newArr;
                                 }
                             }
@@ -1240,9 +1242,9 @@ class index extends Component {
                             let dataType = "";
                             if (Array.isArray(data[0])) {
                                 if (info.suffix === "csv") {
-                                    if(idenMod === 631 || idenMod === 7214){
+                                    if (idenMod === 631 || idenMod === 7214) {
                                         dataType = "cut";
-                                    }else{
+                                    } else {
                                         if (data[0].length === 1 || data[0].length === 2) {
                                             dataType = "1d";
                                         } else if (data[0].length === 3) {
