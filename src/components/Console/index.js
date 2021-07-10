@@ -552,10 +552,8 @@ class index extends Component {
                     });
                 }
             }
-            Object.keys(data).map((item, index) => {
-                if (item.toUpperCase().indexOf("COOR") === -1) {
-                    resFileList[index].key = index;
-                }
+            resFileList.map((item, index) => {
+                item.key = index;
                 return item;
             });
             this.setState({
@@ -694,12 +692,10 @@ class index extends Component {
                             })
                         }
                     }
-                    Object.keys(data).map((item, index) => {
-                        if (item.toUpperCase().indexOf("COOR") === -1) {
-                            resFileList[index].key = index;
-                        }
+                    resFileList.map((item, index) => {
+                        item.key = index;
                         return item;
-                    })
+                    });
                     this.setState({
                         fileListLoading: false,
                         tdataFileListData: resFileList,
@@ -766,7 +762,6 @@ class index extends Component {
                 let elementA = document.createElement('a');
                 elementA.style.display = 'none';
                 elementA.href = this.state.uri + "/output/" + path;
-                console.log(elementA.href);
                 document.body.appendChild(elementA);
                 elementA.click();
                 document.body.removeChild(elementA);
@@ -1240,7 +1235,7 @@ class index extends Component {
                                     dataType = "cut";
                                 }
                             }
-                            data = data.map(item => item.map(item2 => Number(item2)));
+                            data = data.map(item => item.map(item2 => Math.log(Number(item2))));
                             if (!dataType) {
                                 if (Array.isArray(data[0])) {
                                     if (info.suffix === "csv") {

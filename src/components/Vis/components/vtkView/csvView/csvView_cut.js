@@ -121,7 +121,6 @@ export default class csvView extends Component {
     result = () => {
         let { data, } = this.props;
         let { model } = this.state;
-        console.log(data);
         let [xLength, yLength, zLength] = data[3];
         let vtkBox = document.getElementsByClassName('container')[0];
         if (vtkBox) {
@@ -218,7 +217,6 @@ export default class csvView extends Component {
         if (unique.indexOf(null) !== -1) {
             unique.splice(unique.indexOf(null), 1);
         }
-        console.log(unique, "unique")
         let min = Number(unique[0]);
         let max = Number(unique[unique.length - 1]);
 

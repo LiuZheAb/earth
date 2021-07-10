@@ -728,10 +728,8 @@ class Calculate extends React.Component {
                                 });
                             }
                         }
-                        Object.keys(data).map((item, index) => {
-                            if (item.toUpperCase().indexOf("COOR") === -1) {
-                                resFileList[index].key = index;
-                            }
+                        resFileList.map((item, index) => {
+                            item.key = index;
                             return item;
                         });
                         this.setState({
@@ -1037,12 +1035,10 @@ class Calculate extends React.Component {
                         })
                     }
                 }
-                Object.keys(data).map((item, index) => {
-                    if (item.toUpperCase().indexOf("COOR") === -1) {
-                        resFileList[index].key = index;
-                    }
+                resFileList.map((item, index) => {
+                    item.key = index;
                     return item;
-                })
+                });
                 this.setState({
                     fileListLoading: false,
                     tdataFileListData: resFileList,

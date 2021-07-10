@@ -303,7 +303,7 @@ export default class mshView extends Component {
 
     render() {
         let { boxBgColor, model, mode, modeBounds, points, cells, scalarValuesCopy, min, max,
-            light, axis, clippingMiddle
+            light, axis
         } = this.state;
         let { show, state } = this.props;
         let { moveStyle, screen,
