@@ -2808,7 +2808,7 @@ export const showBoundRuler = (ruler, model, container, polydata, props, dimensi
 }
 
 //创建平面
-export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, yLength, actor, mapper, lookupTable, data, cen, appName) => {
+export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, yLength, actor, mapper, lookupTable, data, cen, appName, fileName) => {
     let array = [], array1 = [];
     let xR = [...new Set(xAxis)];
     let yR = [...new Set(yAxis)];
@@ -3083,7 +3083,7 @@ export const creatPlane = (model, _this, xAxis, yAxis, datatype, arrs, xLength, 
         if (min === 0) {
             min = 1e-4;
             max = 5e-4;
-        } else {
+        } else if (fileName.indexOf("LC_2D_M1-D2T_tpwt") > -1 || fileName.indexOf("LC_2D_M2-D2T_tpwt") > -1 || fileName.indexOf("LC_2D_M3-D2T_tpwt") > -1) {
             min = 1e-9;
             max = 5e-8;
         }

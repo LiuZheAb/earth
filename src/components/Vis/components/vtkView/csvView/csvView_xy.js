@@ -17,6 +17,7 @@ import vtkMapper from 'vtk.js/Sources/Rendering/Core/Mapper';
 // import { FieldDataTypes } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 // import { AttributeTypes } from 'vtk.js/Sources/Common/DataModel/DataSetAttributes/Constants';
 import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
+// import LitecolorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/LiteColorMaps.json';
 import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
 // import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
 import { Rendering, Screen, reassignManipulators, changeManipulators, showBoundRuler, Sfn, creatPlane, gl } from "../common/index.js";
@@ -24,6 +25,7 @@ import * as actions from '../../../redux/actions/index';
 // import vtkAppendPolyData from 'vtk.js/Sources/Filters/General/AppendPolyData';
 // import vtkCubeSource from 'vtk.js/Sources/Filters/Sources/CubeSource';
 // import vtkPixelSpaceCallbackMapper from 'vtk.js/Sources/Rendering/Core/PixelSpaceCallbackMapper';
+// colorMode = [...colorMode, ...LitecolorMode];
 const InputGroup = Input.Group;
 const { Option } = Select;
 export default class csvViewXy extends Component {
@@ -44,7 +46,7 @@ export default class csvViewXy extends Component {
             zLength: 0,
             cells: [],
             value: 0,
-            mode: this.props.appName === "保幅超分辨率反演(Super Resolution ITSMF)" || this.props.appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)" ? "Rainbow Desaturated" : "rainbow",
+            mode: (this.props.appName === "保幅超分辨率反演(Super Resolution ITSMF)" || this.props.appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)") ? "Rainbow Desaturated" : "rainbow",
             xAxis: [],
             yAxis: [],
             activeScalar: [],
@@ -68,7 +70,7 @@ export default class csvViewXy extends Component {
     };
     //渲染方法
     result = () => {
-        let { data, datatype, appName } = this.props;
+        let { data, datatype, appName, fileName } = this.props;
         let { model, mode } = this.state;
         let vtkBox = document.getElementsByClassName('vtk-container')[0];
         let yLength = 0;
@@ -507,9 +509,9 @@ export default class csvViewXy extends Component {
                 //左右颠倒
                 if (appName === "保幅超分辨率反演(Super Resolution ITSMF)" || appName === "保幅超分辨率反演 (Super Resolution Seismic Imaging)" || appName === "同步挤压") {
                     let newArr = [];
-                    for (let i = 0; i < yLength; i++) {
-                        for (let j = 0; j < xLength; j++) {
-                            newArr.push(arrs[(i + 1) * xLength - j - 1]);
+                    for (let i = 0; i < xLength; i++) {
+                        for (let j = 0; j < yLength; j++) {
+                            newArr.push(arrs[(i + 1) * yLength - j - 1]);
                         }
                     }
                     arrs = newArr;
@@ -526,7 +528,7 @@ export default class csvViewXy extends Component {
                     useLookupTableScalarRange: true,
                     lookupTable,
                 });
-                creatPlane(model, _this, xAxis, yAxis, datatype, [...arrs], xLength, yLength, actor, mapper, lookupTable, arrs, [0, 0, 0], appName);
+                creatPlane(model, _this, xAxis, yAxis, datatype, [...arrs], xLength, yLength, actor, mapper, lookupTable, arrs, [0, 0, 0], appName, fileName);
 
                 model.renderer.resetCamera();
                 model.renderWindow.render();

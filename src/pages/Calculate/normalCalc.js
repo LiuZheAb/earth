@@ -123,7 +123,8 @@ class Calculate extends React.Component {
             endTime: 0,
             axisData: {},
             visIndex: 1,
-            reStart: sessionStorage.getItem("reStart") || undefined
+            reStart: sessionStorage.getItem("reStart") || undefined,
+            currentFile:""
         };
     };
     logTimer = undefined;
@@ -1056,6 +1057,7 @@ class Calculate extends React.Component {
     handleOpenVisModal = info => {
         let { absolutePath, name } = info;
         let { dockerIP, vport, idenMod, resFileListData, funcName } = this.state;
+        this.setState({currentFile:name});
         if ((idenMod === 411 || idenMod === 412) && absolutePath.split("/").pop() === "mod.csv") {
             message.warn("数据错误，无法可视化");
         } else if (idenMod === 421) {
@@ -1577,7 +1579,7 @@ class Calculate extends React.Component {
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, currentStep2, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener,
-            hideUpload, dimension, real, dimensionValue, realValue, startTime, endTime, visIndex, axisData, hasGotParam, defaultIndex
+            hideUpload, dimension, real, dimensionValue, realValue, startTime, endTime, visIndex, axisData, hasGotParam, defaultIndex,currentFile
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {
@@ -2252,6 +2254,7 @@ class Calculate extends React.Component {
                             data={visIndex === 0 ? [axisData.zp, axisData.yp, axisData.xp, calcResData.DensityDistribution || calcResData.Density || calcResData.density] : calcResData}
                             appName={appName}
                             datatype={dockerType === 2 ? dataType : visIndex === 0 ? apiName + "0" : apiName}
+                            fileName={currentFile}
                         />
                     </Modal>
                     <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>

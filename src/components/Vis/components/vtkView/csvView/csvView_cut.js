@@ -54,7 +54,7 @@ export default class csvView extends Component {
             max: null,
             cancle: [],
             scalarBar: 0,
-            mode: "jet",
+            mode: "jet-re",
             unique: [],
             inputValue: 1,
             points: [],
@@ -122,6 +122,10 @@ export default class csvView extends Component {
         let { data, } = this.props;
         let { model } = this.state;
         let [xLength, yLength, zLength] = data[3];
+        let [xMin, xMax, yMin, yMax, zMin, zMax] = data[4];
+        this.setState({
+            xMin, xMax, yMin, yMax, zMin, zMax
+        });
         let vtkBox = document.getElementsByClassName('container')[0];
         if (vtkBox) {
             vtkBox.innerHTML = null;
@@ -131,25 +135,25 @@ export default class csvView extends Component {
         const planeSourceXY = vtkPlaneSource.newInstance({
             xResolution: yLength - 1,
             yResolution: xLength - 1,
-            origin: [0, 0, zLength / 2],
-            point1: [0, yLength, zLength / 2],
-            point2: [xLength, 0, zLength / 2]
-          });
+            origin: [0, xLength / 2, zLength],
+            point1: [yLength, xLength / 2, zLength],
+            point2: [0, xLength / 2, 0]
+        });
 
         const planeSourceXZ = vtkPlaneSource.newInstance({
-            xResolution: xLength - 1,
-            yResolution: zLength - 1,
-            origin: [0, yLength / 2, 0],
-            point1: [xLength, yLength / 2, 0],
-            point2: [0, yLength / 2, zLength]
+            xResolution: zLength - 1,
+            yResolution: xLength - 1,
+            origin: [yLength / 2, xLength, xLength],
+            point1: [yLength / 2, xLength, 0],
+            point2: [yLength / 2, 0, zLength]
         });
 
         const planeSourceYZ = vtkPlaneSource.newInstance({
             xResolution: yLength - 1,
             yResolution: zLength - 1,
-            origin: [xLength / 2, 0, 0],
-            point1: [xLength / 2, yLength, 0],
-            point2: [xLength / 2, 0, zLength]
+            origin: [0, xLength, zLength / 2],
+            point1: [yLength, xLength, zLength / 2],
+            point2: [0, 0, zLength / 2]
         });
 
         //要显示的三个横截面的数据（一维数组）

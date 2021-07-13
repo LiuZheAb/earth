@@ -73,13 +73,13 @@ const createColumns = _this =>
             filteredValue: _this.state.filteredInfo.appName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         },
-        {
-            title: 'ip',
-            dataIndex: 'dockerIP',
-            align: "center",
-            fixed: 'left',
-            render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
-        },
+        // {
+        //     title: 'ip',
+        //     dataIndex: 'dockerIP',
+        //     align: "center",
+        //     fixed: 'left',
+        //     render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
+        // },
         {
             title: '模型名称',
             dataIndex: 'funcName',
@@ -328,6 +328,7 @@ class index extends Component {
             status: ""
         },
         sortedInfo: {},
+        currentFile: ""
     }
     componentDidMount() {
         let { username } = this.state;
@@ -774,6 +775,7 @@ class index extends Component {
         let { absolutePath, name } = info;
         let { currentItemInfo, resFileListData, dataSource } = this.state;
         let { dockerIP, vport, idenMod, funcName } = currentItemInfo;
+        this.setState({ currentFile: name })
         switch (idenMod) {
             case 421:
                 clearInterval(this.checkTimer);
@@ -1234,10 +1236,10 @@ class index extends Component {
                                     }
                                     newArr[3].push(x.length, y.length, z.length);
                                     newArr[4].push(Math.max(...x), Math.min(...x), Math.max(...y), Math.min(...y), Math.max(...z), Math.min(...z));
-                                    let max = Math.max(...newArr[0], ...newArr[1], ...newArr[2]), min = Math.min(...newArr[0], ...newArr[1], ...newArr[2]), range = max - min;
-                                    for (let i = 0; i < 3; i++) {
-                                        newArr[i] = newArr[i].map(item => parseInt((item - min) / range * 255))
-                                    }
+                                    // let max = Math.max(...newArr[0], ...newArr[1], ...newArr[2]), min = Math.min(...newArr[0], ...newArr[1], ...newArr[2]), range = max - min;
+                                    // for (let i = 0; i < 3; i++) {
+                                    //     newArr[i] = newArr[i].map(item => parseInt((item - min) / range * 255))
+                                    // }
                                     data = newArr;
                                     dataType = "cut";
                                 }
@@ -1353,7 +1355,7 @@ class index extends Component {
     render() {
         const { dataSource, resDrawerVisible, resFileListData, logModalVisible, logInfoArray, fileModalVisible, imgModalVisible,
             uri, filePath, visVisible, calcResData, dataLoading, fileListLoading, dataType, currentItemInfo, username, visDrawerVisible,
-            calcDrawerVisible, tdataDrawerVisible, tdataFileListData, currentPage, currentTPage
+            calcDrawerVisible, tdataDrawerVisible, tdataFileListData, currentPage, currentTPage, currentFile
         } = this.state;
         return (
             <div id="console" className="box-shadow">
@@ -1473,7 +1475,7 @@ class index extends Component {
                     <img src={uri + "/output/" + filePath} alt={filePath} />
                 </Modal>
                 <Modal className="vis-modal" visible={visVisible} onCancel={this.handleCancleVisModal} footer={null} destroyOnClose>
-                    <Vis data={calcResData} appName={currentItemInfo.appName} datatype={dataType} />
+                    <Vis data={calcResData} appName={currentItemInfo.appName} datatype={dataType} fileName={currentFile} />
                 </Modal>
                 <Modal className="log-modal" visible={logModalVisible} onCancel={this.handleCancleLogModal} footer={null}>
                     <div style={{ textAlign: "center" }}>
