@@ -54,7 +54,7 @@ export default class csvView extends Component {
             max: null,
             cancle: [],
             scalarBar: 0,
-            mode: "rainbow",
+            mode: "jet",
             unique: [],
             inputValue: 1,
             points: [],
@@ -326,7 +326,7 @@ export default class csvView extends Component {
                 const point = [pos.x, pos.y, 0.0];
                 picker.pick(point, model.renderer);
                 let pickedPoint = picker.getPickPosition();
-                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
+                model.textCtx.font = `${14 * window.devicePixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';
@@ -365,7 +365,7 @@ export default class csvView extends Component {
                 // let pickedPoint = picker.getPickPosition();
                 let PointID = picker.getPointId();
                 let posX = Math.round(model.points[PointID * 3]), posY = Math.abs(Math.round(model.points[PointID * 3 + 1])), posZ = Math.abs(Math.round(model.points[PointID * 3 + 2]));
-                model.textCtx.font = `${14 * window.pixelRatio}px serif`;
+                model.textCtx.font = `${14 * window.devicePixelRatio}px serif`;
                 model.textCtx.fillStyle = fontColor;
                 model.textCtx.textAlign = 'center';
                 model.textCtx.textBaseline = 'middle';

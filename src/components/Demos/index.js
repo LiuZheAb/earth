@@ -26,6 +26,15 @@ export default class index extends Component {
                         <TabPane tab="面波、主动源地震、人工智能地震 " key="1">
                             <div>
                                 <img onClick={e => this.imgZoomIn(e.target)} src={require('../../assets/images/demo20.bmp')} alt="IPIG" draggable="false" />
+                                <p>沃溪典型示范区速度模型</p>
+                            </div>
+                            <div>
+                                <img onClick={e => this.imgZoomIn(e.target)} src={require('../../assets/images/demo21.bmp')} alt="IPIG" draggable="false" />
+                                <p>宝山典型示范区速度模型</p>
+                            </div>
+                            <div>
+                                <img onClick={e => this.imgZoomIn(e.target)} src={require('../../assets/images/demo22.bmp')} alt="IPIG" draggable="false" />
+                                <p>黄沙坪典型示范区速度模型</p>
                             </div>
                             <div>
                                 <img onClick={e => this.imgZoomIn(e.target)} src={require('../../assets/images/demo1.png')} alt="IPIG" draggable="false" />
@@ -36,12 +45,12 @@ export default class index extends Component {
                         </TabPane>
                         <TabPane tab="面波与大地电磁联合反演" key="2">
                             <div>
-                                <p>电磁反演</p>
                                 <img onClick={e => this.imgZoomIn(e.target)} src={require('../../assets/images/demo3.png')} alt="IPIG" draggable="false" />
+                                <p>电磁反演</p>
                             </div>
                             <div>
-                                <p>面波与大地电磁联合反演</p>
                                 <img onClick={e => this.imgZoomIn(e.target)} src={require('../../assets/images/demo4.png')} alt="IPIG" draggable="false" />
+                                <p>面波与大地电磁联合反演</p>
                             </div>
                         </TabPane>
                         <TabPane tab="WFEM视电阻率剖面" key="3">

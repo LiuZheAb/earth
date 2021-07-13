@@ -7,6 +7,7 @@ import { getCookie } from '../../utils/cookies';
 import { withRouter } from "react-router-dom";
 import Vis from "../Vis";
 import "./index.css";
+import Math from 'vtk.js/Sources/Common/Core/Math';
 
 const getEndTime = (endTime, status) => {
     if (status === "1") {
@@ -72,13 +73,13 @@ const createColumns = _this =>
             filteredValue: _this.state.filteredInfo.appName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         },
-        // {
-        //     title: 'ip',
-        //     dataIndex: 'dockerIP',
-        //     align: "center",
-        //     fixed: 'left',
-        //     render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
-        // },
+        {
+            title: 'ip',
+            dataIndex: 'dockerIP',
+            align: "center",
+            fixed: 'left',
+            render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
+        },
         {
             title: '模型名称',
             dataIndex: 'funcName',
@@ -170,7 +171,7 @@ const createColumns = _this =>
                     let during = info.endTime ? new Date(info.endTime).getTime() - new Date(info.startTime).getTime() :
                         new Date().getTime() - new Date(info.startTime).getTime();
                     return <span>
-                        <span>{parseInt(during / 1000 / 60 / 60 / 24) !== 0 && parseInt(during / 1000 / 60 / 60 / 24) + "天 "}{parseInt(during / 1000 / 60 / 60) % 60 !== 0 && parseInt(during / 1000 / 60 / 60) % 60 + "小时 "}</span>
+                        <span>{parseInt(during / 1000 / 60 / 60 / 24) !== 0 && parseInt(during / 1000 / 60 / 60 / 24) + "天 "}{parseInt(during / 1000 / 60 / 60) % 24 !== 0 && parseInt(during / 1000 / 60 / 60) % 24 + "小时 "}</span>
                         <span style={{ whiteSpace: "nowrap" }}>{parseInt(during / 1000 / 60) % 60 !== 0 && parseInt(during / 1000 / 60) % 60 + "分钟 "}{parseInt(during / 1000) % 60 !== 0 && parseInt(during / 1000) % 60 + "秒"}</span>
                     </span>
                 } else {
@@ -323,7 +324,8 @@ class index extends Component {
             appName: [],
             funcName: [],
             moduleName: [],
-            nowStep: []
+            nowStep: [],
+            status: ""
         },
         sortedInfo: {},
     }
@@ -1209,7 +1211,7 @@ class index extends Component {
                                 let x = [], y = [], z = [];
                                 data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
                                 if (data[0].length === 4) {
-                                    let newArr = [[], [], [], []];
+                                    let newArr = [[], [], [], [], []];
                                     for (let i = 0, len = data.length; i < len; i++) {
                                         x.push(data[i][0]);
                                         y.push(data[i][1]);
@@ -1221,16 +1223,21 @@ class index extends Component {
                                     let xNum = x[Math.floor(x.length / 2)], yNum = y[Math.floor(y.length / 2)], zNum = z[Math.floor(z.length / 2)];
                                     for (let i = 0, len = data.length; i < len; i++) {
                                         if (data[i][0] === xNum) {
-                                            newArr[0].push([data[i][3]]);
+                                            newArr[0].push(data[i][3]);
                                         }
                                         if (data[i][1] === yNum) {
-                                            newArr[1].push([data[i][3]]);
+                                            newArr[1].push(data[i][3]);
                                         }
                                         if (data[i][2] === zNum) {
-                                            newArr[2].push([data[i][3]]);
+                                            newArr[2].push(data[i][3]);
                                         }
                                     }
-                                    newArr[3].push(x.length, y.length, z.length)
+                                    newArr[3].push(x.length, y.length, z.length);
+                                    newArr[4].push(Math.max(...x), Math.min(...x), Math.max(...y), Math.min(...y), Math.max(...z), Math.min(...z));
+                                    let max = Math.max(...newArr[0], ...newArr[1], ...newArr[2]), min = Math.min(...newArr[0], ...newArr[1], ...newArr[2]), range = max - min;
+                                    for (let i = 0; i < 3; i++) {
+                                        newArr[i] = newArr[i].map(item => parseInt((item - min) / range * 255))
+                                    }
                                     data = newArr;
                                     dataType = "cut";
                                 }
@@ -1239,7 +1246,6 @@ class index extends Component {
                             if (!dataType) {
                                 if (Array.isArray(data[0])) {
                                     if (info.suffix === "csv") {
-
                                         if (data[0].length === 1 || data[0].length === 2) {
                                             dataType = "1d";
                                         } else if (data[0].length === 3) {
@@ -1363,7 +1369,8 @@ class index extends Component {
                                         appName: [],
                                         funcName: [],
                                         moduleName: [],
-                                        nowStep: []
+                                        nowStep: [],
+                                        status: ""
                                     }
                                 })
                             }}>清除筛选和排序</Button>

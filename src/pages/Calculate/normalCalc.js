@@ -1337,6 +1337,7 @@ class Calculate extends React.Component {
                 params: { path: absolutePath }
             }).then(res => {
                 let { data } = res.data;
+                let dataType = "";
                 if (Array.isArray(data) && data.length > 0) {
                     if (data[0].length < 6 && data[0].length > 1) {
                         //数组行列调换
@@ -1428,40 +1429,63 @@ class Calculate extends React.Component {
                         data = data.map(item => String(item).split(" "));
                         data = data[0].map((col, i) => data.map(row => row[i]));
                     }
+                    //三个切面
                     if (idenMod === 631 || idenMod === 7214) {
+                        let x = [], y = [], z = [];
                         data = data.map(item => item[0].trim().replace(/\s+/g, " ").split(" "));
                         if (data[0].length === 4) {
-                            let newArr = [];
-                            data.map(item => {
-                                //获取x=0的剖面
-                                if (item[0] === "0") {
-                                    newArr.push([item[1], item[2], item[3]]);
+                            let newArr = [[], [], [], [], []];
+                            for (let i = 0, len = data.length; i < len; i++) {
+                                x.push(data[i][0]);
+                                y.push(data[i][1]);
+                                z.push(data[i][2]);
+                            }
+                            x = Array.from(new Set(x));
+                            y = Array.from(new Set(y));
+                            z = Array.from(new Set(z));
+                            let xNum = x[Math.floor(x.length / 2)], yNum = y[Math.floor(y.length / 2)], zNum = z[Math.floor(z.length / 2)];
+                            for (let i = 0, len = data.length; i < len; i++) {
+                                if (data[i][0] === xNum) {
+                                    newArr[0].push(data[i][3]);
                                 }
-                                return item;
-                            })
+                                if (data[i][1] === yNum) {
+                                    newArr[1].push(data[i][3]);
+                                }
+                                if (data[i][2] === zNum) {
+                                    newArr[2].push(data[i][3]);
+                                }
+                            }
+                            newArr[3].push(x.length, y.length, z.length);
+                            newArr[4].push(Math.max(...x), Math.min(...x), Math.max(...y), Math.min(...y), Math.max(...z), Math.min(...z));
+                            let max = Math.max(...newArr[0], ...newArr[1], ...newArr[2]), min = Math.min(...newArr[0], ...newArr[1], ...newArr[2]), range = max - min;
+                            for (let i = 0; i < 3; i++) {
+                                newArr[i] = newArr[i].map(item => parseInt((item - min) / range * 255))
+                            }
                             data = newArr;
+                            dataType = "cut";
                         }
                     }
                     data = data.map(item => item.map(item2 => Number(item2)));
-                    let dataType = "";
-                    if (Array.isArray(data[0])) {
-                        if (info.suffix === "csv") {
-                            if (data[0].length === 1 || data[0].length === 2) {
-                                dataType = "1d";
-                            } else if (data[0].length === 3) {
-                                dataType = "2d";
-                            } else if (data[0].length === 4) {
-                                dataType = "3d";
-                            } else if (data[0].length > 4) {
-                                dataType = "matrix";
+                    if (!dataType) {
+                        if (Array.isArray(data[0])) {
+                            if (info.suffix === "csv") {
+                                if (data[0].length === 1 || data[0].length === 2) {
+                                    dataType = "1d";
+                                } else if (data[0].length === 3) {
+                                    dataType = "2d";
+                                } else if (data[0].length === 4) {
+                                    dataType = "3d";
+                                } else if (data[0].length > 4) {
+                                    dataType = "matrix";
+                                }
+                            } else if (info.suffix === "msh") {
+                                dataType = "msh";
+                            } else if (info.suffix === "txt") {
+                                dataType = "txt";
                             }
-                        } else if (info.suffix === "msh") {
-                            dataType = "msh";
-                        } else if (info.suffix === "txt") {
-                            dataType = "txt";
+                        } else {
+                            dataType = undefined;
                         }
-                    } else {
-                        dataType = undefined;
                     }
                     this.setState({
                         calcResData: data,

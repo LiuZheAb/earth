@@ -92,8 +92,8 @@ export default class Listener extends React.Component {
                         this.setState({ gotLine: false });
                         axios.get("http://" + ip + ':8666/monitor/cpu')
                             .then(response => {
-                                let lineData = response.data.map(item => ({ time: item.time, value: Number((100 - item.value).toFixed(2)) }));
-                                let lineValue = response.data.map(item => Number((100 - item.value).toFixed(2)));
+                                let lineData = response.data.map(item => ({ time: item.time, value: Number(item.value.toFixed(2)) }));
+                                let lineValue = response.data.map(item => Number(item.value.toFixed(2)));
                                 let minLineData = Math.floor(Number(getMin(lineValue).toFixed(0)) / 10) * 10;
                                 let maxLineData = Math.ceil(Number(getMax(lineValue).toFixed(0)) / 10) * 10;
                                 this.setState({
