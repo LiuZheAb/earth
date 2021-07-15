@@ -73,20 +73,20 @@ const createColumns = _this =>
             filteredValue: _this.state.filteredInfo.appName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         },
-        {
-            title: 'ip',
-            dataIndex: 'dockerIP',
-            align: "center",
-            fixed: 'left',
-            render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
-        },
-        {
-            title: 'dockerID',
-            dataIndex: 'dockerID',
-            align: "center",
-            fixed: 'left',
-            render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
-        },
+        // {
+        //     title: 'ip',
+        //     dataIndex: 'dockerIP',
+        //     align: "center",
+        //     fixed: 'left',
+        //     render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
+        // },
+        // {
+        //     title: 'dockerID',
+        //     dataIndex: 'dockerID',
+        //     align: "center",
+        //     fixed: 'left',
+        //     render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+        // },
         {
             title: '模型名称',
             dataIndex: 'funcName',
