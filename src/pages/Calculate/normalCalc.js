@@ -124,7 +124,9 @@ class Calculate extends React.Component {
             axisData: {},
             visIndex: 1,
             reStart: sessionStorage.getItem("reStart") || undefined,
-            currentFile:""
+            currentFile: "",
+            hasStarted: false,
+            hasRun: false
         };
     };
     logTimer = undefined;
@@ -245,6 +247,7 @@ class Calculate extends React.Component {
             this.setState({
                 loading: false,
                 dockerType: status,
+                hasStarted: true
             });
             switch (status) {
                 case 0:
@@ -676,7 +679,7 @@ class Calculate extends React.Component {
     //运行
     runDocker = () => {
         let { username, idenMod, dockerID, dockerIP, vport, nowStep, stepNum, modelIndex, appName, funcName } = this.state;
-        this.setState({ loading: true, isComputing: true });
+        this.setState({ loading: true, isComputing: true, hasRun: true });
         axios({
             method: 'post',
             url: api + 'computeContain',
@@ -1003,6 +1006,20 @@ class Calculate extends React.Component {
         sessionStorage.removeItem("real");
         sessionStorage.removeItem("realValue");
         sessionStorage.removeItem("defaultIndex");
+        let { hasStarted, hasRun, dockerID, dockerIP } = this.state;
+        if (hasStarted && !hasRun && dockerID && dockerIP) {
+            axios({
+                method: 'post',
+                url: api + 'killcontain',
+                data: {
+                    dockerID,
+                    dockerIP,
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+        }
         this.setState = () => {
             return;
         }
@@ -1057,7 +1074,7 @@ class Calculate extends React.Component {
     handleOpenVisModal = info => {
         let { absolutePath, name } = info;
         let { dockerIP, vport, idenMod, resFileListData, funcName } = this.state;
-        this.setState({currentFile:name});
+        this.setState({ currentFile: name });
         if ((idenMod === 411 || idenMod === 412) && absolutePath.split("/").pop() === "mod.csv") {
             message.warn("数据错误，无法可视化");
         } else if (idenMod === 421) {
@@ -1531,20 +1548,20 @@ class Calculate extends React.Component {
         document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
     getExampleFile = (paramName) => {
-        let { dockerIP, vport, idenMod } = this.state;
+        let { idenMod } = this.state;
         switch (idenMod) {
             case 51:
                 if (paramName === "MatrixFile") {
-                    window.open("http://" + dockerIP + ":" + vport + "/output/stiff.mtx")
+                    window.open("./static/data/stiff.mtx")
                 } else if (paramName === "RightHandFile") {
-                    window.open("http://" + dockerIP + ":" + vport + "/output/force.txt");
+                    window.open("./static/data/force.txt");
                 }
                 break;
             case 52:
                 if (paramName === "input_Function_file") {
-                    window.open("http://" + dockerIP + ":" + vport + "/output/Fk.m")
+                    window.open("./static/data/Fk.m")
                 } else if (paramName === "input_Jacobi_file") {
-                    window.open("http://" + dockerIP + ":" + vport + "/output/JFk.m");
+                    window.open("./static/data/JFk.m");
                 }
                 break;
             case 311:
@@ -1579,7 +1596,7 @@ class Calculate extends React.Component {
             started, resultData, resFileListData, isComputing, idenMod, dockerID, dockerIP, vport, logInfoArray, modelIndex, modalVisible, uri, dockerType,
             computed, nowStep, stepNum, currentStep2, proList, calcResData, calcStatus, resType, visVisible, apiName, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath, dataType, needVis, tinyListener,
-            hideUpload, dimension, real, dimensionValue, realValue, startTime, endTime, visIndex, axisData, hasGotParam, defaultIndex,currentFile
+            hideUpload, dimension, real, dimensionValue, realValue, startTime, endTime, visIndex, axisData, hasGotParam, defaultIndex, currentFile
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {

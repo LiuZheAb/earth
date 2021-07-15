@@ -16,24 +16,15 @@ import vtkLookupTable from 'vtk.js/Sources/Common/Core/LookupTable';
 import vtkPlaneSource from 'vtk.js/Sources/Filters/Sources/PlaneSource';
 import vtkAppendPolyData from 'vtk.js/Sources/Filters/General/AppendPolyData';
 import vtkPointPicker from 'vtk.js/Sources/Rendering/Core/PointPicker';
+// import { Representation } from 'vtk.js/Sources/Rendering/Core/Property/Constants';
 // import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
-import {
-    Slider,
-    // InputNumber, 
-    Input, Col, Row, Select,
-    //  Checkbox 
-} from "antd";
+import { Slider, Input, Col, Row, Select } from "antd";
 // import { FieldAssociations } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 // import vtkOpenGLHardwareSelector from 'vtk.js/Sources/Rendering/OpenGL/HardwareSelector';
 import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
 import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
-import {
-    Rendering, Screen, reassignManipulators,
-    // changeManipulators, 
-    showBoundRuler, scalarBar, gl
-} from "../common/index"
-// import { Rendering, Screen, gl, scalarBar, Axis, reassignManipulators, changeManipulators, showBounds, showVector } from "../common/index";
+import { Rendering, Screen, reassignManipulators, changeManipulators, showBoundRuler, scalarBar, gl } from "../common/index"
 
 const InputGroup = Input.Group;
 const { Option } = Select;
@@ -44,38 +35,12 @@ export default class csvView extends Component {
             data: [],
             activeScalar: [],
             model: {},
-            canvas: {},
-            ResData: [],
             boxBgColor: "#ccc",
-            value: 0,
-            resultName: null,
-            ArrowSize: 1,
             min: null,
             max: null,
-            cancle: [],
-            scalarBar: 0,
             mode: "jet-re",
             unique: [],
             inputValue: 1,
-            points: [],
-            cells: [],
-            pointData: 0,
-            actors: [],
-            Material: [],
-            checkedList: [],
-            indeterminate: true,
-            checkAll: false,
-            resultList: [],
-            checkedResList: [],
-            resClass: 0,
-            resId: 0,
-            vector: false,
-            vectorData: [],
-            OpenGlRW: {},
-            inputX: 0,
-            inputY: 0,
-            inputZ: 0,
-            arrs: {}
         }
         this.container = React.createRef();
         this.container1 = React.createRef();
@@ -119,7 +84,7 @@ export default class csvView extends Component {
 
     //渲染方法
     result = () => {
-        let { data, } = this.props;
+        let { data } = this.props;
         let { model } = this.state;
         let [xLength, yLength, zLength] = data[3];
         let [xMin, xMax, yMin, yMax, zMin, zMax] = data[4];
@@ -129,31 +94,35 @@ export default class csvView extends Component {
         let vtkBox = document.getElementsByClassName('container')[0];
         if (vtkBox) {
             vtkBox.innerHTML = null;
-        }
+        };
+        let yxScale = (yMax - yMin) / (xMax - xMin);
+        let zxScale = (zMax - zMin) / (xMax - xMin);
         Rendering(model, this.container);
+        reassignManipulators(model);
         //定义平面源
         const planeSourceXY = vtkPlaneSource.newInstance({
             xResolution: yLength - 1,
             yResolution: xLength - 1,
-            origin: [0, xLength / 2, zLength],
-            point1: [yLength, xLength / 2, zLength],
-            point2: [0, xLength / 2, 0]
+            origin: [0, zLength * zxScale / 2, xLength],
+            point1: [yLength * yxScale, zLength * zxScale / 2, xLength],
+            point2: [0, zLength * zxScale / 2, 0]
         });
 
+        // planeSourceXY.set({"xResolution":72})
         const planeSourceXZ = vtkPlaneSource.newInstance({
             xResolution: zLength - 1,
             yResolution: xLength - 1,
-            origin: [yLength / 2, xLength, xLength],
-            point1: [yLength / 2, xLength, 0],
-            point2: [yLength / 2, 0, zLength]
+            origin: [yLength * yxScale / 2, zLength * zxScale, xLength],
+            point1: [yLength * yxScale / 2, zLength * zxScale, 0],
+            point2: [yLength * yxScale / 2, 0, xLength]
         });
 
         const planeSourceYZ = vtkPlaneSource.newInstance({
             xResolution: yLength - 1,
             yResolution: zLength - 1,
-            origin: [0, xLength, zLength / 2],
-            point1: [yLength, xLength, zLength / 2],
-            point2: [0, 0, zLength / 2]
+            origin: [0, zLength * zxScale, xLength / 2],
+            point1: [yLength * yxScale, zLength * zxScale, xLength / 2],
+            point2: [0, 0, xLength / 2]
         });
 
         //要显示的三个横截面的数据（一维数组）
@@ -227,7 +196,7 @@ export default class csvView extends Component {
         this.setState({
             min: min,
             max: max,
-            // unique: unique,
+            unique: unique,
             // OpenGlRW: OpenGlRW,
         });
         const lookupTable = vtkLookupTable.newInstance({
@@ -248,6 +217,9 @@ export default class csvView extends Component {
         lut.updateRange();
         map.setLookupTable(lut)
         const act = vtkActor.newInstance();
+
+        // act.getProperty().setRepresentation(Representation.WIREFRAME);
+
         //将三个面数据拼接
         const sourceData = vtkAppendPolyData.newInstance();
         sourceData.setInputData(vtk(polydata1));
@@ -263,7 +235,6 @@ export default class csvView extends Component {
         model.data = map.getInputData();
         model.renderer.addActor(act);
         model.interactorStyle.setCenterOfRotation(model.mapper.getCenter())
-        reassignManipulators(model);
         model.renderer.resetCamera();
         model.renderWindow.render();
     };
@@ -298,11 +269,7 @@ export default class csvView extends Component {
             boxBgColor, model, activeScalar, mode, unique, inputValue, min, max, xAxis1, yAxis1, xMin, xMax, yMin, yMax, zMin, zMax
         } = this.state;
         let { show, state, data } = this.props;
-        let {
-            // moveStyle,
-            screen, ruler, attribute, ranging, theme, scalar, fontSize,
-            //   modelStyle
-        } = state;
+        let { moveStyle, screen, ruler, attribute, ranging, theme, scalar, fontSize, modelStyle } = state;
 
         let scales = [];
         let fontColor, bgColor;
@@ -314,37 +281,6 @@ export default class csvView extends Component {
             bgColor = [1, 1, 1]
         }
         let modes = mode;
-        if (ranging === true) {
-            const picker = vtkPointPicker.newInstance();
-            picker.setPickFromList(1);
-            picker.initializePickList();
-            picker.addPickList(model.actor);
-            let rangingPoints1 = [];
-            model.rangingPoints1 = rangingPoints1;
-            // Pick on mouse right click
-            model.renderWindow.getInteractor().onRightButtonPress((callData) => {
-                if (model.renderer !== callData.pokedRenderer) {
-                    return;
-                }
-                const pos = callData.position;
-                const point = [pos.x, pos.y, 0.0];
-                picker.pick(point, model.renderer);
-                let pickedPoint = picker.getPickPosition();
-                model.textCtx.font = `${14 * window.devicePixelRatio}px serif`;
-                model.textCtx.fillStyle = fontColor
-                model.textCtx.textAlign = 'center';
-                model.textCtx.textBaseline = 'middle';
-                let y = model.dims.height - point[1];
-                model.textCtx.fillText(`${pickedPoint}`, point[0], y);
-            });
-        } else {
-            if (model.renderWindow) {
-                // model.renderWindow.getInteractor().onRightButtonPress((callData) => {
-                //     console.log("请打开测距功能以进行下一步。。。")
-                // })
-            }
-        }
-
         const lut1 = vtkColorTransferFunction.newInstance();
         const preset = vtkColorMaps.getPresetByName(modes);
         //应用ColorMap
@@ -376,12 +312,6 @@ export default class csvView extends Component {
                 let y = dims.height * window.devicePixelRatio - point[1];
                 model.textCtx.fillText(`${data[posY][posX]}-${posZ}`, point[0], y);
             });
-        } else {
-            if (model.renderWindow) {
-                // model.renderWindow.getInteractor().onRightButtonPress((callData) => {
-                //     console.log("请打开测距功能以进行下一步。。。")
-                // })
-            }
         }
         let useScreen = state.screen;
         if (useScreen !== screen) {
@@ -413,8 +343,9 @@ export default class csvView extends Component {
             model.fullScreenRenderer.setBackground(bgColor);
             let dimensional = 3;
             if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
-            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis1, yAxis1, undefined, xMin, xMax, yMin, yMax, zMin, zMax); //刻度标尺
+            showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis1, yAxis1, undefined, yMax, yMin, zMax, zMin, xMin, xMax); //刻度标尺
         }
+        changeManipulators(model, moveStyle, modelStyle);
 
         return (
             <div>

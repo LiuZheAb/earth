@@ -73,13 +73,20 @@ const createColumns = _this =>
             filteredValue: _this.state.filteredInfo.appName,
             render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
         },
-        // {
-        //     title: 'ip',
-        //     dataIndex: 'dockerIP',
-        //     align: "center",
-        //     fixed: 'left',
-        //     render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
-        // },
+        {
+            title: 'ip',
+            dataIndex: 'dockerIP',
+            align: "center",
+            fixed: 'left',
+            render: (text, info) => <span>{info.dockerIP + ":" + info.vport}</span>
+        },
+        {
+            title: 'dockerID',
+            dataIndex: 'dockerID',
+            align: "center",
+            fixed: 'left',
+            render: text => <p className="ellipsis-column"><Tooltip title={text}>{text}</Tooltip></p>
+        },
         {
             title: '模型名称',
             dataIndex: 'funcName',
@@ -604,7 +611,7 @@ class index extends Component {
                     sessionStorage.setItem("funcName", funcName);
                     sessionStorage.setItem("moduleName", moduleName);
                     sessionStorage.setItem("dockerType", 5);
-                    sessionStorage.setItem("idenMod", idenMod / Math.pow(10, nowStep - 1));
+                    sessionStorage.setItem("idenMod", idenMod);
                     sessionStorage.setItem("nowStep", nowStep + 1);
                     sessionStorage.setItem("stepNum", stepNum);
                     sessionStorage.setItem("dockerID", dockerID);

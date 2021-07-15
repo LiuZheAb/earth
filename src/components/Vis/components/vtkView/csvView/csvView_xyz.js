@@ -17,23 +17,13 @@ import vtkPlaneSource from 'vtk.js/Sources/Filters/Sources/PlaneSource';
 import vtkAppendPolyData from 'vtk.js/Sources/Filters/General/AppendPolyData';
 import vtkPointPicker from 'vtk.js/Sources/Rendering/Core/PointPicker';
 // import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
-import {
-    Slider,
-    // InputNumber, 
-    Input, Col, Row, Select,
-    //  Checkbox 
-} from "antd";
+import { Slider, Input, Col, Row, Select, } from "antd";
 // import { FieldAssociations } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 // import vtkOpenGLHardwareSelector from 'vtk.js/Sources/Rendering/OpenGL/HardwareSelector';
 import vtkColorMaps from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
 import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
-import {
-    Rendering, Screen, reassignManipulators,
-    // changeManipulators, 
-    showBoundRuler, scalarBar, gl
-} from "../common/index"
-// import { Rendering, Screen, gl, scalarBar, Axis, reassignManipulators, changeManipulators, showBounds, showVector } from "../common/index";
+import { Rendering, Screen, reassignManipulators, changeManipulators, showBoundRuler, scalarBar, gl } from "../common/index"
 
 const InputGroup = Input.Group;
 const { Option } = Select;
@@ -44,38 +34,12 @@ export default class csvView extends Component {
             data: [],
             activeScalar: [],
             model: {},
-            canvas: {},
-            ResData: [],
             boxBgColor: "#ccc",
-            value: 0,
-            resultName: null,
-            ArrowSize: 1,
             min: null,
             max: null,
-            cancle: [],
-            scalarBar: 0,
             mode: "rainbow",
             unique: [],
             inputValue: 1,
-            points: [],
-            cells: [],
-            pointData: 0,
-            actors: [],
-            Material: [],
-            checkedList: [],
-            indeterminate: true,
-            checkAll: false,
-            resultList: [],
-            checkedResList: [],
-            resClass: 0,
-            resId: 0,
-            vector: false,
-            vectorData: [],
-            OpenGlRW: {},
-            inputX: 0,
-            inputY: 0,
-            inputZ: 0,
-            arrs: {}
         }
         this.container = React.createRef();
         this.container1 = React.createRef();
@@ -713,7 +677,6 @@ export default class csvView extends Component {
                     xAxis1,
                     yAxis1,
                     zAxis1
-                    // OpenGlRW: OpenGlRW,
                 })
             },  // 成功
             (err) => { console.log(err) } // 失败
@@ -751,11 +714,7 @@ export default class csvView extends Component {
             boxBgColor, model, activeScalar, mode, unique, inputValue, min, max, xAxis1, yAxis1, xMin, xMax, yMin, yMax, zMin, zMax
         } = this.state;
         let { show, state, data } = this.props;
-        let {
-            // moveStyle,
-            screen, ruler, attribute, ranging, theme, scalar, fontSize,
-            //   modelStyle
-        } = state;
+        let { moveStyle, screen, ruler, attribute, ranging, theme, scalar, fontSize, modelStyle } = state;
 
         let scales = [];
         let fontColor, bgColor;
@@ -868,6 +827,7 @@ export default class csvView extends Component {
             if (document.querySelector('.textCanvas')) this.container.current.children[0].removeChild(document.querySelector('.textCanvas'))
             showBoundRuler(ruler, model, this.container, vtk(model.actor.getMapper().getInputData().getState()), this.props, dimensional, fontColor, xAxis1, yAxis1, undefined, xMin, xMax, yMin, yMax, zMin, zMax); //刻度标尺
         }
+        changeManipulators(model, moveStyle, modelStyle);
 
         return (
             <div>

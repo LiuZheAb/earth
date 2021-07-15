@@ -17,15 +17,13 @@ import vtkMapper from 'vtk.js/Sources/Rendering/Core/Mapper';
 // import { FieldDataTypes } from 'vtk.js/Sources/Common/DataModel/DataSet/Constants';
 // import { AttributeTypes } from 'vtk.js/Sources/Common/DataModel/DataSetAttributes/Constants';
 import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
-// import LitecolorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/LiteColorMaps.json';
 import vtkColorTransferFunction from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction';
-// import colorMode from 'vtk.js/Sources/Rendering/Core/ColorTransferFunction/ColorMaps.json';
 import { Rendering, Screen, reassignManipulators, changeManipulators, showBoundRuler, Sfn, creatPlane, gl } from "../common/index.js";
 import * as actions from '../../../redux/actions/index';
 // import vtkAppendPolyData from 'vtk.js/Sources/Filters/General/AppendPolyData';
 // import vtkCubeSource from 'vtk.js/Sources/Filters/Sources/CubeSource';
 // import vtkPixelSpaceCallbackMapper from 'vtk.js/Sources/Rendering/Core/PixelSpaceCallbackMapper';
-// colorMode = [...colorMode, ...LitecolorMode];
+
 const InputGroup = Input.Group;
 const { Option } = Select;
 export default class csvViewXy extends Component {

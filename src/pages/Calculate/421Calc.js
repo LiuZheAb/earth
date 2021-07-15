@@ -136,7 +136,10 @@ class Calculate extends React.Component {
             dimensionValue: "2D",
             realValue: "model",
             hasGotParam: true,
-            reStart: sessionStorage.getItem("reStart") || undefined
+            reStart: sessionStorage.getItem("reStart") || undefined,
+            currentFile: "",
+            hasStarted: false,
+            hasRun: false
         };
     };
     logTimer = undefined;
@@ -251,6 +254,7 @@ class Calculate extends React.Component {
             this.setState({
                 loading: false,
                 dockerType: status,
+                hasStarted: true
             });
             switch (status) {
                 case 0:
@@ -482,7 +486,7 @@ class Calculate extends React.Component {
     //运行
     runDocker = () => {
         let { username, idenMod, dockerID, dockerIP, vport, stepNum, modelIndex, appName, funcName } = this.state;
-        this.setState({ loading: true, isComputing: true });
+        this.setState({ loading: true, isComputing: true , hasRun: true});
         axios({
             method: 'post',
             url: api + 'computeContain',
@@ -688,6 +692,20 @@ class Calculate extends React.Component {
         sessionStorage.removeItem("real");
         sessionStorage.removeItem("realValue");
         sessionStorage.removeItem("defaultIndex");
+        let { hasStarted, hasRun, dockerID, dockerIP } = this.state;
+        if (hasStarted && !hasRun && dockerID && dockerIP) {
+            axios({
+                method: 'post',
+                url: api + 'killcontain',
+                data: {
+                    dockerID,
+                    dockerIP,
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+        }
         this.setState = () => {
             return;
         }
@@ -737,6 +755,7 @@ class Calculate extends React.Component {
     handleOpenVisModal = (info, isTData) => {
         let { absolutePath, name } = info;
         let { dockerIP, vport } = this.state;
+        this.setState({ currentFile: name });
         let resFileListData = isTData ? this.state.tdataFileListData : this.state.resFileListData
         let calcResData = {}, sameName = false;
         for (let i = 0; i < resFileListData.length; i++) {
@@ -1085,7 +1104,7 @@ class Calculate extends React.Component {
             computed, nowStep, stepNum, disabled, proList, calcResData, calcStatus, resType, visVisible, toggle,
             tdataDrawerVisible, tdataFileListData, fileListLoading, dataLoading, fileModalVisible, imgModalVisible, filePath,
             sourceParamType, materialIndex, materialModalVisible, materialName, materialValue, dataType, tinyListener,
-            dimension, real, dimensionValue, realValue, hasGotParam, defaultIndex
+            dimension, real, dimensionValue, realValue, hasGotParam, defaultIndex,currentFile
         } = this.state;
         const { getFieldDecorator } = this.props.form;
         let getClassName = value => {
@@ -1719,7 +1738,7 @@ class Calculate extends React.Component {
 
                     </Drawer >
                     <Modal className="vis-modal" visible={visVisible} onCancel={() => { this.setState({ visVisible: false }) }} footer={null} destroyOnClose>
-                        <Vis data={calcResData} appName={appName} datatype={dataType} />
+                        <Vis data={calcResData} appName={appName} datatype={dataType} fileName={currentFile}/>
                     </Modal>
                     <Modal className="file-modal" visible={fileModalVisible} onCancel={this.handleCancleFileModal} footer={null}>
                         <iframe id="file_iframe"
