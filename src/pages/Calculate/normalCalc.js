@@ -193,10 +193,12 @@ class Calculate extends React.Component {
         this.setState({ textAreas });
     };
     // 上传文件调用
-    changeUpload(index, info) {
-        let { uploadFileList } = this.state;
+    changeUpload(index, paramName, info) {
+        let { uploadFileList, idenMod } = this.state;
         let fileList = [...info.fileList];
-        fileList = fileList.slice(-1);
+        if (idenMod !== 222 || idenMod !== 7221 || ((idenMod === 222 || idenMod === 7221) && paramName !== "sac_file" && paramName !== "input_dir")) {
+            fileList = fileList.slice(-1);
+        }
         if (info.file.status) {
             uploadFileList[index] = fileList;
             this.setState({ uploadFileList });
@@ -1844,7 +1846,7 @@ class Calculate extends React.Component {
                                                                             vport,
                                                                             index: modelIndex,
                                                                             fileIndex: index + 1
-                                                                        }} sac_file
+                                                                        }}
                                                                         beforeUpload={(file, fileList) => {
                                                                             if ((idenMod === 321 || idenMod === 322 || idenMod === 323 || idenMod === 324 || idenMod === 325) && defaultValue) {
                                                                                 if (file.name === defaultValue) {
@@ -1857,9 +1859,9 @@ class Calculate extends React.Component {
                                                                                 return true;
                                                                             }
                                                                         }}
-                                                                        directory={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
-                                                                        multiple={((idenMod === 222 || idenMod === 7221) && paramName === "sac_file") || ((idenMod === 2211 || idenMod === 2212) && paramName === "input_dir")}
-                                                                        onChange={this.changeUpload.bind(this, index)}
+                                                                        directory={((idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir"))}
+                                                                        multiple={((idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir"))}
+                                                                        onChange={this.changeUpload.bind(this, index, paramName)}
                                                                         accept={enumList && enumList.join(",")}
                                                                         fileList={uploadFileList[index]}
                                                                     >
