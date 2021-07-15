@@ -196,7 +196,7 @@ class Calculate extends React.Component {
     changeUpload(index, paramName, info) {
         let { uploadFileList, idenMod } = this.state;
         let fileList = [...info.fileList];
-        if (idenMod !== 222 || idenMod !== 7221 || ((idenMod === 222 || idenMod === 7221) && paramName !== "sac_file" && paramName !== "input_dir")) {
+        if (!((idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir"))) {
             fileList = fileList.slice(-1);
         }
         if (info.file.status) {
@@ -1859,8 +1859,8 @@ class Calculate extends React.Component {
                                                                                 return true;
                                                                             }
                                                                         }}
-                                                                        directory={((idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir"))}
-                                                                        multiple={((idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir"))}
+                                                                        directory={(idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir")}
+                                                                        multiple={(idenMod === 222 || idenMod === 7221) && (paramName === "sac_file" || paramName === "input_dir")}
                                                                         onChange={this.changeUpload.bind(this, index, paramName)}
                                                                         accept={enumList && enumList.join(",")}
                                                                         fileList={uploadFileList[index]}
